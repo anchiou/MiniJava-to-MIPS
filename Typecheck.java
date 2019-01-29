@@ -8,7 +8,7 @@ public class Typecheck {
         try {
             new MiniJavaParser(System.in);
             Goal program = MiniJavaParser.Goal();
-            VisitorPhaseOne visitor = new VisitorPhaseOne();
+            FirstVisitor visitor = new FirstVisitor();
             // Stack symbolTable = new Stack<Scope>();
             // program.accept(visitor, symbolTable);
             program.accept(visitor);

@@ -4,5 +4,5 @@ import java.util.Map;
 public class Scope {
     Map<String, String> types;
 
-    
+
 }

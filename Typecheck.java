@@ -9,9 +9,11 @@ public class Typecheck {
             new MiniJavaParser(System.in);
             Goal program = MiniJavaParser.Goal();
             FirstVisitor visitor = new FirstVisitor();
-            // Stack symbolTable = new Stack<Scope>();
-            // program.accept(visitor, symbolTable);
-            program.accept(visitor);
+            Stack<Scope> symbolTable = new Stack<Scope>();
+            // Scope test = new Scope("TestSuccess");
+            // symbolTable.push(test);
+            program.accept(visitor, symbolTable);
+            // program.accept(visitor);
         } catch (ParseException e) {
             System.out.println("ParseException in Typecheck main");
         }

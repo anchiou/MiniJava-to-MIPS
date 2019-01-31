@@ -530,7 +530,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> <INTEGER_LITERAL>
     */
    public String visit(IntegerLiteral n) {
-      String _ret=null;
+      String _ret= n.f0.toString();
+      System.out.println(_ret);
       n.f0.accept(this);
       return _ret;
    }
@@ -557,7 +558,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> <IDENTIFIER>
     */
    public String visit(Identifier n) {
-      String _ret=null;
+      // System.out.println(n.f0.toString());
+      String _ret = n.f0.toString();
       n.f0.accept(this);
       return _ret;
    }

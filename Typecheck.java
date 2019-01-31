@@ -11,8 +11,8 @@ public class Typecheck {
             FirstVisitor visitor = new FirstVisitor();
             //program.accept(visitor, symbolTable);
             program.accept(visitor);
-            String test = visitor.symbolTable.pop().getTest();
-            System.out.println(test);
+            // String test = visitor.symbolTable.pop().getTest();
+            // System.out.println(test);
         } catch (ParseException e) {
             System.out.println("ParseException in Typecheck main");
         }

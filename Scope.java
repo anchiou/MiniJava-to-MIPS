@@ -5,6 +5,8 @@ public class Scope {
     String test;
     Map<String, String> types;
 
+    public Scope () {}
+
     public Scope (String value) {
         test = value;
     }
@@ -21,5 +23,13 @@ public class Scope {
      */
     public void setTest(String test) {
         this.test = test;
+    }
+
+    public void putType(String name, String type) {
+        this.types.put(name, type);
+    }
+
+    public String getType(String name) {
+        return this.types.get(name);
     }
 }

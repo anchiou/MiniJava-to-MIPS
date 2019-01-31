@@ -2,8 +2,7 @@ import syntaxtree.*;
 import visitor.*;
 import java.util.Stack;
 
-
-public class FirstVisitor extends DepthFirstVisitor {
+public class FirstVisitor extends GJNoArguDepthFirst<String> {
    Stack<Scope> symbolTable = new Stack<Scope>();
 
    /**
@@ -11,12 +10,17 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> ( TypeDeclaration() )*
     * f2 -> <EOF>
     */
-   public void visit(Goal n) {
+    public String visit(Goal n) {
       System.out.println("FirstVisitor --> Goal");
-      this.symbolTable.push(new Scope("TestSuccess"));
+      Scope mainScope = new Scope();
+      this.symbolTable.push(mainScope);
+      // this.symbolTable.top().putType();
+
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -39,7 +43,8 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f16 -> "}"
     * f17 -> "}"
     */
-   public void visit(MainClass n) {
+   public String visit(MainClass n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
@@ -58,14 +63,17 @@ public class FirstVisitor extends DepthFirstVisitor {
       n.f15.accept(this);
       n.f16.accept(this);
       n.f17.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> ClassDeclaration()
     *       | ClassExtendsDeclaration()
     */
-   public void visit(TypeDeclaration n) {
+   public String visit(TypeDeclaration n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
@@ -76,13 +84,15 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f4 -> ( MethodDeclaration() )*
     * f5 -> "}"
     */
-   public void visit(ClassDeclaration n) {
+   public String visit(ClassDeclaration n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
       n.f5.accept(this);
+      return _ret;
    }
 
    /**
@@ -95,7 +105,8 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f6 -> ( MethodDeclaration() )*
     * f7 -> "}"
     */
-   public void visit(ClassExtendsDeclaration n) {
+   public String visit(ClassExtendsDeclaration n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
@@ -104,6 +115,7 @@ public class FirstVisitor extends DepthFirstVisitor {
       n.f5.accept(this);
       n.f6.accept(this);
       n.f7.accept(this);
+      return _ret;
    }
 
    /**
@@ -111,10 +123,12 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> Identifier()
     * f2 -> ";"
     */
-   public void visit(VarDeclaration n) {
+   public String visit(VarDeclaration n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -132,7 +146,8 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f11 -> ";"
     * f12 -> "}"
     */
-   public void visit(MethodDeclaration n) {
+   public String visit(MethodDeclaration n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
@@ -146,33 +161,40 @@ public class FirstVisitor extends DepthFirstVisitor {
       n.f10.accept(this);
       n.f11.accept(this);
       n.f12.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> FormalParameter()
     * f1 -> ( FormalParameterRest() )*
     */
-   public void visit(FormalParameterList n) {
+   public String visit(FormalParameterList n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> Type()
     * f1 -> Identifier()
     */
-   public void visit(FormalParameter n) {
+   public String visit(FormalParameter n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> ","
     * f1 -> FormalParameter()
     */
-   public void visit(FormalParameterRest n) {
+   public String visit(FormalParameterRest n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
+      return _ret;
    }
 
    /**
@@ -181,8 +203,10 @@ public class FirstVisitor extends DepthFirstVisitor {
     *       | IntegerType()
     *       | Identifier()
     */
-   public void visit(Type n) {
+   public String visit(Type n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
@@ -190,24 +214,30 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> "["
     * f2 -> "]"
     */
-   public void visit(ArrayType n) {
+   public String visit(ArrayType n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> "boolean"
     */
-   public void visit(BooleanType n) {
+   public String visit(BooleanType n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> "int"
     */
-   public void visit(IntegerType n) {
+   public String visit(IntegerType n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
@@ -218,8 +248,10 @@ public class FirstVisitor extends DepthFirstVisitor {
     *       | WhileStatement()
     *       | PrintStatement()
     */
-   public void visit(Statement n) {
+   public String visit(Statement n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
@@ -227,10 +259,12 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> ( Statement() )*
     * f2 -> "}"
     */
-   public void visit(Block n) {
+   public String visit(Block n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -239,11 +273,13 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f2 -> Expression()
     * f3 -> ";"
     */
-   public void visit(AssignmentStatement n) {
+   public String visit(AssignmentStatement n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
       n.f3.accept(this);
+      return _ret;
    }
 
    /**
@@ -255,7 +291,8 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f5 -> Expression()
     * f6 -> ";"
     */
-   public void visit(ArrayAssignmentStatement n) {
+   public String visit(ArrayAssignmentStatement n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
@@ -263,6 +300,7 @@ public class FirstVisitor extends DepthFirstVisitor {
       n.f4.accept(this);
       n.f5.accept(this);
       n.f6.accept(this);
+      return _ret;
    }
 
    /**
@@ -274,7 +312,8 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f5 -> "else"
     * f6 -> Statement()
     */
-   public void visit(IfStatement n) {
+   public String visit(IfStatement n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
@@ -282,6 +321,7 @@ public class FirstVisitor extends DepthFirstVisitor {
       n.f4.accept(this);
       n.f5.accept(this);
       n.f6.accept(this);
+      return _ret;
    }
 
    /**
@@ -291,12 +331,14 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f3 -> ")"
     * f4 -> Statement()
     */
-   public void visit(WhileStatement n) {
+   public String visit(WhileStatement n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
+      return _ret;
    }
 
    /**
@@ -306,12 +348,14 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f3 -> ")"
     * f4 -> ";"
     */
-   public void visit(PrintStatement n) {
+   public String visit(PrintStatement n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
+      return _ret;
    }
 
    /**
@@ -325,8 +369,10 @@ public class FirstVisitor extends DepthFirstVisitor {
     *       | MessageSend()
     *       | PrimaryExpression()
     */
-   public void visit(Expression n) {
+   public String visit(Expression n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
@@ -334,10 +380,12 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> "&&"
     * f2 -> PrimaryExpression()
     */
-   public void visit(AndExpression n) {
+   public String visit(AndExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -345,10 +393,12 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> "<"
     * f2 -> PrimaryExpression()
     */
-   public void visit(CompareExpression n) {
+   public String visit(CompareExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -356,10 +406,12 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> "+"
     * f2 -> PrimaryExpression()
     */
-   public void visit(PlusExpression n) {
+   public String visit(PlusExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -367,10 +419,12 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> "-"
     * f2 -> PrimaryExpression()
     */
-   public void visit(MinusExpression n) {
+   public String visit(MinusExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -378,10 +432,12 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> "*"
     * f2 -> PrimaryExpression()
     */
-   public void visit(TimesExpression n) {
+   public String visit(TimesExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -390,11 +446,13 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f2 -> PrimaryExpression()
     * f3 -> "]"
     */
-   public void visit(ArrayLookup n) {
+   public String visit(ArrayLookup n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
       n.f3.accept(this);
+      return _ret;
    }
 
    /**
@@ -402,10 +460,12 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> "."
     * f2 -> "length"
     */
-   public void visit(ArrayLength n) {
+   public String visit(ArrayLength n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 
    /**
@@ -416,31 +476,37 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f4 -> ( ExpressionList() )?
     * f5 -> ")"
     */
-   public void visit(MessageSend n) {
+   public String visit(MessageSend n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
       n.f5.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> Expression()
     * f1 -> ( ExpressionRest() )*
     */
-   public void visit(ExpressionList n) {
+   public String visit(ExpressionList n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> ","
     * f1 -> Expression()
     */
-   public void visit(ExpressionRest n) {
+   public String visit(ExpressionRest n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
+      return _ret;
    }
 
    /**
@@ -454,43 +520,55 @@ public class FirstVisitor extends DepthFirstVisitor {
     *       | NotExpression()
     *       | BracketExpression()
     */
-   public void visit(PrimaryExpression n) {
+   public String visit(PrimaryExpression n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> <INTEGER_LITERAL>
     */
-   public void visit(IntegerLiteral n) {
+   public String visit(IntegerLiteral n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> "true"
     */
-   public void visit(TrueLiteral n) {
+   public String visit(TrueLiteral n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> "false"
     */
-   public void visit(FalseLiteral n) {
+   public String visit(FalseLiteral n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> <IDENTIFIER>
     */
-   public void visit(Identifier n) {
+   public String visit(Identifier n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> "this"
     */
-   public void visit(ThisExpression n) {
+   public String visit(ThisExpression n) {
+      String _ret=null;
       n.f0.accept(this);
+      return _ret;
    }
 
    /**
@@ -500,12 +578,14 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f3 -> Expression()
     * f4 -> "]"
     */
-   public void visit(ArrayAllocationExpression n) {
+   public String visit(ArrayAllocationExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
+      return _ret;
    }
 
    /**
@@ -514,20 +594,24 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f2 -> "("
     * f3 -> ")"
     */
-   public void visit(AllocationExpression n) {
+   public String visit(AllocationExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
       n.f3.accept(this);
+      return _ret;
    }
 
    /**
     * f0 -> "!"
     * f1 -> Expression()
     */
-   public void visit(NotExpression n) {
+   public String visit(NotExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
+      return _ret;
    }
 
    /**
@@ -535,9 +619,11 @@ public class FirstVisitor extends DepthFirstVisitor {
     * f1 -> Expression()
     * f2 -> ")"
     */
-   public void visit(BracketExpression n) {
+   public String visit(BracketExpression n) {
+      String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      return _ret;
    }
 }

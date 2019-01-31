@@ -1,15 +1,17 @@
 import syntaxtree.*;
 import visitor.*;
+import java.util.Stack;
 
-public class FirstVisitor extends GJVoidDepthFirst<Scope> {
+
+public class FirstVisitor extends GJVoidDepthFirst<Stack<Scope>> {
  /**
     * f0 -> MainClass()
     * f1 -> ( TypeDeclaration() )*
     * f2 -> <EOF>
     */
-    public void visit(Goal n, Scope argu) {
+    public void visit(Goal n, Stack<Scope> argu) {
         System.out.println("FirstVisitor --> Goal");
-        String s = argu.getTest();
+        String s = argu.pop().getTest();
         System.out.println(s);
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -36,7 +38,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f16 -> "}"
       * f17 -> "}"
       */
-     public void visit(MainClass n, Scope argu) {
+     public void visit(MainClass n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -61,7 +63,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f0 -> ClassDeclaration()
       *       | ClassExtendsDeclaration()
       */
-     public void visit(TypeDeclaration n, Scope argu) {
+     public void visit(TypeDeclaration n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
@@ -73,7 +75,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f4 -> ( MethodDeclaration() )*
       * f5 -> "}"
       */
-     public void visit(ClassDeclaration n, Scope argu) {
+     public void visit(ClassDeclaration n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -92,7 +94,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f6 -> ( MethodDeclaration() )*
       * f7 -> "}"
       */
-     public void visit(ClassExtendsDeclaration n, Scope argu) {
+     public void visit(ClassExtendsDeclaration n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -108,7 +110,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> Identifier()
       * f2 -> ";"
       */
-     public void visit(VarDeclaration n, Scope argu) {
+     public void visit(VarDeclaration n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -129,7 +131,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f11 -> ";"
       * f12 -> "}"
       */
-     public void visit(MethodDeclaration n, Scope argu) {
+     public void visit(MethodDeclaration n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -149,7 +151,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f0 -> FormalParameter()
       * f1 -> ( FormalParameterRest() )*
       */
-     public void visit(FormalParameterList n, Scope argu) {
+     public void visit(FormalParameterList n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
      }
@@ -158,7 +160,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f0 -> Type()
       * f1 -> Identifier()
       */
-     public void visit(FormalParameter n, Scope argu) {
+     public void visit(FormalParameter n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
      }
@@ -167,7 +169,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f0 -> ","
       * f1 -> FormalParameter()
       */
-     public void visit(FormalParameterRest n, Scope argu) {
+     public void visit(FormalParameterRest n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
      }
@@ -178,7 +180,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       *       | IntegerType()
       *       | Identifier()
       */
-     public void visit(Type n, Scope argu) {
+     public void visit(Type n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
@@ -187,7 +189,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> "["
       * f2 -> "]"
       */
-     public void visit(ArrayType n, Scope argu) {
+     public void visit(ArrayType n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -196,14 +198,14 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
      /**
       * f0 -> "boolean"
       */
-     public void visit(BooleanType n, Scope argu) {
+     public void visit(BooleanType n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
      /**
       * f0 -> "int"
       */
-     public void visit(IntegerType n, Scope argu) {
+     public void visit(IntegerType n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
@@ -215,7 +217,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       *       | WhileStatement()
       *       | PrintStatement()
       */
-     public void visit(Statement n, Scope argu) {
+     public void visit(Statement n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
@@ -224,7 +226,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> ( Statement() )*
       * f2 -> "}"
       */
-     public void visit(Block n, Scope argu) {
+     public void visit(Block n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -236,7 +238,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f2 -> Expression()
       * f3 -> ";"
       */
-     public void visit(AssignmentStatement n, Scope argu) {
+     public void visit(AssignmentStatement n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -252,7 +254,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f5 -> Expression()
       * f6 -> ";"
       */
-     public void visit(ArrayAssignmentStatement n, Scope argu) {
+     public void visit(ArrayAssignmentStatement n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -271,7 +273,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f5 -> "else"
       * f6 -> Statement()
       */
-     public void visit(IfStatement n, Scope argu) {
+     public void visit(IfStatement n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -288,7 +290,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f3 -> ")"
       * f4 -> Statement()
       */
-     public void visit(WhileStatement n, Scope argu) {
+     public void visit(WhileStatement n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -303,7 +305,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f3 -> ")"
       * f4 -> ";"
       */
-     public void visit(PrintStatement n, Scope argu) {
+     public void visit(PrintStatement n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -322,7 +324,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       *       | MessageSend()
       *       | PrimaryExpression()
       */
-     public void visit(Expression n, Scope argu) {
+     public void visit(Expression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
@@ -331,7 +333,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> "&&"
       * f2 -> PrimaryExpression()
       */
-     public void visit(AndExpression n, Scope argu) {
+     public void visit(AndExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -342,7 +344,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> "<"
       * f2 -> PrimaryExpression()
       */
-     public void visit(CompareExpression n, Scope argu) {
+     public void visit(CompareExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -353,7 +355,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> "+"
       * f2 -> PrimaryExpression()
       */
-     public void visit(PlusExpression n, Scope argu) {
+     public void visit(PlusExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -364,7 +366,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> "-"
       * f2 -> PrimaryExpression()
       */
-     public void visit(MinusExpression n, Scope argu) {
+     public void visit(MinusExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -375,7 +377,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> "*"
       * f2 -> PrimaryExpression()
       */
-     public void visit(TimesExpression n, Scope argu) {
+     public void visit(TimesExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -387,7 +389,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f2 -> PrimaryExpression()
       * f3 -> "]"
       */
-     public void visit(ArrayLookup n, Scope argu) {
+     public void visit(ArrayLookup n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -399,7 +401,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> "."
       * f2 -> "length"
       */
-     public void visit(ArrayLength n, Scope argu) {
+     public void visit(ArrayLength n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -413,7 +415,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f4 -> ( ExpressionList() )?
       * f5 -> ")"
       */
-     public void visit(MessageSend n, Scope argu) {
+     public void visit(MessageSend n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -426,7 +428,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f0 -> Expression()
       * f1 -> ( ExpressionRest() )*
       */
-     public void visit(ExpressionList n, Scope argu) {
+     public void visit(ExpressionList n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
      }
@@ -435,7 +437,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f0 -> ","
       * f1 -> Expression()
       */
-     public void visit(ExpressionRest n, Scope argu) {
+     public void visit(ExpressionRest n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
      }
@@ -451,42 +453,42 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       *       | NotExpression()
       *       | BracketExpression()
       */
-     public void visit(PrimaryExpression n, Scope argu) {
+     public void visit(PrimaryExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
      /**
       * f0 -> <INTEGER_LITERAL>
       */
-     public void visit(IntegerLiteral n, Scope argu) {
+     public void visit(IntegerLiteral n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
      /**
       * f0 -> "true"
       */
-     public void visit(TrueLiteral n, Scope argu) {
+     public void visit(TrueLiteral n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
      /**
       * f0 -> "false"
       */
-     public void visit(FalseLiteral n, Scope argu) {
+     public void visit(FalseLiteral n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
      /**
       * f0 -> <IDENTIFIER>
       */
-     public void visit(Identifier n, Scope argu) {
+     public void visit(Identifier n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
      /**
       * f0 -> "this"
       */
-     public void visit(ThisExpression n, Scope argu) {
+     public void visit(ThisExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
      }
 
@@ -497,7 +499,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f3 -> Expression()
       * f4 -> "]"
       */
-     public void visit(ArrayAllocationExpression n, Scope argu) {
+     public void visit(ArrayAllocationExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -511,7 +513,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f2 -> "("
       * f3 -> ")"
       */
-     public void visit(AllocationExpression n, Scope argu) {
+     public void visit(AllocationExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -522,7 +524,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f0 -> "!"
       * f1 -> Expression()
       */
-     public void visit(NotExpression n, Scope argu) {
+     public void visit(NotExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
      }
@@ -532,7 +534,7 @@ public class FirstVisitor extends GJVoidDepthFirst<Scope> {
       * f1 -> Expression()
       * f2 -> ")"
       */
-     public void visit(BracketExpression n, Scope argu) {
+     public void visit(BracketExpression n, Stack<Scope>  argu) {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);

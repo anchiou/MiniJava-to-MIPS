@@ -10,8 +10,8 @@ public class Typecheck {
             Goal program = MiniJavaParser.Goal();
             FirstVisitor visitor = new FirstVisitor();
             Stack<Scope> symbolTable = new Stack<Scope>();
-            // Scope test = new Scope("TestSuccess");
-            // symbolTable.push(test);
+            Scope test = new Scope("TestSuccess");
+            symbolTable.push(test);
             program.accept(visitor, symbolTable);
             // program.accept(visitor);
         } catch (ParseException e) {

@@ -46,6 +46,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       String id = n.f1.accept(this);
       System.out.println("Main class id: " + id);
+      this.symbolTable.peek().putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
@@ -89,6 +90,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       String id = n.f1.accept(this);
       System.out.println("Class id: " + id);
+      this.symbolTable.push(new Scope());
+      this.symbolTable.peek().putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
@@ -111,6 +114,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       String id = n.f1.accept(this);
       System.out.println("Class Extends id: " + id);
+      this.symbolTable.push(new Scope());
+      this.symbolTable.peek().putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
@@ -129,7 +134,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String _ret=null;
       String type = n.f0.accept(this);
       String id = n.f1.accept(this);
-      // this.symbolTable.peek().putType(id,type);
+      this.symbolTable.peek().putType(id, type);
+      // System.out.println("Returned from ScopePut");
       n.f2.accept(this);
       return _ret;
    }
@@ -155,6 +161,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f1.accept(this);
       String id = n.f2.accept(this);
       System.out.println("Method id: " + id);
+      this.symbolTable.peek().putType(id, "method");
       n.f3.accept(this);
       n.f4.accept(this);
       n.f5.accept(this);
@@ -189,6 +196,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       System.out.println("Parameter type: " + type);
       String id = n.f1.accept(this);
       System.out.println("Parameter id: " + id);
+      this.symbolTable.peek().putType(id, type);
       return _ret;
    }
 

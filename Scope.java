@@ -1,9 +1,11 @@
 import java.net.PortUnreachableException;
 import java.util.Map;
+import java.util.HashMap;
 
 public class Scope {
     String test;
-    Map<String, String> types;
+    String parent;
+    Map<String, String> types = new HashMap<String, String>();
 
     public Scope () {}
 
@@ -11,21 +13,8 @@ public class Scope {
         test = value;
     }
 
-    /**
-     * @return the test
-     */
-    public String getTest() {
-        return test;
-    }
-
-    /**
-     * @param test the test to set
-     */
-    public void setTest(String test) {
-        this.test = test;
-    }
-
     public void putType(String name, String type) {
+        System.out.println("In PutType name: " + name + " type: " + type);
         this.types.put(name, type);
     }
 

@@ -1,5 +1,3 @@
-// package typecheck;
-
 import java.util.Stack;
 import syntaxtree.*;
 
@@ -8,11 +6,11 @@ public class Typecheck {
         try {
             new MiniJavaParser(System.in);
             Goal program = MiniJavaParser.Goal();
-            FirstVisitor visitor = new FirstVisitor();
-            //program.accept(visitor, symbolTable);
-            program.accept(visitor);
+            FirstVisitor visitor1 = new FirstVisitor();
+            program.accept(visitor1);
             // String test = visitor.symbolTable.pop().getType("num_aux");
-            // System.out.println("Typecheck: " + test);
+            SecondVisitor visitor2 = new SecondVisitor();
+            program.accept(visitor2, visitor1.symbolTable);
         } catch (ParseException e) {
             System.out.println("ParseException in Typecheck main");
         }

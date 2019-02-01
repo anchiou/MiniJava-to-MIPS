@@ -219,6 +219,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      _ret = "array";
       return _ret;
    }
 
@@ -227,7 +228,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     */
    public String visit(BooleanType n) {
       String _ret=null;
-      n.f0.accept(this);
+      _ret = n.f0.accept(this);
+      _ret = "boolean";
       return _ret;
    }
 
@@ -236,7 +238,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     */
    public String visit(IntegerType n) {
       String _ret=null;
-      n.f0.accept(this);
+      _ret = n.f0.accept(this);
+      _ret = "int";
       return _ret;
    }
 

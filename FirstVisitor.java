@@ -205,8 +205,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     */
    public String visit(Type n) {
       String _ret=null;
-      n.f0.accept(this);
-      _ret = n.f0.toString();
+      _ret = n.f0.accept(this);
       System.out.println(_ret);
       return _ret;
    }

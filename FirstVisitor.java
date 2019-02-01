@@ -236,8 +236,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String _ret = n.f0.accept(this);
 =======
       String _ret=null;
-      n.f0.accept(this);
-      _ret = n.f0.toString();
+      _ret = n.f0.accept(this);
       System.out.println(_ret);
 >>>>>>> Added visit methods for arrayType, boolType, intType, Identifier
       return _ret;

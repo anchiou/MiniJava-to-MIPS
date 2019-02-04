@@ -109,10 +109,10 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     */
     public String visit(MethodDeclaration n, Stack<Scope> argu) {
         System.out.println("MethodDecl");
-
-        String _ret=null;
+        
+        String _ret= "MethodDeclaration";
         n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
+        String classType = n.f1.accept(this, argu);
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
@@ -121,7 +121,11 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         n.f7.accept(this, argu);
         n.f8.accept(this, argu);
         n.f9.accept(this, argu);
-        n.f10.accept(this, argu);
+        String returnType = n.f10.accept(this, argu);
+        if (classType != returnType) {
+            System.out.println("Type error");
+            System.exit(0);
+        }
         n.f11.accept(this, argu);
         n.f12.accept(this, argu);
         return _ret;
@@ -240,11 +244,15 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     */
     public String visit(IfStatement n, Stack<Scope> argu) {
         System.out.println("IfStmt");
-
-        String _ret=null;
+      
+        String _ret= "IfStatement";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String Exp = n.f2.accept(this, argu);
+        if (!(Exp == "boolean")) {
+            System.out.println("Type error");
+            System.exit(0);
+        }
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);
@@ -261,11 +269,15 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     */
     public String visit(WhileStatement n, Stack<Scope> argu) {
         System.out.println("WhileStmt");
-
-        String _ret=null;
+      
+        String _ret= "WhileStatement";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String Exp = n.f2.accept(this, argu);
+        if (!(Exp == "boolean")) {
+            System.out.println("Type error");
+            System.exit(0);
+        }
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         return _ret;

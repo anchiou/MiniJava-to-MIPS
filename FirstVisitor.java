@@ -246,7 +246,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
-      _ret = "array";
       return _ret;
    }
 

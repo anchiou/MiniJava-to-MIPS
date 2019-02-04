@@ -359,9 +359,18 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
 
         String _ret="int";
         String first = n.f0.accept(this, argu);
+        if (first != "int") {
+            first = argu.peek().getType(first);
+        }
+
         n.f1.accept(this, argu);
+
         String second = n.f2.accept(this, argu);
-        if (argu.peek().getType(first) == "int" && second == "int") {
+        if (second != "int") {
+            second = argu.peek().getType(second);
+        }
+
+        if (first == "int" && second == "int") {
             return _ret;
         }
         System.out.println("Type error: Expected int");
@@ -377,13 +386,22 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(MinusExpression n, Stack<Scope> argu) {
         System.out.println("MinusExpression");
 
-        String _ret="int";
+        String _ret = "int";
         String first = n.f0.accept(this, argu);
+        if (first != "int") {
+            first = argu.peek().getType(first);
+        }
+        System.out.println("Minus.first: " + first);
+
         n.f1.accept(this, argu);
+
         String second = n.f2.accept(this, argu);
-        if (argu.peek().getType(first) == "int" && second == "int") {
+        System.out.println("Minus.second: " + second);
+
+        if (first == "int" && second == "int") {
             return _ret;
         }
+
         System.out.println("Type error: Expected int");
         System.exit(0);
         return _ret;
@@ -399,9 +417,20 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
 
         String _ret="int";
         String first = n.f0.accept(this, argu);
+        if (first != "int") {
+            first = argu.peek().getType(first);
+        }
+        System.out.println("Times.first: " + first);
+
         n.f1.accept(this, argu);
+
         String second = n.f2.accept(this, argu);
-        if (argu.peek().getType(first) == "int" && second == "int") {
+        if (second != "int") {
+            second = argu.peek().getType(second);
+        }
+        System.out.println("Times.second: " + second);
+
+        if (first == "int" && second == "int") {
             return _ret;
         }
         System.out.println("Type error: Expected int");
@@ -462,7 +491,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(MessageSend n, Stack<Scope> argu) {
         System.out.println("MessageSend");
 
-        String _ret=null;
+        String _ret = null;
         String className = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String methodName = n.f2.accept(this, argu);
@@ -470,18 +499,18 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);
 
-        if (argu.peek().getParent() != className) {
+        if (argu.peek().getParent() != className && className != "this") {
+            System.out.println(className);
             System.out.println("Type error: No such class");
             System.exit(0);
         }
 
-        //TODO FIX THIS FUNCTION
-
         // Type checks if methodName is valid
-        if (argu.peek().getType(methodName) == null) {
+        if (!argu.peek().contains(methodName)) {
             System.out.println("Type error"); // method doesn't exist
             System.exit(0);
         }
+        _ret = argu.peek().getType(methodName); // Set _ret to method return type
 
         return _ret;
     }
@@ -539,7 +568,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(IntegerLiteral n, Stack<Scope> argu) {
         System.out.println("IntegerLiteral");
 
-        String _ret="int";
+        String _ret = "int";
         n.f0.accept(this, argu);
         return _ret;
     }
@@ -570,7 +599,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
      * f0 -> <IDENTIFIER>
     */
     public String visit(Identifier n, Stack<Scope> argu) {
-        System.out.println("Identifier");
+        System.out.println("Identifier: " + n.f0.toString());
 
         String _ret = n.f0.toString();
         n.f0.accept(this, argu);
@@ -583,7 +612,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(ThisExpression n, Stack<Scope> argu) {
         System.out.println("ThisExpr");
 
-        String _ret=null;
+        String _ret = "this";
         n.f0.accept(this, argu);
         return _ret;
     }

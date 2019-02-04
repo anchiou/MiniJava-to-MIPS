@@ -1,13 +1,18 @@
 import java.net.PortUnreachableException;
 import java.util.Map;
 import java.util.HashMap;
+<<<<<<< HEAD
 import java.util.Iterator;
+=======
+>>>>>>> fixed some errors
 
 public class Scope {
     String parent;
     Map<String, String> types = new HashMap<String, String>();
 
-    public Scope () {}
+    public Scope () {
+        types = new HashMap<String, String>();
+    }
 
     public boolean contains(String id) {
         return this.types.containsKey(id);

@@ -254,14 +254,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> "boolean"
     */
    public String visit(BooleanType n) {
-<<<<<<< HEAD
-      String _ret=null;
-      _ret = n.f0.accept(this);
-      _ret = "boolean";
-=======
       String _ret = n.f0.toString();
       n.f0.accept(this);
->>>>>>> 613eca947839d0d4ad4c65e8d8795a2dc7df1c3d
       return _ret;
    }
 
@@ -269,14 +263,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> "int"
     */
    public String visit(IntegerType n) {
-<<<<<<< HEAD
-      String _ret=null;
-      _ret = n.f0.accept(this);
-      _ret = "int";
-=======
       String _ret = n.f0.toString();
       n.f0.accept(this);
->>>>>>> 613eca947839d0d4ad4c65e8d8795a2dc7df1c3d
       return _ret;
    }
 

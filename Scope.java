@@ -1,35 +1,31 @@
 import java.net.PortUnreachableException;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class Scope {
-    String test;
-    Map<String, String> types;
+    String parent;
+    Map<String, String> types = new HashMap<String, String>();
 
     public Scope () {}
 
-    public Scope (String value) {
-        test = value;
+    public boolean contains(String id) {
+        return this.types.containsKey(id);
     }
 
-    /**
-     * @return the test
-     */
-    public String getTest() {
-        return test;
+    public void putType(String id, String type) {
+        // System.out.println("In PutType id: " + id + " type: " + type);
+        this.types.put(id, type);
     }
 
-    /**
-     * @param test the test to set
-     */
-    public void setTest(String test) {
-        this.test = test;
+    public String getType(String id) {
+        return this.types.get(id);
     }
 
-    public void putType(String name, String type) {
-        this.types.put(name, type);
-    }
-
-    public String getType(String name) {
-        return this.types.get(name);
+    public void printAll() {
+        for (String key : this.types.keySet()) {
+            System.out.println(key);
+            System.out.println(this.types.get(key));
+        }
     }
 }

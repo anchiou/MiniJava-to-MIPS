@@ -10,13 +10,10 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f1 -> ( TypeDeclaration() )*
     * f2 -> <EOF>
     */
-    public String visit(Goal n) {
-      System.out.println("FirstVisitor --> Goal");
+   public String visit(Goal n) {
       Scope mainScope = new Scope();
       this.symbolTable.push(mainScope);
-      // this.symbolTable.top().putType();
-
-      String _ret=null;
+      String _ret = null;
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
@@ -46,7 +43,9 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
    public String visit(MainClass n) {
       String _ret=null;
       n.f0.accept(this);
-      n.f1.accept(this);
+      String id = n.f1.accept(this);
+      // System.out.println("Main class id: " + id);
+      this.symbolTable.peek().putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
@@ -85,14 +84,20 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f5 -> "}"
     */
    public String visit(ClassDeclaration n) {
-      String _ret=null;
-      n.f0.accept(this);
-      n.f1.accept(this);
-      n.f2.accept(this);
-      n.f3.accept(this);
-      n.f4.accept(this);
-      n.f5.accept(this);
-      return _ret;
+         String _ret = null;
+         n.f0.accept(this);
+         String id = n.f1.accept(this);
+         if (this.symbolTable.peek().contains(id)) {
+            System.out.println("Type error");
+            return null;
+         }
+         this.symbolTable.push(new Scope());
+         this.symbolTable.peek().putType(id, "class");
+         n.f2.accept(this);
+         n.f3.accept(this);
+         n.f4.accept(this);
+         n.f5.accept(this);
+         return _ret;
    }
 
    /**
@@ -108,7 +113,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
    public String visit(ClassExtendsDeclaration n) {
       String _ret=null;
       n.f0.accept(this);
-      n.f1.accept(this);
+      String id = n.f1.accept(this);
+      // System.out.println("Class Extends id: " + id);
+      if (this.symbolTable.peek().contains(id)) {
+         System.out.println("Type error");
+         return null;
+      }
+      this.symbolTable.push(new Scope());
+      this.symbolTable.peek().putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
@@ -125,8 +137,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     */
    public String visit(VarDeclaration n) {
       String _ret=null;
-      n.f0.accept(this);
-      n.f1.accept(this);
+      String type = n.f0.accept(this);
+      String id = n.f1.accept(this);
+      if (this.symbolTable.peek().contains(id)) {
+         System.out.println("Type error");
+         return null;
+      }
+      this.symbolTable.peek().putType(id, type);
+      // System.out.println("Returned from ScopePut");
       n.f2.accept(this);
       return _ret;
    }
@@ -150,7 +168,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
-      n.f2.accept(this);
+      String id = n.f2.accept(this);
+      // System.out.println("Method id: " + id);
+      if (this.symbolTable.peek().contains(id)) {
+         System.out.println("Type error");
+         return null;
+      }
+      this.symbolTable.push(new Scope());
+      this.symbolTable.peek().putType(id, "method");
       n.f3.accept(this);
       n.f4.accept(this);
       n.f5.accept(this);
@@ -179,10 +204,13 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> Type()
     * f1 -> Identifier()
     */
-   public String visit(FormalParameter n) {
+   public String visit(FormalParameter n) { // Within method scope
       String _ret=null;
-      n.f0.accept(this);
-      n.f1.accept(this);
+      String type = n.f0.accept(this);
+      // System.out.println("Parameter type: " + type);
+      String id = n.f1.accept(this);
+      // System.out.println("Parameter id: " + id);
+      this.symbolTable.peek().putType(id, type);
       return _ret;
    }
 
@@ -204,8 +232,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     *       | Identifier()
     */
    public String visit(Type n) {
-      String _ret=null;
-      n.f0.accept(this);
+      String _ret = n.f0.accept(this);
       return _ret;
    }
 
@@ -215,7 +242,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f2 -> "]"
     */
    public String visit(ArrayType n) {
-      String _ret=null;
+      String _ret = "array";
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
@@ -227,9 +254,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> "boolean"
     */
    public String visit(BooleanType n) {
+<<<<<<< HEAD
       String _ret=null;
       _ret = n.f0.accept(this);
       _ret = "boolean";
+=======
+      String _ret = n.f0.toString();
+      n.f0.accept(this);
+>>>>>>> 613eca947839d0d4ad4c65e8d8795a2dc7df1c3d
       return _ret;
    }
 
@@ -237,9 +269,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> "int"
     */
    public String visit(IntegerType n) {
+<<<<<<< HEAD
       String _ret=null;
       _ret = n.f0.accept(this);
       _ret = "int";
+=======
+      String _ret = n.f0.toString();
+      n.f0.accept(this);
+>>>>>>> 613eca947839d0d4ad4c65e8d8795a2dc7df1c3d
       return _ret;
    }
 
@@ -533,8 +570,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> <INTEGER_LITERAL>
     */
    public String visit(IntegerLiteral n) {
-      String _ret= n.f0.toString();
-      System.out.println(_ret);
+      String _ret=null;
       n.f0.accept(this);
       return _ret;
    }
@@ -561,9 +597,9 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> <IDENTIFIER>
     */
    public String visit(Identifier n) {
-      // System.out.println(n.f0.toString());
-      String _ret = n.f0.toString();
+      String _ret=null;
       n.f0.accept(this);
+      _ret = n.f0.toString();
       return _ret;
    }
 

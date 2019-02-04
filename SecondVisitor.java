@@ -281,7 +281,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f6 -> Statement()
     */
     public String visit(IfStatement n, Stack<Scope> argu) {
-        String _ret=null;
+        String _ret= "IfStatement";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String Exp = n.f2.accept(this, argu);
@@ -304,7 +304,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f4 -> Statement()
     */
     public String visit(WhileStatement n, Stack<Scope> argu) {
-        String _ret=null;
+        String _ret= "WhileStatement";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String Exp = n.f2.accept(this, argu);

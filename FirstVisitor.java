@@ -91,7 +91,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
             System.out.println("Type error");
             return null;
          }
-         this.symbolTable.push(new Scope());
+         this.symbolTable.push(new Scope(id));
          this.symbolTable.peek().putType(id, "class");
          n.f2.accept(this);
          n.f3.accept(this);
@@ -119,7 +119,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
          System.out.println("Type error");
          return null;
       }
-      this.symbolTable.push(new Scope());
+      this.symbolTable.push(new Scope(id));
       this.symbolTable.peek().putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
@@ -170,12 +170,16 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f1.accept(this);
       String id = n.f2.accept(this);
       // System.out.println("Method id: " + id);
+
       if (this.symbolTable.peek().contains(id)) {
          System.out.println("Type error");
          return null;
       }
-      this.symbolTable.push(new Scope());
+
+      String parent = this.symbolTable.peek().getParent();
+      this.symbolTable.push(new Scope(parent));
       this.symbolTable.peek().putType(id, "method");
+
       n.f3.accept(this);
       n.f4.accept(this);
       n.f5.accept(this);

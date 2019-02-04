@@ -10,7 +10,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f1 -> ( TypeDeclaration() )*
     * f2 -> <EOF>
     */
-    public String visit(Goal n) {
+   public String visit(Goal n) {
       Scope mainScope = new Scope();
       this.symbolTable.push(mainScope);
       String _ret = null;
@@ -174,6 +174,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
          System.out.println("Type error");
          return null;
       }
+      this.symbolTable.push(new Scope());
       this.symbolTable.peek().putType(id, "method");
       n.f3.accept(this);
       n.f4.accept(this);

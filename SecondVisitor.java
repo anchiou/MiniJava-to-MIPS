@@ -112,8 +112,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         
         String _ret= "MethodDeclaration";
         n.f0.accept(this, argu);
-        String classType = n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        n.f1.accept(this, argu);
+        String classType = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);
@@ -122,7 +122,9 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         n.f8.accept(this, argu);
         n.f9.accept(this, argu);
         String returnType = n.f10.accept(this, argu);
-        if (classType != returnType) {
+
+        if ((argu.peek().getType(classType)) != (argu.peek().getType(returnType)) && 
+            (argu.peek().getType(classType)) != returnType) {
             System.out.println("Type error");
             System.exit(0);
         }

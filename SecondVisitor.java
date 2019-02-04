@@ -494,6 +494,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
 
         //TODO FIX THIS FUNCTION
 
+        // Type checks if methodName is valid
         if (argu.peek().getType(methodName) == null) {
             System.out.println("Type error"); // method doesn't exist
             System.exit(0);

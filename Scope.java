@@ -1,11 +1,14 @@
 import java.net.PortUnreachableException;
 import java.util.Map;
+import java.util.HashMap;
 
 public class Scope {
     String test;
     Map<String, String> types;
 
-    public Scope () {}
+    public Scope () {
+        types = new HashMap<String, String>();
+    }
 
     public Scope (String value) {
         test = value;

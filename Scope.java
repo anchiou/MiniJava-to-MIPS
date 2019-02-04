@@ -7,7 +7,13 @@ public class Scope {
     String parent;
     Map<String, String> types = new HashMap<String, String>();
 
-    public Scope () {}
+    public Scope () {
+        types = new HashMap<String, String>();
+    }
+
+    public Scope (String value) {
+        parent = value;
+    }
 
     public boolean contains(String id) {
         return this.types.containsKey(id);

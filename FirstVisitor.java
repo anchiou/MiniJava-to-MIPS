@@ -91,6 +91,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
             System.out.println("Type error");
             return null;
          }
+         System.out.println(id);
          this.symbolTable.push(new Scope());
          this.symbolTable.peek().putType(id, "class");
          n.f2.accept(this);
@@ -246,6 +247,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      _ret = n.f0.toString();
+      System.out.print(_ret);
       return _ret;
    }
 
@@ -255,6 +258,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
    public String visit(BooleanType n) {
       String _ret = n.f0.toString();
       n.f0.accept(this);
+      _ret = n.f0.toString();
       return _ret;
    }
 
@@ -264,6 +268,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
    public String visit(IntegerType n) {
       String _ret = n.f0.toString();
       n.f0.accept(this);
+      _ret = n.f0.toString();
       return _ret;
    }
 

@@ -7,9 +7,7 @@ public class Scope {
     String parent;
     Map<String, String> types = new HashMap<String, String>();
 
-    public Scope () {
-        types = new HashMap<String, String>();
-    }
+    public Scope () {}
 
     public Scope (String value) {
         parent = value;

@@ -13,6 +13,7 @@ public class Scope {
 
     public Scope (String value) {
         parent = value;
+        types = new HashMap<String, String>();
     }
 
     public boolean contains(String id) {
@@ -26,6 +27,10 @@ public class Scope {
 
     public String getType(String id) {
         return this.types.get(id);
+    }
+
+    public String getParent() {
+        return this.parent;
     }
 
     public void printAll() {

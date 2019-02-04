@@ -30,7 +30,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(MainClass n, Stack<Scope> argu) {
         System.out.println("MainClass");
         String _ret=null;
-        // argu.pop().printAll();
+        // argu.peek().printAll();
         n.f15.accept(this, argu);
         return _ret;
     }
@@ -196,6 +196,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f3 -> ";"
     */
     public String visit(AssignmentStatement n, Stack<Scope> argu) {
+        System.out.println("AssignmentStmt");
+
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -214,6 +216,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f6 -> ";"
     */
     public String visit(ArrayAssignmentStatement n, Stack<Scope> argu) {
+        System.out.println("ArrayAssignmentStmt");
+
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -235,6 +239,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f6 -> Statement()
     */
     public String visit(IfStatement n, Stack<Scope> argu) {
+        System.out.println("IfStmt");
+
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -254,6 +260,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f4 -> Statement()
     */
     public String visit(WhileStatement n, Stack<Scope> argu) {
+        System.out.println("WhileStmt");
+
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -271,6 +279,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f4 -> ";"
     */
     public String visit(PrintStatement n, Stack<Scope> argu) {
+        System.out.println("PrintStmt");
+
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -292,6 +302,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     *       | PrimaryExpression()
     */
     public String visit(Expression n, Stack<Scope> argu) {
+        System.out.println("Expression");
+
         String _ret = n.f0.accept(this, argu);
         return _ret;
     }
@@ -302,6 +314,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f2 -> PrimaryExpression()
     */
     public String visit(AndExpression n, Stack<Scope> argu) {
+        System.out.println("AndExpression");
+
         String _ret="boolean";
         String first = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -322,9 +336,12 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(CompareExpression n, Stack<Scope> argu) {
         String _ret="boolean";
         String first = n.f0.accept(this, argu);
+        System.out.println("CompareExpression: " + first);
+        System.out.println("CompareExpression: " + argu.peek().getType(first));
+
         n.f1.accept(this, argu);
         String second = n.f2.accept(this, argu);
-        if (first == "int" && second == "int") {
+        if (argu.peek().getType(first) == "int" && second == "int") {
             return _ret;
         }
         System.out.println("Type error: Expected int");
@@ -338,10 +355,21 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f2 -> PrimaryExpression()
     */
     public String visit(PlusExpression n, Stack<Scope> argu) {
+        System.out.println("PlusExpression");
+
         String _ret="int";
         String first = n.f0.accept(this, argu);
+        if (first != "int") {
+            first = argu.peek().getType(first);
+        }
+
         n.f1.accept(this, argu);
+
         String second = n.f2.accept(this, argu);
+        if (second != "int") {
+            second = argu.peek().getType(second);
+        }
+
         if (first == "int" && second == "int") {
             return _ret;
         }
@@ -356,13 +384,24 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f2 -> PrimaryExpression()
     */
     public String visit(MinusExpression n, Stack<Scope> argu) {
-        String _ret="int";
+        System.out.println("MinusExpression");
+
+        String _ret = "int";
         String first = n.f0.accept(this, argu);
+        if (first != "int") {
+            first = argu.peek().getType(first);
+        }
+        System.out.println("Minus.first: " + first);
+
         n.f1.accept(this, argu);
+
         String second = n.f2.accept(this, argu);
+        System.out.println("Minus.second: " + second);
+
         if (first == "int" && second == "int") {
             return _ret;
         }
+
         System.out.println("Type error: Expected int");
         System.exit(0);
         return _ret;
@@ -374,10 +413,23 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f2 -> PrimaryExpression()
     */
     public String visit(TimesExpression n, Stack<Scope> argu) {
+        System.out.println("TimesExpression");
+
         String _ret="int";
         String first = n.f0.accept(this, argu);
+        if (first != "int") {
+            first = argu.peek().getType(first);
+        }
+        System.out.println("Times.first: " + first);
+
         n.f1.accept(this, argu);
+
         String second = n.f2.accept(this, argu);
+        if (second != "int") {
+            second = argu.peek().getType(second);
+        }
+        System.out.println("Times.second: " + second);
+
         if (first == "int" && second == "int") {
             return _ret;
         }
@@ -393,6 +445,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f3 -> "]"
     */
     public String visit(ArrayLookup n, Stack<Scope> argu) {
+        System.out.println("ArrayLookup");
+
         String _ret="int";
         String arr = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -412,6 +466,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f2 -> "length"
     */
     public String visit(ArrayLength n, Stack<Scope> argu) {
+        System.out.println("ArrayLength");
+
         String _ret="int";
         String first = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -435,26 +491,26 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(MessageSend n, Stack<Scope> argu) {
         System.out.println("MessageSend");
 
-        String _ret=null;
+        String _ret = null;
         String className = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String methodName = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);
-        argu.pop().printAll();
-        if (argu.peek().getType(className) == null) {
+
+        if (argu.peek().getParent() != className && className != "this") {
+            System.out.println(className);
             System.out.println("Type error: No such class");
             System.exit(0);
         }
 
-        //TODO FIX THIS FUNCTION
-
         // Type checks if methodName is valid
-        if (argu.peek().getType(methodName) == null) {
+        if (!argu.peek().contains(methodName)) {
             System.out.println("Type error"); // method doesn't exist
             System.exit(0);
         }
+        _ret = argu.peek().getType(methodName); // Set _ret to method return type
 
         return _ret;
     }
@@ -502,7 +558,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(PrimaryExpression n, Stack<Scope> argu) {
         System.out.println("PrimaryExpr");
 
-        String _ret=n.f0.accept(this, argu);
+        String _ret = n.f0.accept(this, argu);
         return _ret;
     }
 
@@ -510,7 +566,9 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
      * f0 -> <INTEGER_LITERAL>
     */
     public String visit(IntegerLiteral n, Stack<Scope> argu) {
-        String _ret="int";
+        System.out.println("IntegerLiteral");
+
+        String _ret = "int";
         n.f0.accept(this, argu);
         return _ret;
     }
@@ -519,6 +577,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
      * f0 -> "true"
     */
     public String visit(TrueLiteral n, Stack<Scope> argu) {
+        System.out.println("TrueLiteral");
+
         String _ret="boolean";
         n.f0.accept(this, argu);
         return _ret;
@@ -528,6 +588,8 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
      * f0 -> "false"
     */
     public String visit(FalseLiteral n, Stack<Scope> argu) {
+        System.out.println("FalseLiteral");
+
         String _ret="boolean";
         n.f0.accept(this, argu);
         return _ret;
@@ -537,9 +599,10 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
      * f0 -> <IDENTIFIER>
     */
     public String visit(Identifier n, Stack<Scope> argu) {
-        String _ret=null;
+        System.out.println("Identifier: " + n.f0.toString());
+
+        String _ret = n.f0.toString();
         n.f0.accept(this, argu);
-        _ret = n.f0.toString();
         return _ret;
     }
 
@@ -549,7 +612,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     public String visit(ThisExpression n, Stack<Scope> argu) {
         System.out.println("ThisExpr");
 
-        String _ret=null;
+        String _ret = "this";
         n.f0.accept(this, argu);
         return _ret;
     }
@@ -568,9 +631,9 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
-        String s = n.f3.accept(this, argu);
+        String expr = n.f3.accept(this, argu);
         n.f4.accept(this, argu);
-        if (s == "int") {
+        if (expr == "int") {
             return _ret;
         }
         System.out.println("Type error: expected int.");
@@ -589,14 +652,13 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
 
         String _ret=null;
         n.f0.accept(this, argu);
-        String s = n.f1.accept(this, argu);
-        // System.out.println(s);
+        String id = n.f1.accept(this, argu);
+        System.out.println("In Alloc:" + id);
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
-        if (argu.peek().getType(s) != null) {
-            return s;
+        if (argu.peek().getParent() == id) {
+            return id;
         }
-        argu.pop().printAll();
         System.out.println("Type error: no such class exists. (630)");
         System.exit(0);
         return _ret;

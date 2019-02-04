@@ -6,9 +6,10 @@ public class Typecheck {
         try {
             new MiniJavaParser(System.in);
             Goal program = MiniJavaParser.Goal();
+
             FirstVisitor visitor1 = new FirstVisitor();
             program.accept(visitor1);
-            // String test = visitor.symbolTable.pop().getType("num_aux");
+
             SecondVisitor visitor2 = new SecondVisitor();
             program.accept(visitor2, visitor1.symbolTable);
         } catch (ParseException e) {

@@ -12,7 +12,8 @@ public class Typecheck {
             SecondVisitor visitor2 = new SecondVisitor();
             program.accept(visitor2, visitor1.symbolTable);
         } catch (ParseException e) {
-            System.out.println("ParseException in Typecheck main");
+            System.out.println("Type error");
+            return;
         }
         return;
     }

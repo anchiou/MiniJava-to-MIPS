@@ -11,7 +11,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f2 -> <EOF>
     */
     public String visit(Goal n) {
-      System.out.println("FirstVisitor --> Goal");
       Scope mainScope = new Scope();
       this.symbolTable.push(mainScope);
       String _ret = null;
@@ -45,7 +44,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String _ret=null;
       n.f0.accept(this);
       String id = n.f1.accept(this);
-      System.out.println("Main class id: " + id);
+      // System.out.println("Main class id: " + id);
       this.symbolTable.peek().putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
@@ -63,7 +62,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f15.accept(this);
       n.f16.accept(this);
       n.f17.accept(this);
-      System.out.println("End of main");
       return _ret;
    }
 
@@ -86,17 +84,20 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f5 -> "}"
     */
    public String visit(ClassDeclaration n) {
-      String _ret=null;
-      n.f0.accept(this);
-      String id = n.f1.accept(this);
-      System.out.println("Class id: " + id);
-      this.symbolTable.push(new Scope());
-      this.symbolTable.peek().putType(id, "class");
-      n.f2.accept(this);
-      n.f3.accept(this);
-      n.f4.accept(this);
-      n.f5.accept(this);
-      return _ret;
+         String _ret = null;
+         n.f0.accept(this);
+         String id = n.f1.accept(this);
+         if (this.symbolTable.peek().contains(id)) {
+            System.out.println("Type error");
+            return null;
+         }
+         this.symbolTable.push(new Scope());
+         this.symbolTable.peek().putType(id, "class");
+         n.f2.accept(this);
+         n.f3.accept(this);
+         n.f4.accept(this);
+         n.f5.accept(this);
+         return _ret;
    }
 
    /**
@@ -113,7 +114,11 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String _ret=null;
       n.f0.accept(this);
       String id = n.f1.accept(this);
-      System.out.println("Class Extends id: " + id);
+      // System.out.println("Class Extends id: " + id);
+      if (this.symbolTable.peek().contains(id)) {
+         System.out.println("Type error");
+         return null;
+      }
       this.symbolTable.push(new Scope());
       this.symbolTable.peek().putType(id, "class");
       n.f2.accept(this);
@@ -134,6 +139,10 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String _ret=null;
       String type = n.f0.accept(this);
       String id = n.f1.accept(this);
+      if (this.symbolTable.peek().contains(id)) {
+         System.out.println("Type error");
+         return null;
+      }
       this.symbolTable.peek().putType(id, type);
       // System.out.println("Returned from ScopePut");
       n.f2.accept(this);
@@ -160,7 +169,11 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       n.f1.accept(this);
       String id = n.f2.accept(this);
-      System.out.println("Method id: " + id);
+      // System.out.println("Method id: " + id);
+      if (this.symbolTable.peek().contains(id)) {
+         System.out.println("Type error");
+         return null;
+      }
       this.symbolTable.peek().putType(id, "method");
       n.f3.accept(this);
       n.f4.accept(this);
@@ -193,9 +206,9 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
    public String visit(FormalParameter n) { // Within method scope
       String _ret=null;
       String type = n.f0.accept(this);
-      System.out.println("Parameter type: " + type);
+      // System.out.println("Parameter type: " + type);
       String id = n.f1.accept(this);
-      System.out.println("Parameter id: " + id);
+      // System.out.println("Parameter id: " + id);
       this.symbolTable.peek().putType(id, type);
       return _ret;
    }

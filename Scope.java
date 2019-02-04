@@ -5,9 +5,11 @@ import java.util.Iterator;
 
 public class Scope {
     String parent;
-    Map<String, String> types = new HashMap<String, String>();
+    Map<String, String> types;
 
-    public Scope () {}
+    public Scope () {
+        types = new HashMap<String, String>();
+    }
 
     public Scope (String value) {
         parent = value;

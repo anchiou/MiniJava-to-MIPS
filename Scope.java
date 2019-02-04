@@ -1,10 +1,7 @@
 import java.net.PortUnreachableException;
 import java.util.Map;
 import java.util.HashMap;
-<<<<<<< HEAD
 import java.util.Iterator;
-=======
->>>>>>> fixed some errors
 
 public class Scope {
     String parent;
@@ -12,6 +9,10 @@ public class Scope {
 
     public Scope () {
         types = new HashMap<String, String>();
+    }
+
+    public Scope (String value) {
+        parent = value;
     }
 
     public boolean contains(String id) {

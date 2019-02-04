@@ -232,13 +232,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     *       | Identifier()
     */
    public String visit(Type n) {
-<<<<<<< HEAD
       String _ret = n.f0.accept(this);
-=======
-      String _ret=null;
-      _ret = n.f0.accept(this);
-      System.out.println(_ret);
->>>>>>> Added visit methods for arrayType, boolType, intType, Identifier
       return _ret;
    }
 

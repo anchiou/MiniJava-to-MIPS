@@ -111,9 +111,9 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     * f12 -> "}"
     */
     public String visit(MethodDeclaration n, Stack<Scope> argu) {
-        String _ret=null;
+        String _ret= "MethodDeclaration";
         n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
+        String classType = n.f1.accept(this, argu);
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
@@ -122,7 +122,11 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         n.f7.accept(this, argu);
         n.f8.accept(this, argu);
         n.f9.accept(this, argu);
-        n.f10.accept(this, argu);
+        String returnType = n.f10.accept(this, argu);
+        if (classType != returnType) {
+            System.out.println("Type error");
+            System.exit(0);
+        }
         n.f11.accept(this, argu);
         n.f12.accept(this, argu);
         return _ret;

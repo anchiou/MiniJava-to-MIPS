@@ -232,7 +232,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     *       | Identifier()
     */
    public String visit(Type n) {
+<<<<<<< HEAD
       String _ret = n.f0.accept(this);
+=======
+      String _ret=null;
+      n.f0.accept(this);
+      _ret = n.f0.toString();
+      System.out.println(_ret);
+>>>>>>> Added visit methods for arrayType, boolType, intType, Identifier
       return _ret;
    }
 
@@ -246,6 +253,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
+      _ret = n.f0.toString();
+      System.out.print(_ret);
       return _ret;
    }
 
@@ -255,6 +264,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
    public String visit(BooleanType n) {
       String _ret = n.f0.toString();
       n.f0.accept(this);
+      _ret = n.f0.toString();
+      System.out.println(_ret);
       return _ret;
    }
 
@@ -264,6 +275,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
    public String visit(IntegerType n) {
       String _ret = n.f0.toString();
       n.f0.accept(this);
+      _ret = n.f0.toString();
+      System.out.println(_ret);
       return _ret;
    }
 

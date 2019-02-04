@@ -280,7 +280,11 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String Exp = n.f2.accept(this, argu);
+        if (!(Exp == "boolean")) {
+            System.out.println("Type error");
+            System.exit(0);
+        }
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);
@@ -299,7 +303,11 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String Exp = n.f2.accept(this, argu);
+        if (!(Exp == "boolean")) {
+            System.out.println("Type error");
+            System.exit(0);
+        }
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         return _ret;

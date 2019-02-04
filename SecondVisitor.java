@@ -622,12 +622,13 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         String _ret=null;
         n.f0.accept(this, argu);
         String s = n.f1.accept(this, argu);
+        // System.out.println(s);
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         if (argu.peek().getType(s) != null) {
             return s;
         }
-        System.out.println("Type error: no such class exists.");
+        System.out.println("Type error: no such class exists. (630)");
         System.exit(0);
         return _ret;
     }

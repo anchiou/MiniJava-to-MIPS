@@ -79,9 +79,9 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     public String visit(ClassDeclaration n, HashMap<String, Scope> argu) {
         System.out.println("ClassDecl");
 
-        ++this.scopeCounter;
-        this.currScope = "scope" + this.scopeCounter;
-        System.out.println(" currScope: " + this.currScope);
+        // ++this.scopeCounter;
+        // this.currScope = "scope" + this.scopeCounter;
+        // System.out.println(" currScope: " + this.currScope);
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -105,9 +105,9 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     public String visit(ClassExtendsDeclaration n, HashMap<String, Scope> argu) {
         System.out.println("ClassExtends");
 
-        ++this.scopeCounter;
-        this.currScope = "scope" + this.scopeCounter;
-        System.out.println(" currScope: " + this.currScope);
+        // ++this.scopeCounter;
+        // this.currScope = "scope" + this.scopeCounter;
+        // System.out.println(" currScope: " + this.currScope);
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -138,9 +138,9 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     public String visit(MethodDeclaration n, HashMap<String, Scope> argu) {
         System.out.println("MethodDecl");
 
-        ++this.scopeCounter;
-        this.currScope = "scope" + this.scopeCounter;
-        System.out.println(" currScope: " + this.currScope);
+        // ++this.scopeCounter;
+        // this.currScope = "scope" + this.scopeCounter;
+        // System.out.println(" currScope: " + this.currScope);
         String _ret= "MethodDeclaration";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -589,7 +589,8 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         }
 
         // type checks if methodName is valid
-        if (!methodExists || argu.get(parent).contains(className)) {
+        if (!methodExists || !argu.get(parent).contains(className)) {
+            System.out.println("methExists: " + methodExists + " parent: " + parent);
             System.out.println("<-- MessageSend Scope -->");
             argu.get(this.currScope).printAll();
             System.out.println("<-- MessageSend End Scope -->");

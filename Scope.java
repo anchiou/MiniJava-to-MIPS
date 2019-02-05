@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class Scope {
-    String parent;
+    String parentScope;
     Map<String, String> types;
 
     public Scope () {
-        types = new HashMap<String, String>();
+        this.types = new HashMap<String, String>();
     }
 
-    public Scope (String value) {
-        parent = value;
-        types = new HashMap<String, String>();
+    public Scope (String parentScope) {
+        this.parentScope = parentScope;
+        this.types = new HashMap<String, String>();
     }
 
     public boolean contains(String id) {
@@ -21,7 +21,7 @@ public class Scope {
     }
 
     public void putType(String id, String type) {
-        // System.out.println("In PutType id: " + id + " type: " + type);
+        System.out.println("In PutType id: " + id + " type: " + type);
         this.types.put(id, type);
     }
 
@@ -29,13 +29,13 @@ public class Scope {
         return this.types.get(id);
     }
 
-    public String getParent() {
-        return this.parent;
+    public String getParentScope() {
+        return this.parentScope;
     }
 
     public void printAll() {
         for (String key : this.types.keySet()) {
-            System.out.println(key);
+            System.out.print(key + " -> ");
             System.out.println(this.types.get(key));
         }
     }

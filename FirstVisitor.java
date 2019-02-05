@@ -1,9 +1,12 @@
 import syntaxtree.*;
 import visitor.*;
-import java.util.Stack;
+import java.util.Map;
+import java.util.HashMap;
 
 public class FirstVisitor extends GJNoArguDepthFirst<String> {
-   Stack<Scope> symbolTable = new Stack<Scope>();
+   Map<String, Scope> symbolTable = new HashMap<String, Scope>();
+   int scopeCount = 0;
+   String currScope = "scope0";
 
    /**
     * f0 -> MainClass()
@@ -12,7 +15,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     */
    public String visit(Goal n) {
       Scope mainScope = new Scope();
-      this.symbolTable.push(mainScope);
+      this.symbolTable.put("scope" + this.scopeCount, mainScope);
+      ++this.scopeCount;
       String _ret = null;
       n.f0.accept(this);
       n.f1.accept(this);
@@ -45,7 +49,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       String id = n.f1.accept(this);
       // System.out.println("Main class id: " + id);
-      this.symbolTable.peek().putType(id, "class");
+      this.symbolTable.get(this.currScope).putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
@@ -87,12 +91,15 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
          String _ret = null;
          n.f0.accept(this);
          String id = n.f1.accept(this);
-         if (this.symbolTable.peek().contains(id)) {
+         if (this.symbolTable.get(this.currScope).contains(id)) {
             System.out.println("Type error");
             return null;
          }
-         this.symbolTable.push(new Scope(id));
-         this.symbolTable.peek().putType(id, "class");
+         String nextScope = "scope" + this.scopeCount;
+         this.symbolTable.put(nextScope, new Scope());
+         this.currScope = nextScope;
+         ++this.scopeCount;
+         this.symbolTable.get(this.currScope).putType(id, "class");
          n.f2.accept(this);
          n.f3.accept(this);
          n.f4.accept(this);
@@ -115,12 +122,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       n.f0.accept(this);
       String id = n.f1.accept(this);
       // System.out.println("Class Extends id: " + id);
-      if (this.symbolTable.peek().contains(id)) {
+      if (this.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
          return null;
       }
-      this.symbolTable.push(new Scope(id));
-      this.symbolTable.peek().putType(id, "class");
+      String nextScope = "scope" + this.scopeCount;
+      this.symbolTable.put(nextScope, new Scope());
+      this.currScope = nextScope;
+      this.symbolTable.get(this.currScope).putType(id, "class");
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
@@ -139,11 +148,11 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String _ret=null;
       String type = n.f0.accept(this);
       String id = n.f1.accept(this);
-      if (this.symbolTable.peek().contains(id)) {
+      if (this.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
          return null;
       }
-      this.symbolTable.peek().putType(id, type);
+      this.symbolTable.get(this.currScope).putType(id, type);
       // System.out.println("Returned from ScopePut");
       n.f2.accept(this);
       return _ret;
@@ -171,14 +180,18 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String id = n.f2.accept(this);
       // System.out.println("Method id: " + id + "returnType: " + returnType);
 
-      if (this.symbolTable.peek().contains(id)) {
+      if (this.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
          return null;
       }
 
-      String parent = this.symbolTable.peek().getParent();
-      this.symbolTable.push(new Scope(parent));
-      this.symbolTable.peek().putType(id, returnType);
+      String parentScope = this.currScope;
+      System.out.println("ParentScope: " + parentScope);
+      String nextScope = "scope" + this.scopeCount;
+      this.symbolTable.put(nextScope, new Scope(parentScope)); // create scope with (parent class, parent scope)
+      this.currScope = nextScope;
+      ++this.scopeCount;
+      this.symbolTable.get(this.currScope).putType(id, returnType);
 
       n.f3.accept(this);
       n.f4.accept(this);
@@ -214,7 +227,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       // System.out.println("Parameter type: " + type);
       String id = n.f1.accept(this);
       // System.out.println("Parameter id: " + id);
-      this.symbolTable.peek().putType(id, type);
+      this.symbolTable.get(this.currScope).putType(id, type);
       return _ret;
    }
 

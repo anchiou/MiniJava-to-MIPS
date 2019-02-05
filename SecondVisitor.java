@@ -349,7 +349,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (e == "int") {
             return _ret;
         }
-        System.out.println("Type error");
+        System.out.println("Print: Type error");
         System.exit(0);
         return _ret;
     }
@@ -568,7 +568,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         n.f1.accept(this, argu);
         String methodName = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
-        n.f4.accept(this, argu);
+        String exprType = n.f4.accept(this, argu);
         n.f5.accept(this, argu);
 
         boolean classExists = false;
@@ -594,19 +594,21 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
             if (argu.get(key).contains(methodName)) {
                 methodExists = true;
                 parent = argu.get(key).getParentScope();
+                this.currScope = key;
                 break;
             }
         }
 
         // type checks if methodName is valid
-        if (!methodExists || !argu.get(parent).contains(className)) {
-            System.out.println("methExists: " + methodExists + " parent: " + parent);
+        if (!methodExists) {
             System.out.println("<-- MessageSend Scope -->");
             argu.get(this.currScope).printAll();
             System.out.println("<-- MessageSend End Scope -->");
             System.out.println("Type error: 6"); // method doesn't exist
             System.exit(0);
         }
+
+        // if (exprType != argu.get(this.currScope))
 
         _ret = argu.get(this.currScope).getType(methodName); // set _ret to method return type
 
@@ -626,8 +628,10 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         globalVector.add(expr);
         String exprRest = n.f1.accept(this, argu);
         System.out.println("ExprList.exprRest: " + exprRest);
-        globalVector.add(exprRest);
-
+        if (exprRest != null) {
+            globalVector.add(exprRest);
+        }
+        _ret = expr;
         return _ret;
     }
 

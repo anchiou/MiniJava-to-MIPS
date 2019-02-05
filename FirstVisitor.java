@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class FirstVisitor extends GJNoArguDepthFirst<String> {
-   Map<String, Scope> symbolTable = new HashMap<String, Scope>();
+   HashMap<String, Scope> symbolTable = new HashMap<String, Scope>();
    int scopeCount = 0;
    String currScope = "scope0";
 

@@ -277,6 +277,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         }
         System.out.println("Type error");
         System.exit(0);
+        return _ret;
     }
 
     /**
@@ -350,6 +351,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         }
         System.out.println("Type error");
         System.exit(0);
+        return _ret;
     }
 
     /**

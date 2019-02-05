@@ -12,6 +12,7 @@ public class Typecheck {
 
             SecondVisitor visitor2 = new SecondVisitor();
             program.accept(visitor2, visitor1.symbolTable);
+            System.out.println("Program type checked successfully");
         } catch (ParseException e) {
             System.out.println("Type error");
             return;

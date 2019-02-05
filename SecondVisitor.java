@@ -109,7 +109,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     */
     public String visit(MethodDeclaration n, Stack<Scope> argu) {
         System.out.println("MethodDecl");
-        
+
         String _ret= "MethodDeclaration";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -123,9 +123,9 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         n.f9.accept(this, argu);
         String returnType = n.f10.accept(this, argu);
 
-        if ((argu.peek().getType(classType)) != (argu.peek().getType(returnType)) && 
+        if ((argu.peek().getType(classType)) != (argu.peek().getType(returnType)) &&
             (argu.peek().getType(classType)) != returnType) {
-            System.out.println("Type error");
+            System.out.println("Type error: 1");
             System.exit(0);
         }
         n.f11.accept(this, argu);
@@ -205,7 +205,11 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         System.out.println("AssignmentStmt");
 
         String _ret=null;
-        n.f0.accept(this, argu);
+        String s = n.f0.accept(this, argu);
+        if (argu.peek().getType(s) == null) {
+            System.out.println("Type error: 2");
+            System.exit(0);
+        }
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
@@ -246,13 +250,13 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     */
     public String visit(IfStatement n, Stack<Scope> argu) {
         System.out.println("IfStmt");
-      
+
         String _ret= "IfStatement";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String Exp = n.f2.accept(this, argu);
         if (!(Exp == "boolean")) {
-            System.out.println("Type error");
+            System.out.println("Type error: 3");
             System.exit(0);
         }
         n.f3.accept(this, argu);
@@ -271,13 +275,13 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
     */
     public String visit(WhileStatement n, Stack<Scope> argu) {
         System.out.println("WhileStmt");
-      
+
         String _ret= "WhileStatement";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String Exp = n.f2.accept(this, argu);
         if (!(Exp == "boolean")) {
-            System.out.println("Type error");
+            System.out.println("Type error: 4");
             System.exit(0);
         }
         n.f3.accept(this, argu);
@@ -469,7 +473,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         if (arr == "array" && value == "int") {
             return _ret;
         }
-        System.out.println("Type error");
+        System.out.println("Type error: 5");
         System.exit(0);
         return _ret;
     }
@@ -521,7 +525,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
 
         // Type checks if methodName is valid
         if (!argu.peek().contains(methodName)) {
-            System.out.println("Type error"); // method doesn't exist
+            System.out.println("Type error: 6"); // method doesn't exist
             System.exit(0);
         }
         _ret = argu.peek().getType(methodName); // Set _ret to method return type
@@ -673,7 +677,7 @@ public class SecondVisitor extends GJDepthFirst<String, Stack<Scope>> {
         if (argu.peek().getParent() == id) {
             return id;
         }
-        System.out.println("Type error: no such class exists. (630)");
+        System.out.println("Type error: no such class exists. (680)");
         System.exit(0);
         return _ret;
     }

@@ -551,6 +551,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     */
     public String visit(MessageSend n, HashMap<String, Scope> argu) {
         System.out.println("MessageSend");
+        System.out.println(" currScope: " + this.currScope);
 
         String _ret = null;
         String className = n.f0.accept(this, argu);
@@ -560,17 +561,35 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);
 
-        // get parent scope and check parent scope for class name
-        String parent = argu.get(this.currScope).getParentScope();
-        System.out.println("MessageSend parent: " + parent);
-        if (argu.get(parent).contains(className) == false && className != "this") {
-            System.out.println(className);
+        boolean classExists = false;
+        for (String key : argu.keySet()) {
+            if (argu.get(key).contains(className)) {
+                classExists = true;
+                break;
+            }
+        }
+
+        if (!classExists && className != "this") {
+            System.out.println("<-- MessageSend Scope -->");
+            argu.get(this.currScope).printAll();
+            System.out.println("<-- MessageSend End Scope -->");
+            System.out.println("MessageSend no class: " + className);
             System.out.println("Type error: No such class");
             System.exit(0);
         }
 
+        boolean methodExists = false;
+        String parent = "";
+        for (String key : argu.keySet()) {
+            if (argu.get(key).contains(methodName)) {
+                methodExists = true;
+                parent = argu.get(key).getParentScope();
+                break;
+            }
+        }
+
         // type checks if methodName is valid
-        if (!argu.get(this.currScope).contains(methodName)) {
+        if (!methodExists || argu.get(parent).contains(className)) {
             System.out.println("<-- MessageSend Scope -->");
             argu.get(this.currScope).printAll();
             System.out.println("<-- MessageSend End Scope -->");

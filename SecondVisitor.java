@@ -2,6 +2,7 @@ import syntaxtree.*;
 import visitor.*;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.ArrayList;
 
 public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> {
 
@@ -30,8 +31,8 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f17 -> "}"
     */
     public String visit(MainClass n, HashMap<String, Scope> argu) { // Always scope0
-        System.out.println("MainClass");
-        System.out.println(" currScope: " + this.currScope);
+        // System.out.println("MainClass");
+        // System.out.println(" currScope: " + this.currScope);
 
         String _ret=null;
         // argu.get(this.currScope).printAll();
@@ -61,7 +62,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     *       | ClassExtendsDeclaration()
     */
     public String visit(TypeDeclaration n, HashMap<String, Scope> argu) {
-        System.out.println("TypeDecl");
+        // System.out.println("TypeDecl");
 
         String _ret=null;
         n.f0.accept(this, argu);
@@ -77,7 +78,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
      * f5 -> "}"
      */
     public String visit(ClassDeclaration n, HashMap<String, Scope> argu) {
-        System.out.println("ClassDecl");
+        // System.out.println("ClassDecl");
 
         // ++this.scopeCounter;
         // this.currScope = "scope" + this.scopeCounter;
@@ -103,11 +104,8 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f7 -> "}"
     */
     public String visit(ClassExtendsDeclaration n, HashMap<String, Scope> argu) {
-        System.out.println("ClassExtends");
+        // System.out.println("ClassExtends");
 
-        // ++this.scopeCounter;
-        // this.currScope = "scope" + this.scopeCounter;
-        // System.out.println(" currScope: " + this.currScope);
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -136,11 +134,8 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f12 -> "}"
     */
     public String visit(MethodDeclaration n, HashMap<String, Scope> argu) {
-        System.out.println("MethodDecl");
+        // System.out.println("MethodDecl");
 
-        // ++this.scopeCounter;
-        // this.currScope = "scope" + this.scopeCounter;
-        // System.out.println(" currScope: " + this.currScope);
         String _ret= "MethodDeclaration";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -156,7 +151,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
 
         if ((argu.get(this.currScope).getType(classType)) != (argu.get(this.currScope).getType(returnType)) &&
             (argu.get(this.currScope).getType(classType)) != returnType) {
-            System.out.println("Type error: 1");
+            System.out.println("Type error");
             System.exit(0);
         }
         n.f11.accept(this, argu);
@@ -204,7 +199,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     *       | PrintStatement()
     */
     public String visit(Statement n, HashMap<String, Scope> argu) {
-        System.out.println("Statement");
+        // System.out.println("Statement");
 
         String _ret=null;
         n.f0.accept(this, argu);
@@ -217,7 +212,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f2 -> "}"
     */
     public String visit(Block n, HashMap<String, Scope> argu) {
-        System.out.println("Block");
+        // System.out.println("Block");
 
         String _ret=null;
         n.f0.accept(this, argu);
@@ -233,12 +228,12 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f3 -> ";"
     */
     public String visit(AssignmentStatement n, HashMap<String, Scope> argu) {
-        System.out.println("AssignmentStmt");
+        // System.out.println("AssignmentStmt");
 
         String _ret=null;
         String id = n.f0.accept(this, argu);
         if (!argu.get(this.currScope).contains(id)) {
-            System.out.println("Type error: 2");
+            System.out.println("Type error");
             System.exit(0);
         }
         n.f1.accept(this, argu);
@@ -262,7 +257,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f6 -> ";"
     */
     public String visit(ArrayAssignmentStatement n, HashMap<String, Scope> argu) {
-        System.out.println("ArrayAssignmentStmt");
+        // System.out.println("ArrayAssignmentStmt");
 
         String _ret=null;
         String id = n.f0.accept(this, argu);
@@ -290,7 +285,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f6 -> Statement()
     */
     public String visit(IfStatement n, HashMap<String, Scope> argu) {
-        System.out.println("IfStmt");
+        // System.out.println("IfStmt");
 
         String _ret= "IfStatement";
         n.f0.accept(this, argu);
@@ -315,7 +310,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f4 -> Statement()
     */
     public String visit(WhileStatement n, HashMap<String, Scope> argu) {
-        System.out.println("WhileStmt");
+        // System.out.println("WhileStmt");
 
         String _ret= "WhileStatement";
         n.f0.accept(this, argu);
@@ -338,7 +333,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f4 -> ";"
     */
     public String visit(PrintStatement n, HashMap<String, Scope> argu) {
-        System.out.println("PrintStmt");
+        // System.out.println("PrintStmt");
 
         String _ret=null;
         n.f0.accept(this, argu);
@@ -349,7 +344,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (e == "int") {
             return _ret;
         }
-        System.out.println("Print: Type error");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -366,7 +361,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     *       | PrimaryExpression()
     */
     public String visit(Expression n, HashMap<String, Scope> argu) {
-        System.out.println("Expression");
+        // System.out.println("Expression");
 
         String _ret = n.f0.accept(this, argu);
         return _ret;
@@ -378,7 +373,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f2 -> PrimaryExpression()
     */
     public String visit(AndExpression n, HashMap<String, Scope> argu) {
-        System.out.println("AndExpression");
+        // System.out.println("AndExpression");
 
         String _ret="boolean";
         String first = n.f0.accept(this, argu);
@@ -387,7 +382,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (first == "boolean" && second == "boolean") {
             return _ret;
         }
-        System.out.println("Type error: Expected boolean");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -403,7 +398,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (first != "int") {
             first = argu.get(this.currScope).getType(first);
         }
-        System.out.println("CompareExpression: " + first);
+        // System.out.println("CompareExpression: " + first);
 
         n.f1.accept(this, argu);
 
@@ -415,7 +410,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (first == "int" && second == "int") {
             return _ret;
         }
-        System.out.println("Type error: Expected int");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -444,7 +439,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (first == "int" && second == "int") {
             return _ret;
         }
-        System.out.println("Type error: Expected int");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -455,25 +450,25 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f2 -> PrimaryExpression()
     */
     public String visit(MinusExpression n, HashMap<String, Scope> argu) {
-        System.out.println("MinusExpression");
+        // System.out.println("MinusExpression");
 
         String _ret = "int";
         String first = n.f0.accept(this, argu);
         if (first != "int") {
             first = argu.get(this.currScope).getType(first);
         }
-        System.out.println("Minus.first: " + first);
+        // System.out.println("Minus.first: " + first);
 
         n.f1.accept(this, argu);
 
         String second = n.f2.accept(this, argu);
-        System.out.println("Minus.second: " + second);
+        // System.out.println("Minus.second: " + second);
 
         if (first == "int" && second == "int") {
             return _ret;
         }
 
-        System.out.println("Type error: Expected int");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -484,14 +479,14 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f2 -> PrimaryExpression()
     */
     public String visit(TimesExpression n, HashMap<String, Scope> argu) {
-        System.out.println("TimesExpression");
+        // System.out.println("TimesExpression");
 
         String _ret="int";
         String first = n.f0.accept(this, argu);
         if (first != "int") {
             first = argu.get(this.currScope).getType(first);
         }
-        System.out.println("Times.first: " + first);
+        // System.out.println("Times.first: " + first);
 
         n.f1.accept(this, argu);
 
@@ -499,12 +494,12 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (second != "int") {
             second = argu.get(this.currScope).getType(second);
         }
-        System.out.println("Times.second: " + second);
+        // System.out.println("Times.second: " + second);
 
         if (first == "int" && second == "int") {
             return _ret;
         }
-        System.out.println("Type error: Expected int");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -516,7 +511,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f3 -> "]"
     */
     public String visit(ArrayLookup n, HashMap<String, Scope> argu) {
-        System.out.println("ArrayLookup");
+        // System.out.println("ArrayLookup");
 
         String _ret="int";
         String arr = n.f0.accept(this, argu);
@@ -526,7 +521,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (arr == "array" && value == "int") {
             return _ret;
         }
-        System.out.println("Type error: 5");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -537,7 +532,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f2 -> "length"
     */
     public String visit(ArrayLength n, HashMap<String, Scope> argu) {
-        System.out.println("ArrayLength");
+        // System.out.println("ArrayLength");
 
         String _ret="int";
         String first = n.f0.accept(this, argu);
@@ -546,7 +541,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (first == "array") {
             return _ret;
         }
-        System.out.println("Type error: Expected integer array.");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -560,16 +555,14 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f5 -> ")"
     */
     public String visit(MessageSend n, HashMap<String, Scope> argu) {
-        System.out.println("MessageSend");
-        System.out.println(" currScope: " + this.currScope);
+        // System.out.println("MessageSend");
+        // System.out.println(" currScope: " + this.currScope);
 
         String _ret = null;
         String className = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String methodName = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
-        String exprType = n.f4.accept(this, argu);
-        n.f5.accept(this, argu);
 
         boolean classExists = false;
         for (String key : argu.keySet()) {
@@ -580,11 +573,11 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         }
 
         if (!classExists && className != "this") {
-            System.out.println("<-- MessageSend Scope -->");
-            argu.get(this.currScope).printAll();
-            System.out.println("<-- MessageSend End Scope -->");
-            System.out.println("MessageSend no class: " + className);
-            System.out.println("Type error: No such class");
+            // System.out.println("<-- MessageSend Scope -->");
+            // argu.get(this.currScope).printAll();
+            // System.out.println("<-- MessageSend End Scope -->");
+            // System.out.println("MessageSend no class: " + className);
+            System.out.println("Type error");
             System.exit(0);
         }
 
@@ -595,20 +588,32 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
                 methodExists = true;
                 parent = argu.get(key).getParentScope();
                 this.currScope = key;
+                // System.out.println("MessageSend new currScope: " + this.currScope);
+                // System.out.println("<-- MessageSend Scope -->");
+                // argu.get(this.currScope).printAll();
+                // System.out.println("<-- MessageSend End Scope -->");
                 break;
             }
         }
 
         // type checks if methodName is valid
         if (!methodExists) {
-            System.out.println("<-- MessageSend Scope -->");
-            argu.get(this.currScope).printAll();
-            System.out.println("<-- MessageSend End Scope -->");
-            System.out.println("Type error: 6"); // method doesn't exist
+            // System.out.println("<-- MessageSend Scope -->");
+            // argu.get(this.currScope).printAll();
+            // System.out.println("<-- MessageSend End Scope -->");
+            System.out.println("Type error"); // method doesn't exist
             System.exit(0);
         }
 
-        // if (exprType != argu.get(this.currScope))
+        // ArrayList<String> parameterTypes; // FIXME
+        // for (String key : argu.get(this.currScope).keySet()) {
+        //     if (argu.get(this.currScope).get(key).contains("p_")) {
+        //         parameterTypes.add(argu.get(this.currScope).get(key));
+        //     }
+        // }
+        n.f4.accept(this, argu);
+
+        n.f5.accept(this, argu);
 
         _ret = argu.get(this.currScope).getType(methodName); // set _ret to method return type
 
@@ -620,14 +625,14 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f1 -> ( ExpressionRest() )*
     */
     public String visit(ExpressionList n, HashMap<String, Scope> argu) {
-        System.out.println("ExprList");
+        // System.out.println("ExprList");
 
         String _ret = null;
         String expr = n.f0.accept(this, argu);
-        System.out.println("ExprList.expr: " + expr);
+        // System.out.println("ExprList.expr: " + expr);
         globalVector.add(expr);
         String exprRest = n.f1.accept(this, argu);
-        System.out.println("ExprList.exprRest: " + exprRest);
+        // System.out.println("ExprList.exprRest: " + exprRest);
         if (exprRest != null) {
             globalVector.add(exprRest);
         }
@@ -640,7 +645,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f1 -> Expression()
     */
     public String visit(ExpressionRest n, HashMap<String, Scope> argu) {
-        System.out.println("ExprRest");
+        // System.out.println("ExprRest");
 
         String _ret=null;
         n.f0.accept(this, argu);
@@ -660,7 +665,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     *       | BracketExpression()
     */
     public String visit(PrimaryExpression n, HashMap<String, Scope> argu) {
-        System.out.println("PrimaryExpr");
+        // System.out.println("PrimaryExpr");
 
         String _ret = n.f0.accept(this, argu);
         return _ret;
@@ -670,7 +675,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
      * f0 -> <INTEGER_LITERAL>
     */
     public String visit(IntegerLiteral n, HashMap<String, Scope> argu) {
-        System.out.println("IntegerLiteral");
+        // System.out.println("IntegerLiteral");
 
         String _ret = "int";
         n.f0.accept(this, argu);
@@ -681,7 +686,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
      * f0 -> "true"
     */
     public String visit(TrueLiteral n, HashMap<String, Scope> argu) {
-        System.out.println("TrueLiteral");
+        // System.out.println("TrueLiteral");
 
         String _ret="boolean";
         n.f0.accept(this, argu);
@@ -692,7 +697,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
      * f0 -> "false"
     */
     public String visit(FalseLiteral n, HashMap<String, Scope> argu) {
-        System.out.println("FalseLiteral");
+        // System.out.println("FalseLiteral");
 
         String _ret="boolean";
         n.f0.accept(this, argu);
@@ -703,9 +708,12 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
      * f0 -> <IDENTIFIER>
     */
     public String visit(Identifier n, HashMap<String, Scope> argu) {
-        System.out.println("Identifier: " + n.f0.toString());
+        // System.out.println("Identifier: " + n.f0.toString());
 
         String _ret = n.f0.toString();
+        // if (_ret.contains("p_")) {
+        //     _ret = _ret.substring(2);
+        // }
         n.f0.accept(this, argu);
         return _ret;
     }
@@ -714,7 +722,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
      * f0 -> "this"
     */
     public String visit(ThisExpression n, HashMap<String, Scope> argu) {
-        System.out.println("ThisExpr");
+        // System.out.println("ThisExpr");
 
         String _ret = "this";
         n.f0.accept(this, argu);
@@ -729,7 +737,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f4 -> "]"
     */
     public String visit(ArrayAllocationExpression n, HashMap<String, Scope> argu) {
-        System.out.println("ArrayAllocExpr");
+        // System.out.println("ArrayAllocExpr");
 
         String _ret="array";
         n.f0.accept(this, argu);
@@ -740,7 +748,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (expr == "int") {
             return _ret;
         }
-        System.out.println("Type error: expected int.");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -752,7 +760,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f3 -> ")"
     */
     public String visit(AllocationExpression n, HashMap<String, Scope> argu) {
-        System.out.println("AllocationExpr");
+        // System.out.println("AllocationExpr");
 
         String _ret=null;
         n.f0.accept(this, argu);
@@ -771,7 +779,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (classExists) {
             return id;
         }
-        System.out.println("Type error: no such class exists. (680)");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -781,7 +789,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f1 -> Expression()
     */
     public String visit(NotExpression n, HashMap<String, Scope> argu) {
-        System.out.println("NotExpr");
+        // System.out.println("NotExpr");
 
         String _ret="boolean";
         n.f0.accept(this, argu);
@@ -789,7 +797,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         if (s == "boolean") {
             return _ret;
         }
-        System.out.println("Type error: expected boolean.");
+        System.out.println("Type error");
         System.exit(0);
         return _ret;
     }
@@ -800,7 +808,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     * f2 -> ")"
     */
     public String visit(BracketExpression n, HashMap<String, Scope> argu) {
-        System.out.println("BracketExpr");
+        // System.out.println("BracketExpr");
 
         String _ret=null;
         n.f0.accept(this, argu);

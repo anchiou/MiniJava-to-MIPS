@@ -21,7 +21,7 @@ public class Scope {
     }
 
     public void putType(String id, String type) {
-        System.out.println("In PutType id: " + id + " type: " + type);
+        // System.out.println("In PutType id: " + id + " type: " + type);
         this.types.put(id, type);
     }
 

@@ -186,7 +186,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       }
 
       String parentScope = this.currScope;
-      System.out.println("ParentScope: " + parentScope);
+      System.out.println("Method " + id + "parentScope: " + parentScope);
       String nextScope = "scope" + this.scopeCount;
       this.symbolTable.put(nextScope, new Scope(parentScope)); // create scope with (parent class, parent scope)
       this.currScope = nextScope;

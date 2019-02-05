@@ -265,14 +265,18 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         System.out.println("ArrayAssignmentStmt");
 
         String _ret=null;
-        n.f0.accept(this, argu);
+        String id = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String first = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
-        n.f5.accept(this, argu);
+        String second = n.f5.accept(this, argu);
         n.f6.accept(this, argu);
-        return _ret;
+        if (first == "int" && second == "int" && id == "array") {
+            return _ret;
+        }
+        System.out.println("Type error");
+        System.exit(0);
     }
 
     /**
@@ -317,7 +321,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         n.f1.accept(this, argu);
         String Exp = n.f2.accept(this, argu);
         if (!(Exp == "boolean")) {
-            System.out.println("Type error: 4");
+            System.out.println("Type error");
             System.exit(0);
         }
         n.f3.accept(this, argu);

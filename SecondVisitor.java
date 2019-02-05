@@ -726,9 +726,15 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         // System.out.println("In Alloc:" + id);
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
-        String parent = argu.get(this.currScope).getParentScope();
-        System.out.println(argu.get(this.currScope));
-        if (argu.get(parent).contains(id)) {
+
+        boolean classExists = false;
+        for (String key : argu.keySet()) {
+            if (argu.get(key).contains(id)) {
+                classExists = true;
+                break;
+            }
+        }
+        if (classExists) {
             return id;
         }
         System.out.println("Type error: no such class exists. (680)");

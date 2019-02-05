@@ -292,7 +292,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         n.f1.accept(this, argu);
         String Exp = n.f2.accept(this, argu);
         if (!(Exp == "boolean")) {
-            System.out.println("Type error: 3");
+            System.out.println("Type error");
             System.exit(0);
         }
         n.f3.accept(this, argu);
@@ -338,10 +338,14 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String e = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
-        return _ret;
+        if (e == "int") {
+            return _ret;
+        }
+        System.out.println("Type error");
+        System.exit(0);
     }
 
     /**

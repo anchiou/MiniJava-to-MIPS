@@ -31,10 +31,28 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
     */
     public String visit(MainClass n, HashMap<String, Scope> argu) { // Always scope0
         System.out.println("MainClass");
+        System.out.println(" currScope: " + this.currScope);
 
         String _ret=null;
         // argu.get(this.currScope).printAll();
+        n.f0.accept(this, argu);
+        n.f1.accept(this, argu);
+        n.f2.accept(this, argu);
+        n.f3.accept(this, argu);
+        n.f4.accept(this, argu);
+        n.f5.accept(this, argu);
+        n.f6.accept(this, argu);
+        n.f7.accept(this, argu);
+        n.f8.accept(this, argu);
+        n.f9.accept(this, argu);
+        n.f10.accept(this, argu);
+        n.f11.accept(this, argu);
+        n.f12.accept(this, argu);
+        n.f13.accept(this, argu);
+        n.f14.accept(this, argu);
         n.f15.accept(this, argu);
+        n.f16.accept(this, argu);
+        n.f17.accept(this, argu);
         return _ret;
     }
 
@@ -52,17 +70,18 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
 
     /**
      * f0 -> "class"
-    * f1 -> Identifier()
-    * f2 -> "{"
-    * f3 -> ( VarDeclaration() )*
-    * f4 -> ( MethodDeclaration() )*
-    * f5 -> "}"
-    */
+     * f1 -> Identifier()
+     * f2 -> "{"
+     * f3 -> ( VarDeclaration() )*
+     * f4 -> ( MethodDeclaration() )*
+     * f5 -> "}"
+     */
     public String visit(ClassDeclaration n, HashMap<String, Scope> argu) {
         System.out.println("ClassDecl");
 
         ++this.scopeCounter;
         this.currScope = "scope" + this.scopeCounter;
+        System.out.println(" currScope: " + this.currScope);
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -88,6 +107,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
 
         ++this.scopeCounter;
         this.currScope = "scope" + this.scopeCounter;
+        System.out.println(" currScope: " + this.currScope);
         String _ret=null;
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -120,6 +140,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
 
         ++this.scopeCounter;
         this.currScope = "scope" + this.scopeCounter;
+        System.out.println(" currScope: " + this.currScope);
         String _ret= "MethodDeclaration";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -536,6 +557,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
 
         // get parent scope and check parent scope for class name
         String parent = argu.get(this.currScope).getParentScope();
+        System.out.println("MessageSend parent: " + parent);
         if (argu.get(parent).contains(className) == false && className != "this") {
             System.out.println(className);
             System.out.println("Type error: No such class");

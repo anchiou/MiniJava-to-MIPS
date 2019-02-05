@@ -221,8 +221,13 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
             System.exit(0);
         }
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String s = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
+        String idType = argu.get(this.currScope).getType(id);
+        if (s != idType) {
+            System.out.println("Type error");
+            System.exit(0);
+        }
         return _ret;
     }
 
@@ -700,6 +705,7 @@ public class SecondVisitor extends GJDepthFirst<String, HashMap<String, Scope>> 
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         String parent = argu.get(this.currScope).getParentScope();
+        System.out.println(argu.get(this.currScope));
         if (argu.get(parent).contains(id)) {
             return id;
         }

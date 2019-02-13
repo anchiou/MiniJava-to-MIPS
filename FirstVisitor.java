@@ -14,6 +14,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f2 -> <EOF>
     */
    public String visit(Goal n) {
+      System.out.println("Goal");
+
       Scope mainScope = new Scope();
       this.symbolTable.put("scope" + this.scopeCount, mainScope);
       ++this.scopeCount;
@@ -45,6 +47,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f17 -> "}"
     */
    public String visit(MainClass n) {
+      System.out.println("MainClass");
+
       String _ret=null;
       n.f0.accept(this);
       String id = n.f1.accept(this);
@@ -77,6 +81,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f5 -> "}"
     */
    public String visit(ClassDeclaration n) {
+         System.out.println("ClassDeclaration");
+
          String _ret = null;
          n.f0.accept(this);
          String id = n.f1.accept(this);
@@ -107,6 +113,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f7 -> "}"
     */
    public String visit(ClassExtendsDeclaration n) {
+      System.out.println("ClassExtendDeclaration");
+
       String _ret=null;
 
       n.f0.accept(this);
@@ -136,6 +144,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f2 -> ";"
     */
    public String visit(VarDeclaration n) {
+      System.out.println("VarDeclaration");
+
       String _ret=null;
       String type = n.f0.accept(this);
       String id = n.f1.accept(this);

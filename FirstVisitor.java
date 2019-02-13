@@ -69,16 +69,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
    }
 
    /**
-    * f0 -> ClassDeclaration()
-    *       | ClassExtendsDeclaration()
-    */
-   public String visit(TypeDeclaration n) {
-      String _ret=null;
-      n.f0.accept(this);
-      return _ret;
-   }
-
-   /**
     * f0 -> "class"
     * f1 -> Identifier()
     * f2 -> "{"
@@ -118,9 +108,10 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     */
    public String visit(ClassExtendsDeclaration n) {
       String _ret=null;
+
       n.f0.accept(this);
+
       String id = n.f1.accept(this);
-      // System.out.println("Class Extends id: " + id);
       if (this.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
          return null;
@@ -129,6 +120,7 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       this.symbolTable.put(nextScope, new Scope());
       this.currScope = nextScope;
       this.symbolTable.get(this.currScope).putType(id, "class");
+
       n.f2.accept(this);
       n.f3.accept(this);
       n.f4.accept(this);
@@ -152,7 +144,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
          return null;
       }
       this.symbolTable.get(this.currScope).putType(id, type);
-      // System.out.println("Returned from ScopePut");
       n.f2.accept(this);
       return _ret;
    }
@@ -221,23 +212,12 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f1 -> Identifier()
     */
    public String visit(FormalParameter n) { // Within method scope
-      String _ret=null;
+      String _ret = null;
       String type = n.f0.accept(this);
-      // System.out.println("Parameter type: " + type);
       String id = n.f1.accept(this);
       // System.out.println("Parameter id: " + id);
+      // System.out.println("Parameter type: " + type);
       this.symbolTable.get(this.currScope).putType(id, type);
-      return _ret;
-   }
-
-   /**
-    * f0 -> ","
-    * f1 -> FormalParameter()
-    */
-   public String visit(FormalParameterRest n) {
-      String _ret=null;
-      n.f0.accept(this);
-      n.f1.accept(this);
       return _ret;
    }
 

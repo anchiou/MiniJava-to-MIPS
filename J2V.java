@@ -4,6 +4,9 @@ public class J2V {
     public static void main(String[] args) throws ParseException {
         new MiniJavaParser(System.in);
         Goal program = MiniJavaParser.Goal();
-        program.accept(new FirstVisitor()); // Pass in visitor
+        FirstVisitor visitor1 = new FirstVisitor();
+        program.accept(visitor1);
+        TranslatorVisitor visitor2 = new TranslatorVisitor();
+        program.accept(visitor2, visitor1.symbolTable);
     }
 }

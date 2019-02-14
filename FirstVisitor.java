@@ -14,8 +14,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f2 -> <EOF>
     */
    public String visit(Goal n) {
-      System.out.println("Goal");
-
       Scope mainScope = new Scope();
       this.symbolTable.put("scope" + this.scopeCount, mainScope);
       ++this.scopeCount;
@@ -47,8 +45,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f17 -> "}"
     */
    public String visit(MainClass n) {
-      System.out.println("MainClass");
-
       String _ret=null;
       n.f0.accept(this);
       String id = n.f1.accept(this);
@@ -81,8 +77,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f5 -> "}"
     */
    public String visit(ClassDeclaration n) {
-         System.out.println("ClassDeclaration");
-
          String _ret = null;
          n.f0.accept(this);
          String id = n.f1.accept(this);
@@ -113,8 +107,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f7 -> "}"
     */
    public String visit(ClassExtendsDeclaration n) {
-      System.out.println("ClassExtendDeclaration");
-
       String _ret=null;
 
       n.f0.accept(this);
@@ -144,8 +136,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f2 -> ";"
     */
    public String visit(VarDeclaration n) {
-      System.out.println("VarDeclaration");
-
       String _ret=null;
       String type = n.f0.accept(this);
       String id = n.f1.accept(this);
@@ -174,7 +164,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f12 -> "}"
     */
    public String visit(MethodDeclaration n) {
-      System.out.println("Method Declaration");
       String _ret=null;
       n.f0.accept(this);
       String returnType = n.f1.accept(this);
@@ -212,7 +201,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f1 -> ( FormalParameterRest() )*
     */
    public String visit(FormalParameterList n) {
-      System.out.println("FormalParameterList");
       String _ret=null;
       n.f0.accept(this);
       n.f1.accept(this);
@@ -224,7 +212,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f1 -> Identifier()
     */
    public String visit(FormalParameter n) { // Within method scope
-      System.out.println("FormalParameter");
       String _ret = null;
       String type = n.f0.accept(this);
       String id = n.f1.accept(this);
@@ -241,7 +228,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     *       | Identifier()
     */
    public String visit(Type n) {
-      System.out.println("type");
       String _ret = n.f0.accept(this);
       return _ret;
    }
@@ -253,7 +239,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     */
    public String visit(ArrayType n) {
       String _ret = "array";
-      System.out.println("array");
       n.f0.accept(this);
       n.f1.accept(this);
       n.f2.accept(this);
@@ -264,7 +249,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> "boolean"
     */
    public String visit(BooleanType n) {
-    System.out.println("boolean");
       String _ret = n.f0.toString();
       n.f0.accept(this);
       return _ret;
@@ -274,7 +258,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> "int"
     */
    public String visit(IntegerType n) {
-      System.out.println("integer");
       String _ret = n.f0.toString();
       n.f0.accept(this);
       return _ret;
@@ -284,7 +267,6 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> <IDENTIFIER>
     */
    public String visit(Identifier n) {
-      System.out.println("identifier");
       String _ret=null;
       n.f0.accept(this);
       _ret = n.f0.toString();

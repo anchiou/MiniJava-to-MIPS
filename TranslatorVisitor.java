@@ -13,6 +13,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
     String parent = "";
     int tempCount = 0;
     int labelCount = 1;
+    int endCount = 1;
 
     /**
     * f0 -> "class"
@@ -147,7 +148,12 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
         String name = n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         String param = n.f4.accept(this, argu);
-        System.out.println("func " + parent + "." + name + "(this " + param + ")");
+        if (param != null) {
+            System.out.println("func " + parent + "." + name + "(this " + param + ")");
+        }
+        else {
+            System.out.println("func " + parent + "." + name + "()");
+        }
         indent += "  ";
         n.f5.accept(this, argu);
         n.f6.accept(this, argu);
@@ -261,11 +267,10 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
     public String visit(AssignmentStatement n, HashMap<String, Scope> argu) {
         String _ret=null;
         String id = n.f0.accept(this, argu);
-        System.out.println(indent + id);
         n.f1.accept(this, argu);
         String s = n.f2.accept(this, argu);
+        System.out.println(indent + id + " = " + s);
         n.f3.accept(this, argu);
-        String idType = argu.get(this.currScope).getType(id);
         return _ret;
     }
 
@@ -308,11 +313,16 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
         indent += "  ";
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
+        // First block
+        System.out.println(indent + "goto :if" + endCount + "_end");
         n.f5.accept(this, argu);
         indent = indent.substring(0, indent.length() - 2);
         System.out.println(indent + "if" + labelCount + "_else:");
         indent += "  ";
         n.f6.accept(this, argu);
+        // second block
+        indent = indent.substring(0, indent.length() - 2);
+        System.out.println(indent + "if" + endCount + "_end:");
         labelCount++;
         return _ret;
     }
@@ -540,7 +550,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
      * f0 -> <INTEGER_LITERAL>
     */
     public String visit(IntegerLiteral n, HashMap<String, Scope> argu) {
-        String _ret = n.f0.accept(this, argu);
+        String _ret = n.f0.toString();
+        n.f0.accept(this, argu);
         return _ret;
     }
 

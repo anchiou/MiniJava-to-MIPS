@@ -5,8 +5,9 @@ public class J2V {
         new MiniJavaParser(System.in);
         Goal program = MiniJavaParser.Goal();
         FirstVisitor visitor1 = new FirstVisitor();
-        program.accept(visitor1);
+        TranslationHelper helper = new TranslationHelper();
+        program.accept(visitor1, helper);
         TranslatorVisitor visitor2 = new TranslatorVisitor();
-        program.accept(visitor2, visitor1.symbolTable);
+        program.accept(visitor2, helper);
     }
 }

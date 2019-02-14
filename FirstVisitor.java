@@ -1,10 +1,7 @@
 import syntaxtree.*;
 import visitor.*;
-import java.util.Map;
-import java.util.HashMap;
 
-public class FirstVisitor extends GJNoArguDepthFirst<String> {
-   HashMap<String, Scope> symbolTable = new HashMap<String, Scope>();
+public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
    int scopeCount = 0;
    String currScope = "scope0";
 
@@ -13,14 +10,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f1 -> ( TypeDeclaration() )*
     * f2 -> <EOF>
     */
-   public String visit(Goal n) {
+   public String visit(Goal n, TranslationHelper helper) {
       Scope mainScope = new Scope();
-      this.symbolTable.put("scope" + this.scopeCount, mainScope);
+      helper.symbolTable.put("scope" + this.scopeCount, mainScope);
       ++this.scopeCount;
       String _ret = null;
-      n.f0.accept(this);
-      n.f1.accept(this);
-      n.f2.accept(this);
+      n.f0.accept(this, helper);
+      n.f1.accept(this, helper);
+      n.f2.accept(this, helper);
       return _ret;
    }
 
@@ -44,27 +41,27 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f16 -> "}"
     * f17 -> "}"
     */
-   public String visit(MainClass n) {
+   public String visit(MainClass n, TranslationHelper helper) {
       String _ret=null;
-      n.f0.accept(this);
-      String id = n.f1.accept(this);
-      this.symbolTable.get(this.currScope).putType(id, "class");
-      n.f2.accept(this);
-      n.f3.accept(this);
-      n.f4.accept(this);
-      n.f5.accept(this);
-      n.f6.accept(this);
-      n.f7.accept(this);
-      n.f8.accept(this);
-      n.f9.accept(this);
-      n.f10.accept(this);
-      n.f11.accept(this);
-      n.f12.accept(this);
-      n.f13.accept(this);
-      n.f14.accept(this);
-      n.f15.accept(this);
-      n.f16.accept(this);
-      n.f17.accept(this);
+      n.f0.accept(this, helper);
+      String id = n.f1.accept(this, helper);
+      helper.symbolTable.get(this.currScope).putType(id, "class");
+      n.f2.accept(this, helper);
+      n.f3.accept(this, helper);
+      n.f4.accept(this, helper);
+      n.f5.accept(this, helper);
+      n.f6.accept(this, helper);
+      n.f7.accept(this, helper);
+      n.f8.accept(this, helper);
+      n.f9.accept(this, helper);
+      n.f10.accept(this, helper);
+      n.f11.accept(this, helper);
+      n.f12.accept(this, helper);
+      n.f13.accept(this, helper);
+      n.f14.accept(this, helper);
+      n.f15.accept(this, helper);
+      n.f16.accept(this, helper);
+      n.f17.accept(this, helper);
       return _ret;
    }
 
@@ -76,23 +73,23 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f4 -> ( MethodDeclaration() )*
     * f5 -> "}"
     */
-   public String visit(ClassDeclaration n) {
+   public String visit(ClassDeclaration n, TranslationHelper helper) {
          String _ret = null;
-         n.f0.accept(this);
-         String id = n.f1.accept(this);
-         if (this.symbolTable.get(this.currScope).contains(id)) {
+         n.f0.accept(this, helper);
+         String id = n.f1.accept(this, helper);
+         if (helper.symbolTable.get(this.currScope).contains(id)) {
             System.out.println("Type error");
             return null;
          }
          String nextScope = "scope" + this.scopeCount;
-         this.symbolTable.put(nextScope, new Scope());
+         helper.symbolTable.put(nextScope, new Scope());
          this.currScope = nextScope;
          ++this.scopeCount;
-         this.symbolTable.get(this.currScope).putType(id, "class");
-         n.f2.accept(this);
-         n.f3.accept(this);
-         n.f4.accept(this);
-         n.f5.accept(this);
+         helper.symbolTable.get(this.currScope).putType(id, "class");
+         n.f2.accept(this, helper);
+         n.f3.accept(this, helper);
+         n.f4.accept(this, helper);
+         n.f5.accept(this, helper);
          return _ret;
    }
 
@@ -106,27 +103,27 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f6 -> ( MethodDeclaration() )*
     * f7 -> "}"
     */
-   public String visit(ClassExtendsDeclaration n) {
+   public String visit(ClassExtendsDeclaration n, TranslationHelper helper) {
       String _ret=null;
 
-      n.f0.accept(this);
+      n.f0.accept(this, helper);
 
-      String id = n.f1.accept(this);
-      if (this.symbolTable.get(this.currScope).contains(id)) {
+      String id = n.f1.accept(this, helper);
+      if (helper.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
          return null;
       }
       String nextScope = "scope" + this.scopeCount;
-      this.symbolTable.put(nextScope, new Scope());
+      helper.symbolTable.put(nextScope, new Scope());
       this.currScope = nextScope;
-      this.symbolTable.get(this.currScope).putType(id, "class");
+      helper.symbolTable.get(this.currScope).putType(id, "class");
 
-      n.f2.accept(this);
-      n.f3.accept(this);
-      n.f4.accept(this);
-      n.f5.accept(this);
-      n.f6.accept(this);
-      n.f7.accept(this);
+      n.f2.accept(this, helper);
+      n.f3.accept(this, helper);
+      n.f4.accept(this, helper);
+      n.f5.accept(this, helper);
+      n.f6.accept(this, helper);
+      n.f7.accept(this, helper);
       return _ret;
    }
 
@@ -135,16 +132,16 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f1 -> Identifier()
     * f2 -> ";"
     */
-   public String visit(VarDeclaration n) {
+   public String visit(VarDeclaration n, TranslationHelper helper) {
       String _ret=null;
-      String type = n.f0.accept(this);
-      String id = n.f1.accept(this);
-      if (this.symbolTable.get(this.currScope).contains(id)) {
+      String type = n.f0.accept(this, helper);
+      String id = n.f1.accept(this, helper);
+      if (helper.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
          return null;
       }
-      this.symbolTable.get(this.currScope).putType(id, type);
-      n.f2.accept(this);
+      helper.symbolTable.get(this.currScope).putType(id, type);
+      n.f2.accept(this, helper);
       return _ret;
    }
 
@@ -163,14 +160,14 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f11 -> ";"
     * f12 -> "}"
     */
-   public String visit(MethodDeclaration n) {
+   public String visit(MethodDeclaration n, TranslationHelper helper) {
       String _ret=null;
-      n.f0.accept(this);
-      String returnType = n.f1.accept(this);
-      String id = n.f2.accept(this);
+      n.f0.accept(this, helper);
+      String returnType = n.f1.accept(this, helper);
+      String id = n.f2.accept(this, helper);
       // System.out.println("Method id: " + id + "returnType: " + returnType);
 
-      if (this.symbolTable.get(this.currScope).contains(id)) {
+      if (helper.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
          return null;
       }
@@ -178,21 +175,21 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
       String parentScope = this.currScope;
       // System.out.println("Method " + id + " parentScope: " + parentScope);
       String nextScope = "scope" + this.scopeCount;
-      this.symbolTable.put(nextScope, new Scope(parentScope)); // create scope with (parent class, parent scope)
+      helper.symbolTable.put(nextScope, new Scope(parentScope)); // create scope with (parent class, parent scope)
       this.currScope = nextScope;
       ++this.scopeCount;
-      this.symbolTable.get(this.currScope).putType(id, returnType);
+      helper.symbolTable.get(this.currScope).putType(id, returnType);
 
-      n.f3.accept(this);
-      n.f4.accept(this);
-      n.f5.accept(this);
-      n.f6.accept(this);
-      n.f7.accept(this);
-      n.f8.accept(this);
-      n.f9.accept(this);
-      n.f10.accept(this);
-      n.f11.accept(this);
-      n.f12.accept(this);
+      n.f3.accept(this, helper);
+      n.f4.accept(this, helper);
+      n.f5.accept(this, helper);
+      n.f6.accept(this, helper);
+      n.f7.accept(this, helper);
+      n.f8.accept(this, helper);
+      n.f9.accept(this, helper);
+      n.f10.accept(this, helper);
+      n.f11.accept(this, helper);
+      n.f12.accept(this, helper);
       return _ret;
    }
 
@@ -200,10 +197,10 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> FormalParameter()
     * f1 -> ( FormalParameterRest() )*
     */
-   public String visit(FormalParameterList n) {
+   public String visit(FormalParameterList n, TranslationHelper helper) {
       String _ret=null;
-      n.f0.accept(this);
-      n.f1.accept(this);
+      n.f0.accept(this, helper);
+      n.f1.accept(this, helper);
       return _ret;
    }
 
@@ -211,13 +208,13 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f0 -> Type()
     * f1 -> Identifier()
     */
-   public String visit(FormalParameter n) { // Within method scope
+   public String visit(FormalParameter n, TranslationHelper helper) { // Within method scope
       String _ret = null;
-      String type = n.f0.accept(this);
-      String id = n.f1.accept(this);
+      String type = n.f0.accept(this, helper);
+      String id = n.f1.accept(this, helper);
       // System.out.println("Parameter id: " + id);
       // System.out.println("Parameter type: " + type);
-      this.symbolTable.get(this.currScope).putType(id, type);
+      helper.symbolTable.get(this.currScope).putType(id, type);
       return _ret;
    }
 
@@ -227,8 +224,8 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     *       | IntegerType()
     *       | Identifier()
     */
-   public String visit(Type n) {
-      String _ret = n.f0.accept(this);
+   public String visit(Type n, TranslationHelper helper) {
+      String _ret = n.f0.accept(this, helper);
       return _ret;
    }
 
@@ -237,38 +234,38 @@ public class FirstVisitor extends GJNoArguDepthFirst<String> {
     * f1 -> "["
     * f2 -> "]"
     */
-   public String visit(ArrayType n) {
+   public String visit(ArrayType n, TranslationHelper helper) {
       String _ret = "array";
-      n.f0.accept(this);
-      n.f1.accept(this);
-      n.f2.accept(this);
+      n.f0.accept(this, helper);
+      n.f1.accept(this, helper);
+      n.f2.accept(this, helper);
       return _ret;
    }
 
    /**
     * f0 -> "boolean"
     */
-   public String visit(BooleanType n) {
+   public String visit(BooleanType n, TranslationHelper helper) {
       String _ret = n.f0.toString();
-      n.f0.accept(this);
+      n.f0.accept(this, helper);
       return _ret;
    }
 
    /**
     * f0 -> "int"
     */
-   public String visit(IntegerType n) {
+   public String visit(IntegerType n, TranslationHelper helper) {
       String _ret = n.f0.toString();
-      n.f0.accept(this);
+      n.f0.accept(this, helper);
       return _ret;
    }
 
    /**
     * f0 -> <IDENTIFIER>
     */
-   public String visit(Identifier n) {
+   public String visit(Identifier n, TranslationHelper helper) {
       String _ret=null;
-      n.f0.accept(this);
+      n.f0.accept(this, helper);
       _ret = n.f0.toString();
       return _ret;
    }

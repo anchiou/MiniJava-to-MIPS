@@ -38,6 +38,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
     public String visit(MainClass n, HashMap<String, Scope> argu) { // Always scope0
         String _ret=null;
         System.out.println("func Main()");
+	indent += "  ";
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -61,7 +62,16 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
     }
 
     /**
-     * f0 -> ClassDeclaration()
+ f0 t.0 goto :if1_else
+      num_aux = 1
+      goto :if1_end
+    if1_else:
+      t.1 = [this]
+      t.1 = [t.1+FIXME]
+      t.2 = Sub(num 1)
+      num_aux = int
+    if1_end:
+    * f0 -> ClassDeclaration()
     *       | ClassExtendsDeclaration()
     */
     public String visit(TypeDeclaration n, HashMap<String, Scope> argu) {
@@ -115,7 +125,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
 
     /**
      * f0 -> Type()
-     * f1 -> Identifier()
+ub(num 1)
      * f2 -> ";"
      */
     public String visit(VarDeclaration n, HashMap<String, Scope> argu) {
@@ -311,6 +321,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
         String Exp = n.f2.accept(this, argu);
         System.out.println(indent + "if0 t." + tempCount + " goto :if" + labelCount + "_else");
         indent += "  ";
+	tempCount++;
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         // First block
@@ -431,10 +442,12 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
     public String visit(MinusExpression n, HashMap<String, Scope> argu) {
         // System.out.println("MinusExpression");
 
+	tempCount++;
         String _ret = "int";
         String first = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String second = n.f2.accept(this, argu);
+	System.out.println(indent + "t." + tempCount + " = Sub(" + first + " " + second + ")");
         return _ret;
     }
 
@@ -501,6 +514,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, HashMap<String, Scop
         String className = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String methodName = n.f2.accept(this, argu);
+	System.out.println(indent + "t." + tempCount + " = [this]");
+	System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
         n.f5.accept(this, argu);

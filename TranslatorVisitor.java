@@ -62,16 +62,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         return _ret;
     }
 
-    /**
- f0 t.0 goto :if1_else
-      num_aux = 1
-      goto :if1_end
-    if1_else:
-      t.1 = [this]
-      t.1 = [t.1+FIXME]
-      t.2 = Sub(num 1)
-      num_aux = int
-    if1_end:
+    /*
     * f0 -> ClassDeclaration()
     *       | ClassExtendsDeclaration()
     */
@@ -171,9 +162,10 @@ ub(num 1)
         n.f7.accept(this, helper);
         n.f8.accept(this, helper);
         n.f9.accept(this, helper);
-        String returnType = n.f10.accept(this, helper);
+        String returnId = n.f10.accept(this, helper);
         n.f11.accept(this, helper);
         n.f12.accept(this, helper);
+	System.out.println(indent + "ret " + returnId);
         indent = "";
         return _ret;
     }
@@ -294,7 +286,7 @@ ub(num 1)
     * f5 -> Expression()
     * f6 -> ";"
     */
-    public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
+public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String _ret=null;
         String id = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -347,7 +339,7 @@ ub(num 1)
     * f4 -> Statement()
     */
     public String visit(WhileStatement n, TranslationHelper helper) {
-        String _ret= "WhileStatement";
+	    String _ret= "WhileStatement";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String Exp = n.f2.accept(this, helper);
@@ -464,6 +456,7 @@ ub(num 1)
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
+	System.out.println(indent + "MulS(" + first + " " + second + ")");
         return _ret;
     }
 

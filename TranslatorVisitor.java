@@ -54,6 +54,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f12.accept(this, helper);
         n.f13.accept(this, helper);
         n.f14.accept(this, helper);
+	indent = indent.substring(0, indent.length() - 2);
         n.f15.accept(this, helper);
         n.f16.accept(this, helper);
         n.f17.accept(this, helper);
@@ -164,7 +165,7 @@ ub(num 1)
         else {
             System.out.println("func " + parent + "." + name + "()");
         }
-        //indent += "  ";
+        indent += "  ";
         n.f5.accept(this, helper);
         n.f6.accept(this, helper);
         n.f7.accept(this, helper);
@@ -514,8 +515,8 @@ ub(num 1)
         String className = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String methodName = n.f2.accept(this, helper);
-	System.out.println(indent + "t." + tempCount + " = [this]");
-	System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
+	//System.out.println(indent + "t." + tempCount + " = [this]");
+	//System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
         n.f5.accept(this, helper);

@@ -17,4 +17,23 @@ public class ClassManager {
     public void putMethods(String className, Map<String, String> methods) {
         this.vTable.put(className, methods);
     }
+
+    public void printFields(String className) {
+        ArrayList<String> fields = this.record.get(className);
+        System.out.print(className + " fields: ");
+        for (int i = 0; i < fields.size(); ++i) {
+            System.out.print(fields.get(i) + "  ");
+        }
+        System.out.println("");
+    }
+
+    public void printMethods(String className) {
+        Map<String, String> methods = this.vTable.get(className);
+        System.out.print(className + " methods: ");
+        for (String key : methods.keySet()) {
+            System.out.println(key + "  ");
+            // System.out.println(this.types.get(key));
+        }
+        System.out.println("");
+    }
 }

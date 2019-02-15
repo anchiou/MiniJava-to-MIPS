@@ -1,9 +1,15 @@
 import syntaxtree.*;
 import visitor.*;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
    int scopeCount = 0;
    String currScope = "scope0";
+   ArrayList<String> fields;
+   Map<String, String> methods;
 
    /**
     * f0 -> MainClass()
@@ -75,21 +81,34 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
     */
    public String visit(ClassDeclaration n, TranslationHelper helper) {
          String _ret = null;
+         this.fields = new ArrayList<String>();
+         this.methods = new LinkedHashMap<String, String>();
+
          n.f0.accept(this, helper);
+
          String id = n.f1.accept(this, helper);
          if (helper.symbolTable.get(this.currScope).contains(id)) {
             System.out.println("Type error");
             return null;
          }
+
          String nextScope = "scope" + this.scopeCount;
          helper.symbolTable.put(nextScope, new Scope());
          this.currScope = nextScope;
          ++this.scopeCount;
          helper.symbolTable.get(this.currScope).putType(id, "class");
+
          n.f2.accept(this, helper);
          n.f3.accept(this, helper);
          n.f4.accept(this, helper);
          n.f5.accept(this, helper);
+
+         helper.classList.putRecords(id, this.fields);
+         // helper.classList.printFields(id);
+
+         helper.classList.putMethods(id, this.methods);
+         // helper.classList.printMethods(id);
+
          return _ret;
    }
 
@@ -141,6 +160,9 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
          return null;
       }
       helper.symbolTable.get(this.currScope).putType(id, type);
+
+      this.fields.add(id); // add field to field list
+
       n.f2.accept(this, helper);
       return _ret;
    }
@@ -179,6 +201,8 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       this.currScope = nextScope;
       ++this.scopeCount;
       helper.symbolTable.get(this.currScope).putType(id, returnType);
+
+      this.methods.put(id, id);
 
       n.f3.accept(this, helper);
       n.f4.accept(this, helper);

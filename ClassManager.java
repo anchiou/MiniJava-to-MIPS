@@ -16,6 +16,7 @@ public class ClassManager {
     // put class name and method maps (maps field names to offsets)
     public void putMethods(String className, Map<String, String> methods) {
         this.vTable.put(className, methods);
+<<<<<<< HEAD
     }
 
     public void printFields(String className) {
@@ -36,4 +37,7 @@ public class ClassManager {
         }
         System.out.println("");
     }
+=======
+    }
+>>>>>>> 742921a63d8b78d23a4764a28cdf54bb0153f249
 }

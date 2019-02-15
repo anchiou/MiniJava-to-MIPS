@@ -9,12 +9,12 @@ public class ClassManager {
     private Map<String, Map<String, String>> vTable = new LinkedHashMap<>();
 
     // put class name and fields list
-    public void putRecords(String class, ArrayList<String> fields) {
-        this.record.put(class, fields);
+    public void putRecords(String className, ArrayList<String> fields) {
+        this.record.put(className, fields);
     }
 
     // put class name and method maps (maps field names to offsets)
-    public void putMethods(String class, Map<String, String> methods) {
-        this.vTable.put(class, methods);
+    public void putMethods(String className, Map<String, String> methods) {
+        this.vTable.put(className, methods);
     }
 }

@@ -5,11 +5,21 @@ import java.util.Map;
 public class ClassManager {
     // map of class names to fields
     private Map<String, ArrayList<String>> record = new LinkedHashMap<>();
-    // map of class names to methods
-    private Map<String, Map<String, String>> vTable = new LinkedHashMap<>();
+    // map of class names to methods: inner map is for overridden methods
+    private Map<String, Map<String, String>> vTable = new LinkedHashMap<>(); // e.g., <class, <overriden method, class>>
+
+    // returns corresponding class record
+    public ArrayList<String> getRecord(String className) {
+        return this.record.get(className);
+    }
+
+    // returns corresponding class v-table
+    public Map<String, String> getVTable(String className) {
+        return this.vTable.get(className);
+    }
 
     // put class name and fields list
-    public void putRecords(String className, ArrayList<String> fields) {
+    public void putFields(String className, ArrayList<String> fields) {
         this.record.put(className, fields);
     }
 

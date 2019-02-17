@@ -8,8 +8,9 @@ import java.util.Map;
 public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
    int scopeCount = 0;
    String currScope = "scope0";
-   ArrayList<String> fields;
-   Map<String, String> methods;
+   String currClass = "";
+   ArrayList<String> fields; // class record fields list
+   Map<String, String> methods; // class v-table methods list
 
    /**
     * f0 -> MainClass()
@@ -51,6 +52,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       String _ret=null;
       n.f0.accept(this, helper);
       String id = n.f1.accept(this, helper);
+      this.currClass = id;
       helper.symbolTable.get(this.currScope).putType(id, "class");
       n.f2.accept(this, helper);
       n.f3.accept(this, helper);
@@ -91,6 +93,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
             System.out.println("Type error");
             return null;
          }
+         this.currClass = id;
 
          String nextScope = "scope" + this.scopeCount;
          helper.symbolTable.put(nextScope, new Scope());
@@ -103,11 +106,11 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
          n.f4.accept(this, helper);
          n.f5.accept(this, helper);
 
-         helper.classList.putRecords(id, this.fields);
-         // helper.classList.printFields(id);
+         helper.classList.putFields(id, this.fields); // add class record to manager
+         helper.classList.printFields(id);
 
-         helper.classList.putMethods(id, this.methods);
-         // helper.classList.printMethods(id);
+         helper.classList.putMethods(id, this.methods); // add class v-table to manager
+         helper.classList.printMethods(id);
 
          return _ret;
    }
@@ -130,19 +133,36 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       String id = n.f1.accept(this, helper);
       if (helper.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
-         return null;
+         System.exit(0);
       }
+      this.currClass = id;
+
       String nextScope = "scope" + this.scopeCount;
       helper.symbolTable.put(nextScope, new Scope());
       this.currScope = nextScope;
       helper.symbolTable.get(this.currScope).putType(id, "class");
 
       n.f2.accept(this, helper);
-      n.f3.accept(this, helper);
+
+      String parent = n.f3.accept(this, helper); // parent class
+      this.fields = helper.classList.getRecord(parent); // copy parent class record
+      if (this.fields == null) {
+         System.out.println("Type error");
+         System.exit(0);
+      }
+      this.methods = helper.classList.getVTable(parent); // copy parent class v-table
+
       n.f4.accept(this, helper);
       n.f5.accept(this, helper);
       n.f6.accept(this, helper);
       n.f7.accept(this, helper);
+
+      helper.classList.putFields(id, this.fields); // add class record to manager
+      helper.classList.printFields(id);
+
+      helper.classList.putMethods(id, this.methods); // add class v-table to manager
+      helper.classList.printMethods(id);
+
       return _ret;
    }
 
@@ -184,6 +204,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
     */
    public String visit(MethodDeclaration n, TranslationHelper helper) {
       String _ret=null;
+
       n.f0.accept(this, helper);
       String returnType = n.f1.accept(this, helper);
       String id = n.f2.accept(this, helper);
@@ -197,12 +218,12 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       String parentScope = this.currScope;
       // System.out.println("Method " + id + " parentScope: " + parentScope);
       String nextScope = "scope" + this.scopeCount;
-      helper.symbolTable.put(nextScope, new Scope(parentScope)); // create scope with (parent class, parent scope)
+      helper.symbolTable.put(nextScope, new Scope(parentScope)); // create scope with (parent class/parent scope)
       this.currScope = nextScope;
       ++this.scopeCount;
       helper.symbolTable.get(this.currScope).putType(id, returnType);
 
-      this.methods.put(id, id);
+      this.methods.put(id, this.currClass); // FIXME: don't want to replace superclass overriden method
 
       n.f3.accept(this, helper);
       n.f4.accept(this, helper);

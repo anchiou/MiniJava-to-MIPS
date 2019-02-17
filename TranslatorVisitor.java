@@ -16,6 +16,19 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     int endCount = 1;
 
     /**
+    * f0 -> MainClass()
+    * f1 -> ( TypeDeclaration() )*
+    * f2 -> <EOF>
+    */
+    public String visit(Goal n, TranslationHelper helper) {
+        String _ret = null;
+        n.f0.accept(this, helper);
+        n.f1.accept(this, helper);
+        n.f2.accept(this, helper);
+        return _ret;
+    }
+
+    /**
     * f0 -> "class"
     * f1 -> Identifier()
     * f2 -> "{"
@@ -38,7 +51,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     public String visit(MainClass n, TranslationHelper helper) { // Always scope0
         String _ret=null;
         System.out.println("func Main()");
-	indent += "  ";
+	    indent += "  ";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         n.f2.accept(this, helper);
@@ -54,7 +67,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f12.accept(this, helper);
         n.f13.accept(this, helper);
         n.f14.accept(this, helper);
-	indent = indent.substring(0, indent.length() - 2);
+	    indent = indent.substring(0, indent.length() - 2);
         n.f15.accept(this, helper);
         n.f16.accept(this, helper);
         n.f17.accept(this, helper);
@@ -314,7 +327,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String Exp = n.f2.accept(this, helper);
         System.out.println(indent + "if0 t." + tempCount + " goto :if" + labelCount + "_else");
         indent += "  ";
-	tempCount++;
+	    tempCount++;
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
         // First block
@@ -435,12 +448,12 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(MinusExpression n, TranslationHelper helper) {
         // System.out.println("MinusExpression");
 
-	tempCount++;
+	    tempCount++;
         String _ret = "int";
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
-	System.out.println(indent + "t." + tempCount + " = Sub(" + first + " " + second + ")");
+	    System.out.println(indent + "t." + tempCount + " = Sub(" + first + " " + second + ")");
         return _ret;
     }
 
@@ -456,7 +469,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
-	System.out.println(indent + "MulS(" + first + " " + second + ")");
+	    System.out.println(indent + "MulS(" + first + " " + second + ")");
         return _ret;
     }
 
@@ -508,8 +521,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String className = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String methodName = n.f2.accept(this, helper);
-	//System.out.println(indent + "t." + tempCount + " = [this]");
-	//System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
+        //System.out.println(indent + "t." + tempCount + " = [this]");
+        //System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
         n.f5.accept(this, helper);

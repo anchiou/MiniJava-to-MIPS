@@ -107,10 +107,10 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
          n.f5.accept(this, helper);
 
          helper.classList.putFields(id, this.fields); // add class record to manager
-         helper.classList.printFields(id);
+         // helper.classList.printFields(id);
 
          helper.classList.putMethods(id, this.methods); // add class v-table to manager
-         helper.classList.printMethods(id);
+         // helper.classList.printMethods(id);
 
          return _ret;
    }
@@ -137,14 +137,22 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       }
       this.currClass = id;
 
-      String nextScope = "scope" + this.scopeCount;
-      helper.symbolTable.put(nextScope, new Scope());
-      this.currScope = nextScope;
-      helper.symbolTable.get(this.currScope).putType(id, "class");
-
       n.f2.accept(this, helper);
 
       String parent = n.f3.accept(this, helper); // parent class
+      String parentScope = "";
+      for (String key : helper.symbolTable.keySet()) {
+         if (helper.symbolTable.get(key).contains(parent)) {
+            parentScope = key;
+         }
+      }
+
+      String nextScope = "scope" + this.scopeCount;
+      helper.symbolTable.put(nextScope, new Scope(parentScope));
+      this.currScope = nextScope;
+      ++this.scopeCount;
+      helper.symbolTable.get(this.currScope).putType(id, "class");
+
       this.fields = helper.classList.getRecord(parent); // copy parent class record
       if (this.fields == null) {
          System.out.println("Type error");
@@ -158,10 +166,10 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       n.f7.accept(this, helper);
 
       helper.classList.putFields(id, this.fields); // add class record to manager
-      helper.classList.printFields(id);
+      // helper.classList.printFields(id);
 
       helper.classList.putMethods(id, this.methods); // add class v-table to manager
-      helper.classList.printMethods(id);
+      // helper.classList.printMethods(id);
 
       return _ret;
    }
@@ -235,17 +243,6 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       n.f10.accept(this, helper);
       n.f11.accept(this, helper);
       n.f12.accept(this, helper);
-      return _ret;
-   }
-
-   /**
-    * f0 -> FormalParameter()
-    * f1 -> ( FormalParameterRest() )*
-    */
-   public String visit(FormalParameterList n, TranslationHelper helper) {
-      String _ret=null;
-      n.f0.accept(this, helper);
-      n.f1.accept(this, helper);
       return _ret;
    }
 

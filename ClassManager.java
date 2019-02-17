@@ -8,6 +8,16 @@ public class ClassManager {
     // map of class names to methods: inner map is for overridden methods
     private Map<String, Map<String, String>> vTable = new LinkedHashMap<>(); // e.g., <class, <overriden method, class>>
 
+    // returns all class records
+    public Map<String, ArrayList<String>> getAllRecords() {
+        return this.record;
+    }
+
+    // returns all class v-tables
+    public Map<String, Map<String, String>> getAllVTables() {
+        return this.vTable;
+    }
+
     // returns corresponding class record
     public ArrayList<String> getRecord(String className) {
         return this.record.get(className);
@@ -39,10 +49,10 @@ public class ClassManager {
 
     public void printMethods(String className) {
         Map<String, String> methods = this.vTable.get(className);
-        System.out.print(className + " methods: ");
+        // System.out.print(className + " methods: ");
         for (String key : methods.keySet()) {
-            System.out.println(key + "  ");
-            // System.out.println(this.types.get(key));
+            System.out.print("  :" + methods.get(key) + ".");
+            System.out.println(key);
         }
         System.out.println("");
     }

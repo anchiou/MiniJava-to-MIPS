@@ -11,7 +11,7 @@ class LinearSearch{
 class LS {
     int[] number ;
     int size ;
-    
+
     // Invoke methods to initialize, print and search
     // for elements on the array
     public int Start(int sz){
@@ -30,49 +30,49 @@ class LS {
 
     // Print array of integers
     public int Print(){
-	int j ;
+		int j ;
 
-	j = 1 ;
-	while (j < (size)) {
-	    System.out.println(number[j]);
-	    j = j + 1 ;
-	}
-	return 0 ;
-    }
-
-    // Search for a specific value (num) using
-    // linear search
-    public int Search(int num){
-	int j ;
-	boolean ls01 ;
-	int ifound ;
-	int aux01 ;
-	int aux02 ;
-	int nt ;
-
-	j = 1 ;
-	ls01 = false ;
-	ifound = 0 ;
-	
-	//System.out.println(num);
-	while (j < (size)) {
-	    aux01 = number[j] ;
-	    aux02 = num + 1 ;
-	    if (aux01 < num) nt = 0 ;
-	    else if (!(aux01 < aux02)) nt = 0 ;
-	    else {
-		ls01 = true ;
-		ifound = 1 ;
-		j = size ;
-	    }
-	    j = j + 1 ;
+		j = 1 ;
+		while (j < (size)) {
+			System.out.println(number[j]);
+			j = j + 1 ;
+		}
+		return 0 ;
 	}
 
-	return ifound ;
+		// Search for a specific value (num) using
+		// linear search
+	public int Search(int num){
+		int j ;
+		boolean ls01 ;
+		int ifound ;
+		int aux01 ;
+		int aux02 ;
+		int nt ;
+
+		j = 1 ;
+		ls01 = false ;
+		ifound = 0 ;
+
+		//System.out.println(num);
+		while (j < (size)) {
+			aux01 = number[j] ;
+			aux02 = num + 1 ;
+			if (aux01 < num) nt = 0 ;
+			else if (!(aux01 < aux02)) nt = 0 ;
+			else {
+				ls01 = true ;
+				ifound = 1 ;
+				j = size ;
+			}
+			j = j + 1 ;
+		}
+
+		return ifound ;
     }
 
 
-    
+
     // initialize array of integers with some
     // some sequence
     public int Init(int sz){
@@ -83,7 +83,7 @@ class LS {
 
 	size = sz ;
 	number = new int[sz] ;
-	
+
 	j = 1 ;
 	k = size + 1 ;
 	while (j < (size)) {
@@ -93,7 +93,7 @@ class LS {
 	    j = j + 1 ;
 	    k = k - 1 ;
 	}
-	return 0 ;	
+	return 0 ;
     }
 
 }

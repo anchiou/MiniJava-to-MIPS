@@ -6,9 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
-   int scopeCount = 0;
-   String currScope = "scope0";
+   String classScope = "";
    String currClass = "";
+
+   String currScope = "scope0";
+   int scopeCount = 0;
+
    ArrayList<String> fields; // class record fields list
    Map<String, String> methods; // class v-table methods list
 
@@ -18,9 +21,6 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
     * f2 -> <EOF>
     */
    public String visit(Goal n, TranslationHelper helper) {
-      Scope mainScope = new Scope();
-      helper.symbolTable.put("scope" + this.scopeCount, mainScope);
-      ++this.scopeCount;
       String _ret = null;
       n.f0.accept(this, helper);
       n.f1.accept(this, helper);
@@ -50,10 +50,15 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
     */
    public String visit(MainClass n, TranslationHelper helper) {
       String _ret=null;
+
       n.f0.accept(this, helper);
+
       String id = n.f1.accept(this, helper);
       this.currClass = id;
+      helper.symbolTable.put("scope" + this.scopeCount, new Scope(id));
+      ++this.scopeCount;
       helper.symbolTable.get(this.currScope).putType(id, "class");
+
       n.f2.accept(this, helper);
       n.f3.accept(this, helper);
       n.f4.accept(this, helper);
@@ -96,13 +101,16 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
          this.currClass = id;
 
          String nextScope = "scope" + this.scopeCount;
-         helper.symbolTable.put(nextScope, new Scope());
+         helper.symbolTable.put(nextScope, new Scope(id));
          this.currScope = nextScope;
          ++this.scopeCount;
          helper.symbolTable.get(this.currScope).putType(id, "class");
 
          n.f2.accept(this, helper);
+
+         this.classScope = this.currScope; // keep track of class' scope
          n.f3.accept(this, helper);
+
          n.f4.accept(this, helper);
          n.f5.accept(this, helper);
 
@@ -148,7 +156,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       }
 
       String nextScope = "scope" + this.scopeCount;
-      helper.symbolTable.put(nextScope, new Scope(parentScope));
+      helper.symbolTable.put(nextScope, new Scope(parentScope, id));
       this.currScope = nextScope;
       ++this.scopeCount;
       helper.symbolTable.get(this.currScope).putType(id, "class");
@@ -161,7 +169,10 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       this.methods = new LinkedHashMap<String, String>(helper.classList.getVTable(parent)); // copy parent class v-table
 
       n.f4.accept(this, helper);
+
+      this.classScope = this.currScope; // keep track of class' scope
       n.f5.accept(this, helper);
+
       n.f6.accept(this, helper);
       n.f7.accept(this, helper);
 
@@ -189,10 +200,12 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       }
       helper.symbolTable.get(this.currScope).putType(id, type);
 
-      this.fields.add(id); // add field to field list
+      if (this.classScope == this.currScope) { // check if it is a class variable (not method variable)
+         this.fields.add(id); // add field to field list
+      }
 
       n.f2.accept(this, helper);
-      return _ret;
+      return id;
    }
 
    /**
@@ -226,7 +239,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       String parentScope = this.currScope;
       // System.out.println("Method " + id + " parentScope: " + parentScope);
       String nextScope = "scope" + this.scopeCount;
-      helper.symbolTable.put(nextScope, new Scope(parentScope)); // create scope with (parent class/parent scope)
+      helper.symbolTable.put(nextScope, new Scope(parentScope, this.currClass)); // create scope with (parent class/parent scope)
       this.currScope = nextScope;
       ++this.scopeCount;
       helper.symbolTable.get(this.currScope).putType(id, returnType);

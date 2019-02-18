@@ -153,12 +153,12 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       ++this.scopeCount;
       helper.symbolTable.get(this.currScope).putType(id, "class");
 
-      this.fields = helper.classList.getRecord(parent); // copy parent class record
+      this.fields = new ArrayList<String>(helper.classList.getRecord(parent)); // copy parent class record
       if (this.fields == null) {
          System.out.println("Type error");
          System.exit(0);
       }
-      this.methods = helper.classList.getVTable(parent); // copy parent class v-table
+      this.methods = new LinkedHashMap<String, String>(helper.classList.getVTable(parent)); // copy parent class v-table
 
       n.f4.accept(this, helper);
       n.f5.accept(this, helper);
@@ -231,7 +231,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       ++this.scopeCount;
       helper.symbolTable.get(this.currScope).putType(id, returnType);
 
-      this.methods.put(id, this.currClass); // FIXME: don't want to replace superclass overriden method
+      this.methods.put(id, this.currClass); // FIXME: don't want to replace superclass method in v-table when overriding
 
       n.f3.accept(this, helper);
       n.f4.accept(this, helper);

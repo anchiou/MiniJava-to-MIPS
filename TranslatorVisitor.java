@@ -16,6 +16,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     int tempCount = 0;
     int labelCount = 1;
     int endCount = 1;
+    int nullCount = 1;
 
     /**
     * f0 -> MainClass()
@@ -58,6 +59,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     */
     public String visit(MainClass n, TranslationHelper helper) { // Always scope0
         String _ret=null;
+        Map<String, Map<String, String>> vTables = helper.classList.getAllVTables();
         System.out.println("func Main()");
 	    indent += "  ";
         n.f0.accept(this, helper);
@@ -81,6 +83,14 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         System.out.println(indent + "t." + tempCount + " = HeapAllocZ(" + classSize + ")");
         --scopeCount;
         this.currScope = "scope" + scopeCount; // update scope
+        System.out.println(indent + "[t." + tempCount + "] = :vmt_" + className);
+        System.out.println(indent + "if0 t." + tempCount + " goto :null" + nullCount);
+        System.out.println(indent + "Error" + "(" + "\"null pointer\"" + ")");
+        System.out.println(indent + "null" + nullCount + ":");
+        ++nullCount;
+        ++tempCount;
+        System.out.println(indent + "t." + tempCount + " = [t." + (tempCount-1) + "]");
+        System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+0]");
         n.f16.accept(this, helper);
         n.f17.accept(this, helper);
         indent = indent.substring(0, indent.length() - 2);
@@ -182,6 +192,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     public String visit(MethodDeclaration n, TranslationHelper helper) {
         // System.out.println("MethDec: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
+        tempCount = 0;
         String _ret= "MethodDeclaration";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -455,11 +466,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(AndExpression n, TranslationHelper helper) {
         // System.out.println("AndExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret="boolean";
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
+        System.out.println(indent + "t." + tempCount + " = And(" + first + " " + second + ")");
         return _ret;
     }
 
@@ -470,7 +481,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(CompareExpression n, TranslationHelper helper) {
         // System.out.println("CompareExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret="boolean";
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -486,11 +496,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(PlusExpression n, TranslationHelper helper) {
         // System.out.println("PlusExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret="int";
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
+        System.out.println(indent + "t." + tempCount + " = Add(" + first + " " + second + ")");
         return _ret;
     }
 
@@ -501,8 +511,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(MinusExpression n, TranslationHelper helper) {
         // System.out.println("MinusExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
-	    tempCount++;
         String _ret = "int";
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -518,7 +526,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(TimesExpression n, TranslationHelper helper) {
         // System.out.println("TimesExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret="int";
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -535,7 +542,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(ArrayLookup n, TranslationHelper helper) {
         // System.out.println("ArrayLookup: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret="int";
         String arr = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -595,7 +601,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String expr = n.f0.accept(this, helper);
         String exprRest = n.f1.accept(this, helper);
         _ret = expr;
-        System.out.println(indent + "t." + tempCount + "= call t." + "?" + "(t." + "?" + " t." + "?)");
         return _ret;
     }
 
@@ -727,9 +732,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(NotExpression n, TranslationHelper helper) {
         // System.out.println("NotExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret="boolean";
         n.f0.accept(this, helper);
+        n.f1.accept(this, helper);
+        //System.out.println(indent + "t." + tempCount + " = Not(" + first + " " + second + ")");
         return _ret;
     }
 

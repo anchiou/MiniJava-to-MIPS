@@ -186,8 +186,9 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         String returnId = n.f10.accept(this, helper);
         n.f11.accept(this, helper);
         n.f12.accept(this, helper);
-	System.out.println(indent + "ret " + returnId);
+	    System.out.println(indent + "ret " + returnId);
         indent = "";
+        System.out.println("\0");
         return _ret;
     }
 
@@ -430,7 +431,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
-        System.out.println(indent + "t." + tempCount + " = Lts(" + first + " " + second + ")");
+        System.out.println(indent + "t." + tempCount + " = LtS(" + first + " " + second + ")");
         return _ret;
     }
 

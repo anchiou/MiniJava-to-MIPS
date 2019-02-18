@@ -401,7 +401,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(Expression n, TranslationHelper helper) {
         // System.out.println("Expression");
-
         String _ret = n.f0.accept(this, helper);
         return _ret;
     }
@@ -489,7 +488,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(ArrayLookup n, TranslationHelper helper) {
         // System.out.println("ArrayLookup");
-
         String _ret="int";
         String arr = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -529,8 +527,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String className = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String methodName = n.f2.accept(this, helper);
-        //System.out.println(indent + "t." + tempCount + " = [this]");
-        //System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
+        System.out.println(indent + "t." + tempCount + " = [this]");
+        System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
         n.f5.accept(this, helper);
@@ -546,6 +544,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String expr = n.f0.accept(this, helper);
         String exprRest = n.f1.accept(this, helper);
         _ret = expr;
+        System.out.println(indent + "t." + tempCount + "= call t." + "?" + "(t." + "?" + " t." + "?)");
         return _ret;
     }
 

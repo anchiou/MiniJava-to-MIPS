@@ -75,10 +75,15 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f12.accept(this, helper);
         n.f13.accept(this, helper);
         n.f14.accept(this, helper);
-	    indent = indent.substring(0, indent.length() - 2);
         n.f15.accept(this, helper);
+        String className = helper.symbolTable.get(currScope).getClassName();
+        int classSize = helper.classList.getClassSize(className);
+        System.out.println(indent + "t." + tempCount + " = HeapAllocZ(" + classSize + ")");
+        --scopeCount;
+        this.currScope = "scope" + scopeCount; // update scope
         n.f16.accept(this, helper);
         n.f17.accept(this, helper);
+        indent = indent.substring(0, indent.length() - 2);
         System.out.println("\0");
         return _ret;
     }
@@ -568,17 +573,14 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         String _ret = null;
-        String className = n.f0.accept(this, helper);
+        String name = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String methodName = n.f2.accept(this, helper);
-        System.out.println(indent + "t." + tempCount + " = [this]");
-        System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
+        // System.out.println(indent + "t." + tempCount + " = [this]");
+        // System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
         n.f5.accept(this, helper);
-
-        --scopeCount;
-        this.currScope = "scope" + scopeCount; // update scope
         return _ret;
     }
 

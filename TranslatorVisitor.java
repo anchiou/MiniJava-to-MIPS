@@ -8,6 +8,7 @@ import java.util.Vector;
 
 public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     Vector<String> globalVector = new Vector<String>();
+    ArrayList<String> expressionList;
     String currScope = "scope0";
     int scopeCount = 0;
 
@@ -630,7 +631,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f5 -> ")"
      */
     public String visit(MessageSend n, TranslationHelper helper) {
-        System.out.println("----MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         ++scopeCount;
         this.currScope = "scope" + scopeCount; // update scope
@@ -649,9 +650,16 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 
         n.f3.accept(this, helper);
 
-        String expr = n.f4.accept(this, helper);
+        this.expressionList = new ArrayList<String>();
+        n.f4.accept(this, helper);
+
         String _ret = "t." + tempCount;
-        System.out.println(indent + "t." + tempCount + " = call " + "t." + (tempCount-1) + "(" + name + " " + expr + ")");
+        System.out.print(indent + "t." + tempCount + " = call " + "t." + (tempCount-1) + "(" + name + " ");
+        System.out.print(this.expressionList.get(0));
+        for (int i = 1; i < this.expressionList.size(); ++i) {
+            System.out.print(" " + this.expressionList.get(i));
+        }
+        System.out.println(")");
         tempCount++;
 
         n.f5.accept(this, helper);
@@ -664,11 +672,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(ExpressionList n, TranslationHelper helper) {
         // System.out.println("ExprList: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret = null;
         String expr = n.f0.accept(this, helper);
-        String exprRest = n.f1.accept(this, helper);
-        _ret = expr;
+        this.expressionList.add(expr);
+        n.f1.accept(this, helper);
         return _ret;
     }
 
@@ -679,9 +686,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(ExpressionRest n, TranslationHelper helper) {
         // System.out.println("ExprRest: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret=null;
+        String _ret = null;
         n.f0.accept(this, helper);
-        _ret = n.f1.accept(this, helper);
+        String expr = n.f1.accept(this, helper);
+        this.expressionList.add(expr);
         return _ret;
     }
 

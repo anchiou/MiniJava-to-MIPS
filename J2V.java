@@ -8,11 +8,11 @@ public class J2V {
         TranslationHelper helper = new TranslationHelper();
         program.accept(visitor1, helper);
 
-        for (String key : helper.symbolTable.keySet()) {
-            System.out.println(key + ": ");
-            helper.symbolTable.get(key).printAll();
-            System.out.println("");
-        }
+        // for (String key : helper.symbolTable.keySet()) {
+        //     System.out.println(key + ": ");
+        //     helper.symbolTable.get(key).printAll();
+        //     System.out.println("");
+        // }
 
         TranslatorVisitor visitor2 = new TranslatorVisitor();
         program.accept(visitor2, helper);

@@ -652,7 +652,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(TrueLiteral n, TranslationHelper helper) {
         // System.out.println("TrueLit: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret="true";
+        String _ret="1";
         n.f0.accept(this, helper);
         return _ret;
     }
@@ -663,7 +663,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(FalseLiteral n, TranslationHelper helper) {
         // System.out.println("FalseLit: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret="false";
+        String _ret="0";
         n.f0.accept(this, helper);
         return _ret;
     }

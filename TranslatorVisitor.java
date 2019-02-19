@@ -90,8 +90,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
             System.out.println(indent + "null" + nullCount + ":");
             ++nullCount;
             ++tempCount;
-            System.out.println(indent + "t." + tempCount + " = [t." + (tempCount-1) + "]");
-            System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+0]");
+            // System.out.println(indent + "t." + tempCount + " = [t." + (tempCount-1) + "]");
+            // System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+0]");
         }
         n.f16.accept(this, helper);
         n.f17.accept(this, helper);
@@ -519,6 +519,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
 	    System.out.println(indent + "t." + tempCount + " = Sub(" + first + " " + second + ")");
+        ++tempCount;
         return _ret;
     }
 
@@ -581,15 +582,18 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         this.currScope = "scope" + scopeCount; // update scope
         // System.out.println("MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret = "t." + tempCount;
         String name = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String methodName = n.f2.accept(this, helper);
-        // System.out.println(indent + "t." + tempCount + " = [this]");
-        // System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+FIXME]");
+        System.out.println(indent + "t." + tempCount + " = [" + name + "]");
+        System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+0]");
+        tempCount++;
         n.f3.accept(this, helper);
-        n.f4.accept(this, helper);
+        String f = n.f4.accept(this, helper);
+        String _ret = "t." + tempCount;
         n.f5.accept(this, helper);
+        System.out.println(indent + "t." + tempCount + " = call " + "t." + (tempCount-1) + "(" + name + " " + f + ")");
+        tempCount++;
         return _ret;
     }
 

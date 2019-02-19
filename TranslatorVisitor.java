@@ -79,18 +79,20 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f14.accept(this, helper);
         n.f15.accept(this, helper);
         String className = helper.symbolTable.get(currScope).getClassName();
-        int classSize = helper.classList.getClassSize(className);
-        System.out.println(indent + "t." + tempCount + " = HeapAllocZ(" + classSize + ")");
-        --scopeCount;
-        this.currScope = "scope" + scopeCount; // update scope
-        System.out.println(indent + "[t." + tempCount + "] = :vmt_" + className);
-        System.out.println(indent + "if0 t." + tempCount + " goto :null" + nullCount);
-        System.out.println(indent + "Error" + "(" + "\"null pointer\"" + ")");
-        System.out.println(indent + "null" + nullCount + ":");
-        ++nullCount;
-        ++tempCount;
-        System.out.println(indent + "t." + tempCount + " = [t." + (tempCount-1) + "]");
-        System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+0]");
+        if (className != "Main") {
+            int classSize = helper.classList.getClassSize(className);
+            System.out.println(indent + "t." + tempCount + " = HeapAllocZ(" + classSize + ")");
+            --scopeCount;
+            this.currScope = "scope" + scopeCount; // update scope
+            System.out.println(indent + "[t." + tempCount + "] = :vmt_" + className);
+            System.out.println(indent + "if0 t." + tempCount + " goto :null" + nullCount);
+            System.out.println(indent + "Error" + "(" + "\"null pointer\"" + ")");
+            System.out.println(indent + "null" + nullCount + ":");
+            ++nullCount;
+            ++tempCount;
+            System.out.println(indent + "t." + tempCount + " = [t." + (tempCount-1) + "]");
+            System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+0]");
+        }
         n.f16.accept(this, helper);
         n.f17.accept(this, helper);
         indent = indent.substring(0, indent.length() - 2);
@@ -438,6 +440,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String e = n.f2.accept(this, helper);
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
+        System.out.println(indent + "PrintIntS(" + e + ")");
         return _ret;
     }
 
@@ -496,7 +499,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(PlusExpression n, TranslationHelper helper) {
         // System.out.println("PlusExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret="int";
+        String _ret="t." + tempCount;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
@@ -511,7 +514,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(MinusExpression n, TranslationHelper helper) {
         // System.out.println("MinusExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret = "int";
+        String _ret = "t." + tempCount;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
@@ -526,11 +529,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(TimesExpression n, TranslationHelper helper) {
         // System.out.println("TimesExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret="int";
+        String _ret="t." + tempCount;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
-	    System.out.println(indent + "MulS(" + first + " " + second + ")");
+	    System.out.println(indent + "t." + tempCount + " = MulS(" + first + " " + second + ")");
         return _ret;
     }
 
@@ -578,7 +581,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         this.currScope = "scope" + scopeCount; // update scope
         // System.out.println("MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret = null;
+        String _ret = "t." + tempCount;
         String name = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String methodName = n.f2.accept(this, helper);

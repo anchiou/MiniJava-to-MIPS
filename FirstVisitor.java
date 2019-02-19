@@ -2,6 +2,7 @@ import syntaxtree.*;
 import visitor.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
 
    ArrayList<String> fields; // class record fields list
    Map<String, String> methods; // class v-table methods list
+   Map<String, String> parameterList;
 
    /**
     * f0 -> MainClass()
@@ -229,7 +231,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       n.f0.accept(this, helper);
       String returnType = n.f1.accept(this, helper);
       String id = n.f2.accept(this, helper);
-      // System.out.println("Method id: " + id + "returnType: " + returnType);
+      // System.out.println("Method id: " + id + "currClass: " + this.currClass);
 
       if (helper.symbolTable.get(this.currScope).contains(id)) {
          System.out.println("Type error");
@@ -244,10 +246,14 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       ++this.scopeCount;
       helper.symbolTable.get(this.currScope).putType(id, returnType);
 
-      this.methods.put(id, this.currClass); // FIXME: don't want to replace superclass method in v-table when overriding
+      this.methods.put(id, this.currClass); // FIXME? don't want to replace superclass method in v-table when overriding
 
       n.f3.accept(this, helper);
+
+      this.parameterList = new HashMap<String, String>();
       n.f4.accept(this, helper);
+      helper.symbolTable.get(this.currScope).putParameters(this.currClass + "." + id, parameterList);
+
       n.f5.accept(this, helper);
       n.f6.accept(this, helper);
       n.f7.accept(this, helper);
@@ -269,7 +275,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
       String id = n.f1.accept(this, helper);
       // System.out.println("Parameter id: " + id);
       // System.out.println("Parameter type: " + type);
-      helper.symbolTable.get(this.currScope).putType(id, type);
+      this.parameterList.put(id, type);
       return _ret;
    }
 

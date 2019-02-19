@@ -630,7 +630,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f5 -> ")"
      */
     public String visit(MessageSend n, TranslationHelper helper) {
-        // System.out.println("----MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        System.out.println("----MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         ++scopeCount;
         this.currScope = "scope" + scopeCount; // update scope

@@ -59,11 +59,12 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     */
     public String visit(MainClass n, TranslationHelper helper) { // Always scope0
         String _ret=null;
-        Map<String, Map<String, String>> vTables = helper.classList.getAllVTables();
+
         System.out.println("func Main()");
-	    indent += "  ";
+        indent += "  ";
+
         n.f0.accept(this, helper);
-        n.f1.accept(this, helper);
+        String mainClass = n.f1.accept(this, helper);
         n.f2.accept(this, helper);
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
@@ -78,25 +79,17 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f13.accept(this, helper);
         n.f14.accept(this, helper);
         n.f15.accept(this, helper);
-        String className = helper.symbolTable.get(currScope).getClassName();
-        if (className != "Main") {
-            int classSize = helper.classList.getClassSize(className);
-            System.out.println(indent + "t." + tempCount + " = HeapAllocZ(" + classSize + ")");
-            --scopeCount;
-            this.currScope = "scope" + scopeCount; // update scope
-            System.out.println(indent + "[t." + tempCount + "] = :vmt_" + className);
-            System.out.println(indent + "if0 t." + tempCount + " goto :null" + nullCount);
-            System.out.println(indent + "Error" + "(" + "\"null pointer\"" + ")");
-            System.out.println(indent + "null" + nullCount + ":");
-            ++nullCount;
-            ++tempCount;
-            // System.out.println(indent + "t." + tempCount + " = [t." + (tempCount-1) + "]");
-            // System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+0]");
-        }
+
+        --scopeCount;
+        this.currScope = "scope" + scopeCount; // update scope
+
         n.f16.accept(this, helper);
         n.f17.accept(this, helper);
+
+        System.out.println(indent + "ret");
         indent = indent.substring(0, indent.length() - 2);
         System.out.println("\0");
+
         return _ret;
     }
 
@@ -724,6 +717,19 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(AllocationExpression n, TranslationHelper helper) {
         // System.out.println("AllocExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+
+        String className = helper.symbolTable.get(this.currScope).getClassName();
+        int classSize = helper.classList.getClassSize(className);
+        System.out.println(indent + "t." + tempCount + " = HeapAllocZ(" + classSize + ")");
+        System.out.println(indent + "[t." + tempCount + "] = :vmt_" + className);
+
+        System.out.println(indent + "if t." + tempCount + " goto :null" + nullCount);
+        System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
+        System.out.println(indent + "null" + nullCount + ":");
+        ++nullCount;
+        ++tempCount;
+        // System.out.println(indent + "t." + tempCount + " = [t." + (tempCount-1) + "]");
+        // System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+0]");
 
         String _ret=null;
         n.f0.accept(this, helper);

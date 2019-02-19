@@ -13,9 +13,6 @@ public class J2V {
         //     helper.symbolTable.get(key).printAll();
         //     System.out.println("");
         // }
-        // for (int i = 0; i < helper.symbolTable.size(); ++i) {
-        //     helper.symboleTable.at(i).printAll();
-        // }
 
         TranslatorVisitor visitor2 = new TranslatorVisitor();
         program.accept(visitor2, helper);

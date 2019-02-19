@@ -201,7 +201,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
             System.out.println("func " + parent + "." + name + "(this " + param + ")");
         }
         else {
-            System.out.println("func " + parent + "." + name + "()");
+            System.out.println("func " + parent + "." + name + "(this)");
         }
         indent += "  ";
         n.f5.accept(this, helper);
@@ -639,7 +639,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 
         n.f1.accept(this, helper);
 
-        String className = helper.symbolTable.get(this.currScope).getClassName();
+        String className = helper.symbolTable.get(currScope).getClassName();
         String methodName = n.f2.accept(this, helper);
         int methodOffset = helper.classList.getMethodOffset(className, methodName);
 

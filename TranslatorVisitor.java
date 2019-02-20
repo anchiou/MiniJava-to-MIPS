@@ -446,7 +446,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f1.accept(this, helper);
         System.out.println(indent + "while" + whileCount + "_top:");
         String Exp = n.f2.accept(this, helper);
-        System.out.println(indent + "if0 goto :while" + whileEndCount + "_end");
+        System.out.println(indent + "if0 t." + tempCount + " goto :while" + whileEndCount + "_end");
+        ++tempCount;
+        // System.out.println("-------------------HELLO " + Exp);
         indent += "  ";
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
@@ -522,6 +524,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
+        String className = helper.symbolTable.get(currScope).getClassName();
+        int fieldOffset = helper.classList.getFieldOffset(className, second);
         System.out.println(indent + "t." + tempCount + " = LtS(" + first + " " + second + ")");
         return _ret;
     }
@@ -748,6 +752,13 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(PrimaryExpression n, TranslationHelper helper) {
         // System.out.println("-----PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
         String _ret = n.f0.accept(this, helper);
+        String className = helper.symbolTable.get(currScope).getClassName();
+        int fieldOffset = helper.classList.getFieldOffset(className, _ret);
+        if (fieldOffset > 0) {
+            System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
+            _ret = "t." + tempCount;
+            ++tempCount;
+        }
         return _ret;
     }
 

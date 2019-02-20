@@ -189,6 +189,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     */
     public String visit(MethodDeclaration n, TranslationHelper helper) {
         // System.out.println("MethDec: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        ++scopeCount;
+        this.currScope = "scope" + scopeCount; // update scope
 
         tempCount = 0;
         String _ret= "MethodDeclaration";
@@ -656,6 +658,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 
         n.f1.accept(this, helper);
 
+        // System.out.println("---------------"+helper.symbolTable.get(currScope).getClassName());
         String className = helper.symbolTable.get(currScope).getClassName();
         String methodName = n.f2.accept(this, helper);
         int methodOffset = helper.classList.getMethodOffset(className, methodName);
@@ -679,6 +682,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         tempCount++;
 
         n.f5.accept(this, helper);
+        --scopeCount;
+        this.currScope = "scope" + scopeCount; // update scope
         return _ret;
     }
 

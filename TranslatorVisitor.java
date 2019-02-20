@@ -92,9 +92,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f16.accept(this, helper);
         n.f17.accept(this, helper);
 
-        System.out.println(indent + "ret");
+        System.out.println(indent + "ret\n");
         indent = indent.substring(0, indent.length() - 2);
-        System.out.println("\0");
 
         return _ret;
     }
@@ -222,9 +221,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         String returnId = n.f10.accept(this, helper);
         n.f11.accept(this, helper);
         n.f12.accept(this, helper);
-	    System.out.println(indent + "ret " + returnId);
+	    System.out.println(indent + "ret " + returnId + "\n");
         indent = "";
-        System.out.println("\0");
         return _ret;
     }
 
@@ -753,9 +751,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(PrimaryExpression n, TranslationHelper helper) {
         // System.out.println("-----PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret = null;
         String f0 = n.f0.accept(this, helper);
-        // System.out.println("====================f0: "+f0);
+        String _ret = f0;
 
         if (!f0.matches("([0-9])+|this|Not|t.(.*)") && f0 != null) {
             if (this.parameterList != null) {
@@ -772,10 +769,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                 }
             }
         } else {
-            // System.out.println("====================else: "+_ret);
             _ret = f0;
         }
-        // System.out.println("===================="+_ret);
+
         return _ret;
     }
 

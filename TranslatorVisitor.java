@@ -688,8 +688,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             _ret = callString;
         } else {
             System.out.println(indent + "t." + tempCount + " = " + callString);
+            tempCount++;
         }
-        tempCount++;
 
         n.f5.accept(this, helper);
         --scopeCount;

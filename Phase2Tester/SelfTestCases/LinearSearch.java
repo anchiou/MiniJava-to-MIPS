@@ -1,6 +1,6 @@
 class LinearSearch{
     public static void main(String[] a){
-		System.out.println(new LS().Start(10));
+			System.out.println(new LS().Start(10));
     }
 }
 
@@ -15,17 +15,17 @@ class LS {
     // Invoke methods to initialize, print and search
     // for elements on the array
     public int Start(int sz){
-		int aux01 ;
-		int aux02 ;
+			int aux01 ;
+			int aux02 ;
 
-		aux01 = this.Init(sz);
-		aux02 = this.Print();
-		System.out.println(9999);
-		System.out.println(this.Search(8));
-		System.out.println(this.Search(12)) ;
-		System.out.println(this.Search(17)) ;
-		System.out.println(this.Search(50)) ;
-		return 55 ;
+			aux01 = this.Init(sz);
+			aux02 = this.Print();
+			System.out.println(9999);
+			System.out.println(this.Search(8));
+			System.out.println(this.Search(12)) ;
+			System.out.println(this.Search(17)) ;
+			System.out.println(this.Search(50)) ;
+			return 55 ;
     }
 
     // Print array of integers

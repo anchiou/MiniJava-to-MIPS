@@ -495,6 +495,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("----Expression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         String _ret = n.f0.accept(this, helper);
+        // System.out.println("--------------Expr: " +_ret);
         return _ret;
     }
 
@@ -751,14 +752,30 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(PrimaryExpression n, TranslationHelper helper) {
         // System.out.println("-----PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret = n.f0.accept(this, helper);
-        String className = helper.symbolTable.get(currScope).getClassName();
-        int fieldOffset = helper.classList.getFieldOffset(className, _ret);
-        if (fieldOffset > 0) {
-            System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
-            _ret = "t." + tempCount;
-            ++tempCount;
+
+        String _ret = null;
+        String f0 = n.f0.accept(this, helper);
+        // System.out.println("====================f0: "+f0);
+
+        if (!f0.matches("([0-9])+|this|Not") && f0 != null) {
+            if (this.parameterList != null) {
+                if (this.parameterList.contains(f0)) {
+                    _ret = f0;
+                } else {
+                    String className = helper.symbolTable.get(currScope).getClassName();
+                    int fieldOffset = helper.classList.getFieldOffset(className, f0);
+                    if (fieldOffset > 0) {
+                        System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
+                        _ret = "t." + tempCount;
+                        ++tempCount;
+                    }
+                }
+            }
+        } else {
+            // System.out.println("====================else: "+_ret);
+            _ret = f0;
         }
+        // System.out.println("===================="+_ret);
         return _ret;
     }
 
@@ -876,7 +893,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(NotExpression n, TranslationHelper helper) {
         // System.out.println("NotExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret="boolean";
+        String _ret="Not";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         //System.out.println(indent + "t." + tempCount + " = Not(" + first + " " + second + ")");

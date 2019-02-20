@@ -757,7 +757,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String f0 = n.f0.accept(this, helper);
         // System.out.println("====================f0: "+f0);
 
-        if (!f0.matches("([0-9])+|this|Not") && f0 != null) {
+        if (!f0.matches("([0-9])+|this|Not|t.(.*)") && f0 != null) {
             if (this.parameterList != null) {
                 if (this.parameterList.contains(f0)) {
                     _ret = f0;

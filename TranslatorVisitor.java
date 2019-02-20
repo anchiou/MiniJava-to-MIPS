@@ -660,6 +660,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String methodName = n.f2.accept(this, helper);
         int methodOffset = helper.classList.getMethodOffset(className, methodName);
 
+        String callTemp = "t." + tempCount; // temporary variable that holds method access
         System.out.println(indent + "t." + tempCount + " = [" + name + "]");
         System.out.println(indent + "t." + tempCount + " = [t." + tempCount + "+" + methodOffset + "]");
         tempCount++;
@@ -670,9 +671,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f4.accept(this, helper);
 
         String _ret = "t." + tempCount;
-        System.out.print(indent + "t." + tempCount + " = call " + "t." + (tempCount-1) + "(" + name + " ");
-        System.out.print(this.expressionList.get(0));
-        for (int i = 1; i < this.expressionList.size(); ++i) {
+        System.out.print(indent + "t." + tempCount + " = call " + callTemp + "(" + name);
+        for (int i = 0; i < this.expressionList.size(); ++i) {
             System.out.print(" " + this.expressionList.get(i));
         }
         System.out.println(")");

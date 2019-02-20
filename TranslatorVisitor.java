@@ -454,6 +454,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         ++whileCount;
         indent = indent.substring(0, indent.length()-2);
         System.out.println(indent + "while" + whileEndCount + "_end:");
+        ++whileEndCount;
         return _ret;
     }
 

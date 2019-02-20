@@ -18,6 +18,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     int labelCount = 1;
     int endCount = 1;
     int nullCount = 1;
+    int whileCount = 1;
+    int whileEndCount = 1;
     boolean isAssignment = false;
     boolean arithExpr = false;
     boolean nestedArtih = false;
@@ -442,9 +444,16 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 	    String _ret= "WhileStatement";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
+        System.out.println(indent + "while" + whileCount + "_top:");
         String Exp = n.f2.accept(this, helper);
+        System.out.println(indent + "if0 goto :while" + whileEndCount + "_end");
+        indent += "  ";
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
+        System.out.println(indent + "goto :while" + whileCount + "_top");
+        ++whileCount;
+        indent = indent.substring(0, indent.length()-2);
+        System.out.println(indent + "while" + whileEndCount + "_end:");
         return _ret;
     }
 

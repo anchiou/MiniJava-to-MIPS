@@ -1,24 +1,23 @@
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 public class Scope {
     private String parentScope; // scope number of parent class if any
     private String className; // the class the scope corresponds to
     private Map<String, String> types; // <id, type>
-    private Map<String, Map<String, String>> parameters; // handles multiple parameters: <class.method, parameterMap>
+    private Map<String, LinkedHashMap<String, String>> parameters = new HashMap<String, LinkedHashMap<String, String>>(); // handles multiple parameters: <class.method, parameterMap>
 
     public Scope (String className) {
         this.className = className;
         this.types = new HashMap<String, String>();
-        this.parameters = new HashMap<String, Map<String, String>>();
     }
 
     public Scope (String parentScope, String className) {
         this.parentScope = parentScope;
         this.className = className;
         this.types = new HashMap<String, String>();
-        this.parameters = new HashMap<String, Map<String, String>>();
     }
 
     public boolean contains(String id) {
@@ -30,7 +29,7 @@ public class Scope {
     }
 
     public Map<String, String> getParameters(String method) {
-        return this.parameters.get(method);
+        return new LinkedHashMap<String, String>(this.parameters.get(method));
     }
 
     public String getType(String id) {
@@ -41,7 +40,7 @@ public class Scope {
         return this.parentScope;
     }
 
-    public void putParameters(String method, Map<String, String> parameters) {
+    public void putParameters(String method, LinkedHashMap<String, String> parameters) {
         this.parameters.put(method, parameters);
     }
 

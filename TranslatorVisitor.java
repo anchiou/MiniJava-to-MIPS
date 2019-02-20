@@ -9,11 +9,11 @@ import java.util.Vector;
 public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     Vector<String> globalVector = new Vector<String>();
     ArrayList<String> expressionList;
+    ArrayList<String> parameterList;
     String currScope = "scope0";
     int scopeCount = 0;
 
     String indent = "";
-    String parent = "";
     int tempCount = 0;
     int labelCount = 1;
     int endCount = 1;
@@ -122,8 +122,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
 
         String _ret=null;
         n.f0.accept(this, helper);
-        String name = n.f1.accept(this, helper);
-        parent = name;
+        n.f1.accept(this, helper);
         n.f2.accept(this, helper);
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
@@ -195,16 +194,22 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         String _ret= "MethodDeclaration";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
-        String name = n.f2.accept(this, helper);
+
+        String className = helper.symbolTable.get(this.currScope).getClassName();
+        String id = n.f2.accept(this, helper);
+        String method = className + "." + id;
         n.f3.accept(this, helper);
-        String param = n.f4.accept(this, helper);
-        if (param != null) {
-            System.out.println("func " + parent + "." + name + "(this " + param + ")");
+
+        this.parameterList = new ArrayList<String>();
+        n.f4.accept(this, helper);
+        System.out.print("func " + method + "(this");
+        for (int i = 0; i < this.parameterList.size(); ++i) {
+            System.out.print(" " + this.parameterList.get(i));
         }
-        else {
-            System.out.println("func " + parent + "." + name + "(this)");
-        }
+        System.out.println(")");
+
         indent += "  ";
+
         n.f5.accept(this, helper);
         n.f6.accept(this, helper);
         n.f7.accept(this, helper);
@@ -225,9 +230,9 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
      */
     public String visit(FormalParameterList n, TranslationHelper helper) {
         // System.out.println("FormalParamList: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
-        String _ret=null;
-        _ret = n.f0.accept(this, helper);
+        String _ret = null;
+        String parameter = n.f0.accept(this, helper);
+        this.parameterList.add(parameter);
         n.f1.accept(this, helper);
         return _ret;
     }
@@ -239,9 +244,20 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     public String visit(FormalParameter n, TranslationHelper helper) { // Within method scope
         // System.out.println("FormalParam: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
+        n.f0.accept(this, helper);
+        String _ret = n.f1.accept(this, helper);
+        return _ret;
+    }
+
+    /**
+     * f0 -> ","
+     * f1 -> FormalParameter()
+     */
+    public String visit(FormalParameterRest n, TranslationHelper helper) {
         String _ret = null;
-        String type = n.f0.accept(this, helper);
-        _ret = n.f1.accept(this, helper);
+        n.f0.accept(this, helper);
+        String parameter = n.f1.accept(this, helper);
+        this.parameterList.add(parameter);
         return _ret;
     }
 

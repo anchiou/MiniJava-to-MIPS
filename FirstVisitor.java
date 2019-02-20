@@ -15,7 +15,7 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
 
    ArrayList<String> fields; // class record fields list
    Map<String, String> methods; // class v-table methods list
-   Map<String, String> parameterList;
+   LinkedHashMap<String, String> parameterList;
 
    /**
     * f0 -> MainClass()
@@ -250,9 +250,9 @@ public class FirstVisitor extends GJDepthFirst<String, TranslationHelper> {
 
       n.f3.accept(this, helper);
 
-      this.parameterList = new HashMap<String, String>();
+      this.parameterList = new LinkedHashMap<String, String>();
       n.f4.accept(this, helper);
-      helper.symbolTable.get(this.currScope).putParameters(this.currClass + "." + id, parameterList);
+      helper.symbolTable.get(this.currScope).putParameters(this.currClass + "." + id, this.parameterList);
 
       n.f5.accept(this, helper);
       n.f6.accept(this, helper);

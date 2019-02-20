@@ -537,9 +537,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             _ret = "t." + tempCount;
             System.out.println(indent + "t." + tempCount + " = Add(" + first + " " + second + ")");
             if (this.nestedArtih) {
-                this.arithExpr = false;
                 this.nestedArtih = false;
                 ++tempCount;
+            } else {
+                this.arithExpr = false;
             }
         } else {
             _ret = "Add(" + first + " " + second + ")";
@@ -568,9 +569,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             _ret = "t." + tempCount;
             System.out.println(indent + "t." + tempCount + " = Sub(" + first + " " + second + ")");
             if (this.nestedArtih) {
-                this.arithExpr = false;
                 this.nestedArtih = false;
                 ++tempCount;
+            } else {
+                this.arithExpr = false;
             }
         } else {
             _ret = "Sub(" + first + " " + second + ")";
@@ -591,17 +593,20 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         } else {
             this.nestedArtih = true;
         }
+
         String _ret = null;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
+
         if (!this.isAssignment || this.nestedArtih) {
             _ret = "t." + tempCount;
             System.out.println(indent + "t." + tempCount + " = MulS(" + first + " " + second + ")");
             if (this.nestedArtih) {
-                this.arithExpr = false;
                 this.nestedArtih = false;
                 ++tempCount;
+            } else {
+                this.arithExpr = false;
             }
         } else {
             _ret = "MulS(" + first + " " + second + ")";
@@ -649,16 +654,15 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f5 -> ")"
      */
     public String visit(MessageSend n, TranslationHelper helper) {
-        // System.out.println("----MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         ++scopeCount;
         this.currScope = "scope" + scopeCount; // update scope
+        // System.out.println("----MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         String name = n.f0.accept(this, helper);
 
         n.f1.accept(this, helper);
 
-        // System.out.println("---------------"+helper.symbolTable.get(currScope).getClassName());
+        // System.out.println("---------------" + helper.symbolTable.get(currScope).getClassName());
         String className = helper.symbolTable.get(currScope).getClassName();
         String methodName = n.f2.accept(this, helper);
         int methodOffset = helper.classList.getMethodOffset(className, methodName);
@@ -674,12 +678,18 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f4.accept(this, helper);
 
         String _ret = "t." + tempCount;
-        System.out.print(indent + "t." + tempCount + " = call " + callTemp + "(" + name);
+        String callString = "call " + callTemp + "(" + name;
         for (int i = 0; i < this.expressionList.size(); ++i) {
-            System.out.print(" " + this.expressionList.get(i));
+            callString += " " + this.expressionList.get(i);
         }
-        System.out.println(")");
-        tempCount++;
+        callString += ")";
+
+        if (this.isAssignment && !this.arithExpr) {
+            _ret = callString;
+        } else {
+            System.out.println(indent + "t." + tempCount + " = " + callString);
+            tempCount++;
+        }
 
         n.f5.accept(this, helper);
         --scopeCount;
@@ -727,7 +737,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(PrimaryExpression n, TranslationHelper helper) {
         // System.out.println("-----PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret = n.f0.accept(this, helper);
         return _ret;
     }
@@ -737,7 +746,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(IntegerLiteral n, TranslationHelper helper) {
         // System.out.println("IntLiteral: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         String _ret = n.f0.toString();
         n.f0.accept(this, helper);
         return _ret;

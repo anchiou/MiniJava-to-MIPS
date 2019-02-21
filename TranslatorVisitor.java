@@ -23,6 +23,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean isAssignment = false;
     boolean arithExpr = false;
     boolean nestedArtih = false;
+    boolean isArrayAlloc = false;
 
     /**
     * f0 -> MainClass()
@@ -40,6 +41,15 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         n.f2.accept(this, helper);
+        if (isArrayAlloc) {
+            System.out.println("func ArrayAlloc(size)");
+            indent += "  ";
+            System.out.println(indent + "bytes = MulS(size 4)");
+            System.out.println(indent + "bytes = Add(bytes 4)");
+            System.out.println(indent + "v = HeapAllocZ(bytes)");
+            System.out.println(indent + "[v] = size");
+            System.out.println(indent + "ret v\n");
+        }
         return _ret;
     }
 
@@ -839,12 +849,15 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(ArrayAllocationExpression n, TranslationHelper helper) {
         // System.out.println("ArrayAllocExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret="array";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         n.f2.accept(this, helper);
         String expr = n.f3.accept(this, helper);
+        System.out.println(indent + "t." + tempCount + " = call :AllocArray(" + expr + ")");
         n.f4.accept(this, helper);
+        String _ret="t." + tempCount;
+        ++tempCount;
+        isArrayAlloc = true;
         return _ret;
     }
 

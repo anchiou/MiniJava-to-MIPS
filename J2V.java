@@ -9,7 +9,7 @@ public class J2V {
         program.accept(visitor1, helper);
 
         // for (String key : helper.symbolTable.keySet()) {
-        //     System.out.println(key + ": ");
+        //     System.out.println(key + ":");
         //     helper.symbolTable.get(key).printAll();
         //     System.out.println("");
         // }

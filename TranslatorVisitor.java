@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import com.sun.javafx.geom.BaseBounds.BoundsType;
+
 public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     Vector<String> globalVector = new Vector<String>();
     ArrayList<String> expressionList;
@@ -18,6 +20,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     int labelCount = 1;
     int endCount = 1;
     int nullCount = 1;
+    int boundsCount = 1;
     int whileCount = 1;
     int whileEndCount = 1;
     boolean isAssignment = false;
@@ -204,8 +207,11 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         // System.out.println("MethDec: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
         ++scopeCount;
         this.currScope = "scope" + scopeCount; // update scope
+        this.arithExpr = false;
+        this.nestedArtih = false;
 
-        tempCount = 0;
+        this.tempCount = 0;
+        this.boundsCount = 1;
         String _ret= "MethodDeclaration";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -363,16 +369,24 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
      * f3 -> ";"
      */
     public String visit(AssignmentStatement n, TranslationHelper helper) {
-        // System.out.println("----AssnStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------AssnStmt: " + this.currScope + " -> " +
+        //     helper.symbolTable.get(this.currScope).getClassName());
 
         this.isAssignment = true;
         String _ret=null;
         String id = n.f0.accept(this, helper);
-        // System.out.println("HELLO " + id);
+
         n.f1.accept(this, helper);
+
+        // System.out.println("                        isAssn: " + this.isAssignment +
+        //     "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
+
         String exprResult = n.f2.accept(this, helper);
+        // System.out.println("                        exprResult: " + exprResult);
+
         String className = helper.symbolTable.get(currScope).getClassName();
         int offset = helper.classList.getFieldOffset(className, id);
+
         if (offset > 0) {
             System.out.println(indent + "[this+" + offset + "] = " + exprResult);
         }
@@ -390,8 +404,12 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
             ++nullCount;
             ++tempCount;
         }
+
         n.f3.accept(this, helper);
         this.isAssignment = false;
+
+        // System.out.println("----------------------EndAssnStmt:");
+
         return _ret;
     }
 
@@ -405,7 +423,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
      * f6 -> ";"
      */
 public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
-        // System.out.println("ArrayAssnStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------ArrayAssnStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         isArrayAssignment = true;
         String _ret=null;
@@ -569,29 +587,36 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f2 -> PrimaryExpression()
      */
     public String visit(PlusExpression n, TranslationHelper helper) {
-        // System.out.println("PlusExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------PlusExpr: " +
+        //     this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         if (!this.arithExpr) {
             this.arithExpr = true;
         } else {
             this.nestedArtih = true;
         }
+        // System.out.println("\t\t arithExpr: " + this.arithExpr + ", nested: " + this.nestedArtih);
+
         String _ret = null;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
-        if (!this.isAssignment || this.nestedArtih) {
+        String addString = "Add(" + first + " " + second + ")";
+
+        if (!this.isAssignment && !this.nestedArtih) {
             _ret = "t." + tempCount;
-            System.out.println(indent + "t." + tempCount + " = Add(" + first + " " + second + ")");
-            if (this.nestedArtih) {
-                this.nestedArtih = false;
-                ++tempCount;
-            } else {
-                this.arithExpr = false;
-            }
+            System.out.println(indent + "t." + tempCount +  " = " + addString);
+            this.arithExpr = false;
+        } else if (this.isAssignment && this.nestedArtih) {
+            _ret = "t." + tempCount;
+            System.out.println(indent + "t." + tempCount + " = " + addString);
+            this.nestedArtih = false;
+            ++tempCount;
         } else {
-            _ret = "Add(" + first + " " + second + ")";
+            _ret = addString;
+            this.arithExpr = false;
         }
+
         return _ret;
     }
 
@@ -601,29 +626,36 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f2 -> PrimaryExpression()
      */
     public String visit(MinusExpression n, TranslationHelper helper) {
-        // System.out.println("MinusExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------MinusExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         if (!this.arithExpr) {
             this.arithExpr = true;
         } else {
             this.nestedArtih = true;
         }
+        // System.out.println("                        isAssn: " + this.isAssignment +
+        //     "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
+
         String _ret = null;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
-	    if (!this.isAssignment || this.nestedArtih) {
+        String subString = "Sub(" + first + " " + second + ")";
+
+        if (!this.isAssignment && !this.nestedArtih) {
             _ret = "t." + tempCount;
-            System.out.println(indent + "t." + tempCount + " = Sub(" + first + " " + second + ")");
-            if (this.nestedArtih) {
-                this.nestedArtih = false;
-                ++tempCount;
-            } else {
-                this.arithExpr = false;
-            }
+            System.out.println(indent + "t." + tempCount +  " = " + subString);
+            this.arithExpr = false;
+        } else if (this.isAssignment && this.nestedArtih) {
+            _ret = "t." + tempCount;
+            System.out.println(indent + "t." + tempCount + " = " + subString);
+            this.nestedArtih = false;
+            ++tempCount;
         } else {
-            _ret = "Sub(" + first + " " + second + ")";
+            _ret = subString;
+            this.arithExpr = false;
         }
+
         return _ret;
     }
 
@@ -633,31 +665,37 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f2 -> PrimaryExpression()
      */
     public String visit(TimesExpression n, TranslationHelper helper) {
-        // System.out.println("TimesExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------TimesExpression: " + this.currScope + " -> " +
+        //     helper.symbolTable.get(this.currScope).getClassName());
 
         if (!this.arithExpr) {
             this.arithExpr = true;
         } else {
             this.nestedArtih = true;
         }
+        // System.out.println("                        isAssn: " + this.isAssignment +
+        // "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
 
         String _ret = null;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
+        String mulString = "MulS(" + first + " " + second + ")";
 
-        if (!this.isAssignment || this.nestedArtih) {
+        if (!this.isAssignment && !this.nestedArtih) {
             _ret = "t." + tempCount;
-            System.out.println(indent + "t." + tempCount + " = MulS(" + first + " " + second + ")");
-            if (this.nestedArtih) {
-                this.nestedArtih = false;
-                ++tempCount;
-            } else {
-                this.arithExpr = false;
-            }
+            System.out.println(indent + "t." + tempCount +  " = " + mulString);
+            this.arithExpr = false;
+        } else if (this.isAssignment && this.nestedArtih) {
+            _ret = "t." + tempCount;
+            System.out.println(indent + "t." + tempCount + " = " + mulString);
+            this.nestedArtih = false;
+            ++tempCount;
         } else {
-            _ret = "MulS(" + first + " " + second + ")";
+            _ret = mulString;
+            this.arithExpr = false;
         }
+
         return _ret;
     }
 
@@ -668,12 +706,38 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f3 -> "]"
      */
     public String visit(ArrayLookup n, TranslationHelper helper) {
-        // System.out.println("ArrayLookup: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret="int";
-        String arr = n.f0.accept(this, helper);
+        // System.out.println("----------------------ArrayLookup: " + this.currScope + " -> " +
+        //     helper.symbolTable.get(this.currScope).getClassName());
+
+        String _ret = null;
+        String array = n.f0.accept(this, helper);
+        // System.out.println("                        array: " + array);
+
+        System.out.println(indent + "if " + array + " goto :null" + nullCount);
+        System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
+        System.out.println(indent + "null" + nullCount + ":");
+        ++nullCount;
+        String arrayTemp = "t." + tempCount;
+
         n.f1.accept(this, helper);
-        String value = n.f2.accept(this, helper);
+
+        String index = n.f2.accept(this, helper);
+        // System.out.println("                        index: " + index);
+
+        System.out.println(indent + arrayTemp + " = [" + array + "]");
+        System.out.println(indent + arrayTemp + " = Lt(" + index + " " + arrayTemp + ")"); // check index < size
+        System.out.println(indent + "if " + arrayTemp + " goto :bounds" + boundsCount);
+        System.out.println(indent + "  Error" + "(" + "\"array index out of bounds\"" + ")");
+        System.out.println(indent + "bounds" + boundsCount + ":");
+        ++boundsCount;
+
+        System.out.println(indent + arrayTemp + " = MulS(" + index + " 4)");
+        System.out.println(indent + arrayTemp + " = Add(" + arrayTemp + " " + array + ")");
+        _ret = "[" + arrayTemp + "+4]";
+        ++tempCount;
+
         n.f3.accept(this, helper);
+
         return _ret;
     }
 
@@ -703,7 +767,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(MessageSend n, TranslationHelper helper) {
         ++scopeCount;
         this.currScope = "scope" + scopeCount; // update scope
-        // System.out.println("----MessageSend: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------MessageSend: " + this.currScope
+        //     + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+
+        // System.out.println("                        isAssn: " + this.isAssignment +
+        //     "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
 
         String name = n.f0.accept(this, helper);
 
@@ -724,6 +792,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         this.expressionList = new ArrayList<String>();
         n.f4.accept(this, helper);
 
+        // System.out.println("                        isAssn: " + this.isAssignment +
+        //     "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
+
         String _ret = "t." + tempCount;
         String callString = "call " + callTemp + "(" + name;
         for (int i = 0; i < this.expressionList.size(); ++i) {
@@ -741,6 +812,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f5.accept(this, helper);
         --scopeCount;
         this.currScope = "scope" + scopeCount; // update scope
+
+        // System.out.println("----------------------EndMessageSend");
+
         return _ret;
     }
 
@@ -783,7 +857,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      *       | BracketExpression()
      */
     public String visit(PrimaryExpression n, TranslationHelper helper) {
-        // System.out.println("-----PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         String f0 = n.f0.accept(this, helper);
         String _ret = f0;

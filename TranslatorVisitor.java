@@ -669,10 +669,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(ArrayLength n, TranslationHelper helper) {
         // System.out.println("ArrayLength: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret="int";
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         n.f2.accept(this, helper);
+        _ret = "[" + first + "]";
         return _ret;
     }
 

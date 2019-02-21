@@ -672,7 +672,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         n.f2.accept(this, helper);
-        _ret = "[" + first + "]";
+        String _ret = "[" + first + "]";
         return _ret;
     }
 

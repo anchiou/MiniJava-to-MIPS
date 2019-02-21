@@ -24,6 +24,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean arithExpr = false;
     boolean nestedArtih = false;
     boolean isArrayAlloc = false;
+    boolean isArrayAssignment = false;
+    boolean isArrayAllocTemp = false;
 
     /**
     * f0 -> MainClass()
@@ -377,6 +379,10 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         else {
             System.out.println(indent + id + " = " + exprResult);
         }
+        if (isArrayAllocTemp) {
+            System.out.println(indent + "t." + tempCount + " = [this+" + offset + "]");
+            isArrayAllocTemp = false;
+        }
         if (exprResult.matches("t.(.*)")) {
             System.out.println(indent + "if t." + tempCount + " goto :null" + nullCount);
             System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
@@ -401,13 +407,23 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
 public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("ArrayAssnStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
+        isArrayAssignment = true;
         String _ret=null;
         String id = n.f0.accept(this, helper);
+        // ONLY WORKS FOR CLASS FIELD ARRAYS RIGHT NOW
+        String className = helper.symbolTable.get(currScope).getClassName();
+        int offset = helper.classList.getFieldOffset(className, id);
+        // System.out.println("----------HELLO " + id);
+        //System.out.println(indent + "t." + tempCount + " = [this+" + offset + "]");
         n.f1.accept(this, helper);
         String first = n.f2.accept(this, helper);
+        isArrayAssignment = false;
+        // System.out.println("----------HELLO " + first);
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
         String second = n.f5.accept(this, helper);
+        System.out.println(indent + "[" + first + "+" + offset + "] = " + second);
+        System.out.println(indent + "t." + tempCount + " = [this+" + offset + "]");
         n.f6.accept(this, helper);
         return _ret;
     }
@@ -772,6 +788,13 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String f0 = n.f0.accept(this, helper);
         String _ret = f0;
 
+        if (isArrayAssignment) {
+            // DO something
+            _ret = "t." + tempCount;
+            ++tempCount;
+            return _ret;
+        }
+
         if (!f0.matches("([0-9])+|this|Not|t.(.*)") && f0 != null) {
             if (this.parameterList != null) {
                 if (this.parameterList.contains(f0)) {
@@ -856,7 +879,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(ArrayAllocationExpression n, TranslationHelper helper) {
         // System.out.println("ArrayAllocExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         n.f2.accept(this, helper);
@@ -866,6 +888,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String _ret="t." + tempCount;
         ++tempCount;
         isArrayAlloc = true;
+        isArrayAllocTemp = true;
         return _ret;
     }
 

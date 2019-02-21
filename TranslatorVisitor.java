@@ -366,9 +366,17 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         this.isAssignment = true;
         String _ret=null;
         String id = n.f0.accept(this, helper);
+        // System.out.println("HELLO " + id);
         n.f1.accept(this, helper);
         String exprResult = n.f2.accept(this, helper);
-        System.out.println(indent + id + " = " + exprResult);
+        String className = helper.symbolTable.get(currScope).getClassName();
+        int offset = helper.classList.getFieldOffset(className, id);
+        if (offset > 0) {
+            System.out.println(indent + "[this+" + offset + "] = " + exprResult);
+        }
+        else {
+            System.out.println(indent + id + " = " + exprResult);
+        }
         if (exprResult.matches("t.(.*)")) {
             System.out.println(indent + "if t." + tempCount + " goto :null" + nullCount);
             System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");

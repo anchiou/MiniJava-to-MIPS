@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import com.sun.javafx.geom.BaseBounds.BoundsType;
-
 public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     Vector<String> globalVector = new Vector<String>();
     ArrayList<String> expressionList;
@@ -491,22 +489,27 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
     public String visit(WhileStatement n, TranslationHelper helper) {
         // System.out.println("WhileStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
+        String oldWhile = "";
+        String oldWhileEnd = "";
+
 	    String _ret= "WhileStatement";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         System.out.println(indent + "while" + whileCount + "_top:");
+        oldWhile = "while" + whileCount + "_top";
+        ++whileCount;
         String Exp = n.f2.accept(this, helper);
         System.out.println(indent + "if0 t." + tempCount + " goto :while" + whileEndCount + "_end");
+        oldWhileEnd = "while" + whileEndCount + "_end";
+        ++whileEndCount;
         ++tempCount;
         // System.out.println("-------------------HELLO " + Exp);
         indent += "  ";
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
-        System.out.println(indent + "goto :while" + whileCount + "_top");
-        ++whileCount;
+        System.out.println(indent + "goto :" + oldWhile);
         indent = indent.substring(0, indent.length()-2);
-        System.out.println(indent + "while" + whileEndCount + "_end:");
-        ++whileEndCount;
+        System.out.println(indent + oldWhileEnd + ":");
         return _ret;
     }
 

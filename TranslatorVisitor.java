@@ -894,11 +894,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      *       | BracketExpression()
      */
     public String visit(PrimaryExpression n, TranslationHelper helper) {
-        System.out.println("----------------------PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         String f0 = n.f0.accept(this, helper);
         String _ret = f0;
-        System.out.println("                        f0: " + f0);
+        // System.out.println("                        f0: " + f0);
 
         if (!f0.matches("([0-9])+|this|Not|t.(.*)") && f0 != null) {
             if (this.parameterList != null) {
@@ -915,7 +915,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                 }
             }
         } else if (this.isArrayAssignment && !this.isArrayAlloc) {
-                System.out.println("                        isArrayAssn: " + isArrayAssignment);
+                // System.out.println("                        isArrayAssn: " + isArrayAssignment);
                 _ret = "t." + tempCount;
                 ++tempCount;
         } else {

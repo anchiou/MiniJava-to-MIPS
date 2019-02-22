@@ -27,6 +27,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean nestedArtih = false;
     boolean isArrayAlloc = false;
     boolean isArrayAssignment = false;
+    boolean isMessageSend = false;
 
     /**
     * f0 -> MainClass()
@@ -802,8 +803,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f5 -> ")"
      */
     public String visit(MessageSend n, TranslationHelper helper) {
+
         ++scopeCount;
         this.currScope = "scope" + scopeCount; // update scope
+        System.out.println(isMessageSend);
         // System.out.println("----------------------MessageSend: " + this.currScope
         //     + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
@@ -813,6 +816,19 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String name = n.f0.accept(this, helper);
 
         n.f1.accept(this, helper);
+
+        if (isMessageSend) {
+            for (String key : helper.symbolTable.keySet()) {
+                Scope h = helper.symbolTable.get(key);
+                if (h.contains(name)) {
+                    currScope = key;
+                }
+            }
+        }
+
+        isMessageSend = true;
+
+        System.out.println(currScope);
 
         // System.out.println("---------------" + helper.symbolTable.get(currScope).getClassName());
         String className = helper.symbolTable.get(currScope).getClassName();
@@ -851,7 +867,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         this.currScope = "scope" + scopeCount; // update scope
 
         // System.out.println("----------------------EndMessageSend");
-
+        isMessageSend = false;
         return _ret;
     }
 

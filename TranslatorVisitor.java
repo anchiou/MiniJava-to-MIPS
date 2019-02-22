@@ -47,7 +47,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f1.accept(this, helper);
         n.f2.accept(this, helper);
         if (isArrayAlloc) {
-            System.out.println("func ArrayAlloc(size)");
+            System.out.println("func AllocArray(size)");
             indent += "  ";
             System.out.println(indent + "bytes = MulS(size 4)");
             System.out.println(indent + "bytes = Add(bytes 4)");
@@ -497,7 +497,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
         // First block
-        System.out.println(indent + "goto " + oldEnd + "_end");
+        System.out.println(indent + "goto :" + oldEnd + "_end");
         n.f5.accept(this, helper);
         indent = indent.substring(0, indent.length() - 2);
         System.out.println(indent + oldLabel + "_else:");
@@ -621,7 +621,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String className = helper.symbolTable.get(currScope).getClassName();
         int fieldOffset = helper.classList.getFieldOffset(className, second);
         System.out.println(indent + "t." + tempCount + " = LtS(" + first + " " + second + ")");
-        String _ret="t." + tempCount;
+        String _ret = "t." + tempCount;
         return _ret;
     }
 
@@ -1068,10 +1068,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("NotExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
         n.f0.accept(this, helper);
         String expr = n.f1.accept(this, helper);
-        String _ret="t." + tempCount;
+        String _ret = "t." + tempCount;
         System.out.println(indent + "t." + tempCount + " = Sub(1 " + expr + ")");
-        // System.out.println(_ret);
-        //System.out.println(indent + "t." + tempCount + " = Not(" + first + " " + second + ")");
+        ++tempCount;
         return _ret;
     }
 

@@ -43,17 +43,17 @@ class BBS{
 			j = 1 ;
 			//aux03 = i+1 ;
 			while (j < (i+1)){
-			aux07 = j - 1 ;
-			aux04 = number[aux07] ;
-			aux05 = number[j] ;
-			if (aux05 < aux04) {
-				aux06 = j - 1 ;
-				t = number[aux06] ;
-				number[aux06] = number[j] ;
-				number[j] = t;
-			}
-			else nt = 0 ;
-			j = j + 1 ;
+				aux07 = j - 1 ;
+				aux04 = number[aux07] ;
+				aux05 = number[j] ;
+				if (aux05 < aux04) {
+					aux06 = j - 1 ;
+					t = number[aux06] ;
+					number[aux06] = number[j] ;
+					number[j] = t;
+				}
+				else nt = 0 ;
+				j = j + 1 ;
 			}
 			i = i - 1 ;
 		}

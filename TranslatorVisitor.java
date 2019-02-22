@@ -22,12 +22,13 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     int whileCount = 1;
     int whileEndCount = 1;
     int ssCount = 1;
-    boolean isAssignment = false;
     boolean arithExpr = false;
     boolean nestedArtih = false;
+    boolean isAssignment = false;
     boolean isArrayAlloc = false;
     boolean isArrayAssignment = false;
     boolean isMessageSend = false;
+    boolean isPrint = false;
 
     /**
     * f0 -> MainClass()
@@ -435,36 +436,38 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f1.accept(this, helper);
 
         String index = n.f2.accept(this, helper);
-        this.isArrayAssignment = false;
         // System.out.println("                        index: " + index);
 
-        String arrayTemp = "t." + tempCount;
-        System.out.println(indent + arrayTemp + " = [this+" + offset + "]"); // check if lhs array exists
-        System.out.println(indent + "if " + arrayTemp + " goto :null" + nullCount);
+        String baseTemp = "t." + tempCount; // temp holding array base adress
+        System.out.println(indent + baseTemp + " = [this+" + offset + "]"); // check if lhs array exists
+        System.out.println(indent + "if " + baseTemp + " goto :null" + nullCount);
         System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
         System.out.println(indent + "null" + nullCount + ":");
         ++nullCount;
         ++tempCount;
 
-        System.out.println(indent + "t." + tempCount + " = [" + arrayTemp + "]");
+        String lhsArray = "t." + tempCount; // temp holding array to be assigned to
+        System.out.println(indent + "t." + tempCount + " = [" + baseTemp + "]");
         System.out.println(indent + "t." + tempCount + " = Lt(" + index + " " + "t." + tempCount + ")"); // check lhs_index < size
         System.out.println(indent + "if " + "t." + tempCount + " goto :bounds" + boundsCount);
         System.out.println(indent + "  Error" + "(" + "\"array index out of bounds\"" + ")");
         System.out.println(indent + "bounds" + boundsCount + ":");
         ++boundsCount;
 
-        System.out.println(indent + "t." + tempCount + " = MulS(" + index + " 4)");
-        System.out.println(indent + "t." + tempCount + " = Add(" + "t." + tempCount + " " + arrayTemp + ")");
+        System.out.println(indent + "t." + tempCount + " = MulS(" + index + " 4)"); // index * 4
+        System.out.println(indent + "t." + tempCount + " = Add(" + "t." + tempCount + " " + baseTemp + ")"); // base
         ++tempCount;
 
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
 
-        String second = n.f5.accept(this, helper);
-        // System.out.println(indent + "[" + index + "+" + offset + "] = " + second);
-        // System.out.println(indent + "t." + tempCount + " = [this+" + offset + "]");
+        String rhs = n.f5.accept(this, helper); // rhs expression
+        System.out.println(indent + "[" + lhsArray + "+4] = " + rhs);
 
         n.f6.accept(this, helper);
+
+        this.isArrayAssignment = false;
+
         return _ret;
     }
 
@@ -550,7 +553,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(PrintStatement n, TranslationHelper helper) {
         // System.out.println("PrintStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-
+        this.isPrint = true;
         String _ret=null;
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
@@ -558,6 +561,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
         System.out.println(indent + "PrintIntS(" + e + ")");
+        this.isPrint = false;
         return _ret;
     }
 
@@ -778,7 +782,13 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         ++tempCount;
 
         n.f3.accept(this, helper);
+        if(this.isArrayAssignment || this.isPrint) {
+            System.out.println(indent + "t." + tempCount + " = " + _ret);
+            _ret = "t." + tempCount;
+            if (this.isArrayAssignment) ++tempCount;
+        }
 
+        // System.out.println("----------------------EndArrayLookup");
         return _ret;
     }
 
@@ -933,10 +943,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                     }
                 }
             }
-        } else if (this.isArrayAssignment && !this.isArrayAlloc) {
-                // System.out.println("                        isArrayAssn: " + isArrayAssignment);
-                _ret = "t." + tempCount;
-                ++tempCount;
         } else {
             _ret = f0;
         }

@@ -21,6 +21,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     int boundsCount = 1;
     int whileCount = 1;
     int whileEndCount = 1;
+    int ssCount = 1;
     boolean isAssignment = false;
     boolean arithExpr = false;
     boolean nestedArtih = false;
@@ -373,7 +374,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         this.isAssignment = true;
         String _ret=null;
         String id = n.f0.accept(this, helper);
-        // System.out.println("                        id: " + id);
+        //System.out.println("                        id: " + id);
 
         n.f1.accept(this, helper);
 
@@ -588,9 +589,13 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("AndExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
         String _ret="boolean";
         String first = n.f0.accept(this, helper);
+        System.out.println(indent + "if0 " + first + " goto :ss" + ssCount + "_else");
+        indent += "  ";
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
-        System.out.println(indent + "t." + tempCount + " = And(" + first + " " + second + ")");
+        System.out.println(indent + "goto :ss" + ssCount + "_end");
+        ++ssCount;
+        indent = indent.substring(0, indent.length()-2);
         return _ret;
     }
 
@@ -1038,7 +1043,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("NotExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
         String _ret="Not";
         n.f0.accept(this, helper);
-        n.f1.accept(this, helper);
+        String expr = n.f1.accept(this, helper);
+        System.out.println(indent + "t." + tempCount + " = Sub(1 " + expr + ")");
         //System.out.println(indent + "t." + tempCount + " = Not(" + first + " " + second + ")");
         return _ret;
     }

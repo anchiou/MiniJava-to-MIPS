@@ -527,7 +527,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         oldWhile = "while" + whileCount + "_top";
         ++whileCount;
         String expr = n.f2.accept(this, helper);
-        System.out.println(indent + "if0 t." + tempCount + " goto :while" + whileEndCount + "_end");
+        System.out.println(indent + "if0 " + expr + " goto :while" + whileEndCount + "_end");
         oldWhileEnd = "while" + whileEndCount + "_end";
         ++whileEndCount;
         ++tempCount;
@@ -587,15 +587,21 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(AndExpression n, TranslationHelper helper) {
         // System.out.println("AndExpression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret="boolean";
         String first = n.f0.accept(this, helper);
         System.out.println(indent + "if0 " + first + " goto :ss" + ssCount + "_else");
         indent += "  ";
+        String oldSScount = "ss" + ssCount;
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
         System.out.println(indent + "goto :ss" + ssCount + "_end");
         ++ssCount;
         indent = indent.substring(0, indent.length()-2);
+        System.out.println(indent + oldSScount + "_else:");
+        indent += "  ";
+        System.out.println(indent + second + " = 0");
+        indent = indent.substring(0, indent.length()-2);
+        System.out.println(indent + oldSScount + "_end:");
+        String _ret=second;
         return _ret;
     }
 
@@ -606,13 +612,13 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(CompareExpression n, TranslationHelper helper) {
         // System.out.println("CompareExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret="boolean";
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
         String className = helper.symbolTable.get(currScope).getClassName();
         int fieldOffset = helper.classList.getFieldOffset(className, second);
         System.out.println(indent + "t." + tempCount + " = LtS(" + first + " " + second + ")");
+        String _ret="t." + tempCount;
         return _ret;
     }
 
@@ -1041,10 +1047,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(NotExpression n, TranslationHelper helper) {
         // System.out.println("NotExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret="Not";
+        String _ret="t." + tempCount;
         n.f0.accept(this, helper);
         String expr = n.f1.accept(this, helper);
         System.out.println(indent + "t." + tempCount + " = Sub(1 " + expr + ")");
+        ++tempCount;
         //System.out.println(indent + "t." + tempCount + " = Not(" + first + " " + second + ")");
         return _ret;
     }

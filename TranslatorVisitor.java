@@ -367,13 +367,13 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
      * f3 -> ";"
      */
     public String visit(AssignmentStatement n, TranslationHelper helper) {
-        System.out.println("----------------------AssnStmt: " + this.currScope + " -> " +
-            helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------AssnStmt: " + this.currScope + " -> " +
+        //     helper.symbolTable.get(this.currScope).getClassName());
 
         this.isAssignment = true;
         String _ret=null;
         String id = n.f0.accept(this, helper);
-        System.out.println("                        id: " + id);
+        // System.out.println("                        id: " + id);
 
         n.f1.accept(this, helper);
 
@@ -381,7 +381,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         //     "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
 
         String exprResult = n.f2.accept(this, helper);
-        System.out.println("                        exprResult: " + exprResult);
+        // System.out.println("                        exprResult: " + exprResult);
 
         String className = helper.symbolTable.get(currScope).getClassName();
         int offset = helper.classList.getFieldOffset(className, id);
@@ -407,7 +407,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f3.accept(this, helper);
         this.isAssignment = false;
 
-        System.out.println("----------------------EndAssnStmt:");
+        // System.out.println("----------------------EndAssnStmt:");
 
         return _ret;
     }
@@ -422,22 +422,43 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
      * f6 -> ";"
      */
 public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
-        System.out.println("----------------------ArrayAssnStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------ArrayAssnStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         this.isArrayAssignment = true;
         String _ret=null;
         String id = n.f0.accept(this, helper);
+
         // ONLY WORKS FOR CLASS FIELD ARRAYS RIGHT NOW
+        String parent = helper.symbolTable.get(currScope).getParentScope();
         String className = helper.symbolTable.get(currScope).getClassName();
         int offset = helper.classList.getFieldOffset(className, id);
-        System.out.println("                        id: " + id);
-        // System.out.println(indent + "t." + tempCount + " = [this+" + offset + "]");
+        // System.out.println("                        id: " + id);
+        // System.out.println("                        fieldOffset: " + offset);
 
         n.f1.accept(this, helper);
 
         String index = n.f2.accept(this, helper);
         this.isArrayAssignment = false;
-        System.out.println("                        index: " + index);
+        // System.out.println("                        index: " + index);
+
+        String arrayTemp = "t." + tempCount;
+        System.out.println(indent + arrayTemp + " = [this+" + offset + "]"); // check if lhs array exists
+        System.out.println(indent + "if " + arrayTemp + " goto :null" + nullCount);
+        System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
+        System.out.println(indent + "null" + nullCount + ":");
+        ++nullCount;
+        ++tempCount;
+
+        System.out.println(indent + "t." + tempCount + " = [" + arrayTemp + "]");
+        System.out.println(indent + "t." + tempCount + " = Lt(" + index + " " + "t." + tempCount + ")"); // check lhs_index < size
+        System.out.println(indent + "if " + "t." + tempCount + " goto :bounds" + boundsCount);
+        System.out.println(indent + "  Error" + "(" + "\"array index out of bounds\"" + ")");
+        System.out.println(indent + "bounds" + boundsCount + ":");
+        ++boundsCount;
+
+        System.out.println(indent + "t." + tempCount + " = MulS(" + index + " 4)");
+        System.out.println(indent + "t." + tempCount + " = Add(" + "t." + tempCount + " " + arrayTemp + ")");
+        ++tempCount;
 
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
@@ -493,7 +514,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f4 -> Statement()
      */
     public String visit(WhileStatement n, TranslationHelper helper) {
-        System.out.println("----------------------WhileStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------WhileStmt: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         String oldWhile = "";
         String oldWhileEnd = "";
@@ -504,15 +525,16 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         System.out.println(indent + "while" + whileCount + "_top:");
         oldWhile = "while" + whileCount + "_top";
         ++whileCount;
-        String Exp = n.f2.accept(this, helper);
+        String expr = n.f2.accept(this, helper);
         System.out.println(indent + "if0 t." + tempCount + " goto :while" + whileEndCount + "_end");
         oldWhileEnd = "while" + whileEndCount + "_end";
         ++whileEndCount;
         ++tempCount;
-        // System.out.println("-------------------HELLO " + Exp);
         indent += "  ";
+
         n.f3.accept(this, helper);
         n.f4.accept(this, helper);
+
         System.out.println(indent + "goto :" + oldWhile);
         indent = indent.substring(0, indent.length()-2);
         System.out.println(indent + oldWhileEnd + ":");
@@ -551,10 +573,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      *       | PrimaryExpression()
      */
     public String visit(Expression n, TranslationHelper helper) {
-        System.out.println("----------------------Expression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------Expression: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         String _ret = n.f0.accept(this, helper);
-        System.out.println("                        expr: " +_ret);
         return _ret;
     }
 
@@ -716,12 +737,12 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      * f3 -> "]"
      */
     public String visit(ArrayLookup n, TranslationHelper helper) {
-        System.out.println("----------------------ArrayLookup: " + this.currScope + " -> " +
-            helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------ArrayLookup: " + this.currScope + " -> " +
+        //     helper.symbolTable.get(this.currScope).getClassName());
 
         String _ret = null;
         String array = n.f0.accept(this, helper);
-        System.out.println("                        array: " + array);
+        // System.out.println("                        array: " + array);
 
         System.out.println(indent + "if " + array + " goto :null" + nullCount);
         System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
@@ -732,7 +753,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         n.f1.accept(this, helper);
 
         String index = n.f2.accept(this, helper);
-        System.out.println("                        index: " + index);
+        // System.out.println("                        lookupIndex: " + index);
 
         System.out.println(indent + arrayTemp + " = [" + array + "]");
         System.out.println(indent + arrayTemp + " = Lt(" + index + " " + arrayTemp + ")"); // check index < size
@@ -867,18 +888,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      *       | BracketExpression()
      */
     public String visit(PrimaryExpression n, TranslationHelper helper) {
-        System.out.println("----------------------PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
         String f0 = n.f0.accept(this, helper);
         String _ret = f0;
-        System.out.println("                        f0: " + f0);
-
-        if (isArrayAssignment) {
-            // DO something
-            _ret = "t." + tempCount;
-            ++tempCount;
-            return _ret;
-        }
+        // System.out.println("                        f0: " + f0);
 
         if (!f0.matches("([0-9])+|this|Not|t.(.*)") && f0 != null) {
             if (this.parameterList != null) {
@@ -894,6 +908,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                     }
                 }
             }
+        } else if (isArrayAssignment) {
+                // System.out.println("                        isArrayAssn: " + isArrayAssignment);
+                _ret = "t." + tempCount;
+                ++tempCount;
         } else {
             _ret = f0;
         }

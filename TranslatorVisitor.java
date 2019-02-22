@@ -1064,7 +1064,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String expr = n.f1.accept(this, helper);
         String _ret="t." + tempCount;
         System.out.println(indent + "t." + tempCount + " = Sub(1 " + expr + ")");
-        ++tempCount;
         // System.out.println(_ret);
         //System.out.println(indent + "t." + tempCount + " = Not(" + first + " " + second + ")");
         return _ret;

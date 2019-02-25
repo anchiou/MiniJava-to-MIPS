@@ -237,6 +237,12 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         n.f8.accept(this, helper);
         n.f9.accept(this, helper);
         String returnId = n.f10.accept(this, helper);
+        if (returnId.matches("\\[t\\.(.*)\\]")) {
+            System.out.println(indent + "t." + tempCount + " = " + returnId);
+            returnId = "t." + tempCount;
+            ++tempCount;
+        }
+
         n.f11.accept(this, helper);
         n.f12.accept(this, helper);
 	    System.out.println(indent + "ret " + returnId + "\n");
@@ -395,7 +401,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
             System.out.println(indent + id + " = " + exprResult);
         }
 
-        if (exprResult.matches("t.(.*)") && !this.isArrayAlloc) {
+        if (exprResult.matches("t\\.(.*)") && !this.isArrayAlloc) {
             System.out.println(indent + "if t." + tempCount + " goto :null" + nullCount);
             System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
             System.out.println(indent + "null" + nullCount + ":");
@@ -931,7 +937,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String _ret = f0;
         // System.out.println("                        f0: " + f0);
 
-        if (!f0.matches("([0-9])+|this|Not|t.(.*)") && f0 != null) {
+        if (!f0.matches("([0-9])+|this|Not|t\\.(.*)") && f0 != null) {
             if (this.parameterList != null) {
                 if (this.parameterList.contains(f0)) {
                     _ret = f0;

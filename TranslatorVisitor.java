@@ -27,7 +27,6 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean isAssignment = false;
     boolean isArrayAlloc = false;
     boolean isArrayAssignment = false;
-    boolean isArrayLookup = false;
     boolean isMessageSend = false;
     boolean isPrint = false;
     boolean isCompare = false;
@@ -383,7 +382,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         this.isAssignment = true;
         String _ret=null;
         String id = n.f0.accept(this, helper);
-        // System.out.println("                        id: " + id);
+        //System.out.println("                        id: " + id);
 
         n.f1.accept(this, helper);
 
@@ -624,7 +623,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(CompareExpression n, TranslationHelper helper) {
         // System.out.println("CompareExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        isCompare = true;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
@@ -632,6 +630,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         int fieldOffset = helper.classList.getFieldOffset(className, second);
         System.out.println(indent + "t." + tempCount + " = LtS(" + first + " " + second + ")");
         String _ret = "t." + tempCount;
+        isCompare = true;
         return _ret;
     }
 
@@ -667,12 +666,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             System.out.println(indent + "t." + tempCount + " = " + addString);
             this.nestedArtih = false;
             ++tempCount;
-        } else if (isCall || isCompare) {
+        } else if (!this.isAssignment && this.isCall) {
             _ret = "t." + tempCount;
-            System.out.println(indent + "t." + tempCount + " = " + addString);
+            System.out.println(indent + _ret + " = " + addString);
             ++tempCount;
-            isCall = false;
-            isCompare = false;
+            this.isCall = false;
         } else {
             _ret = addString;
             this.arithExpr = false;
@@ -712,11 +710,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             System.out.println(indent + "t." + tempCount + " = " + subString);
             this.nestedArtih = false;
             ++tempCount;
-        } else if (isCall || isCompare) {
+        } else if (!this.isAssignment && this.isCall) {
             _ret = "t." + tempCount;
-            System.out.println(indent + "t." + tempCount + " = " + subString);
-            isCall = false;
-            isCompare = false;
+            System.out.println(indent + _ret + " = " + subString);
+            ++tempCount;
+            this.isCall = false;
         } else {
             _ret = subString;
             this.arithExpr = false;
@@ -775,7 +773,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("----------------------ArrayLookup: " + this.currScope + " -> " +
         //     helper.symbolTable.get(this.currScope).getClassName());
 
-        this.isArrayLookup = true;
         String _ret = null;
         String array = n.f0.accept(this, helper);
         // System.out.println("                        array: " + array);
@@ -810,7 +807,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             if (this.isArrayAssignment) ++tempCount;
         }
 
-        this.isArrayLookup = false;
         // System.out.println("----------------------EndArrayLookup");
         return _ret;
     }
@@ -840,6 +836,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(MessageSend n, TranslationHelper helper) {
 
+        isCall = true;
         ++scopeCount;
         this.currScope = "scope" + scopeCount; // update scope
         //System.out.println(isMessageSend);
@@ -848,8 +845,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 
         // System.out.println("                        isAssn: " + this.isAssignment +
         //     "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
-
-        isCall = true;
 
         String name = n.f0.accept(this, helper);
 
@@ -890,6 +885,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String callString = "call " + callTemp + "(" + name;
         for (int i = 0; i < this.expressionList.size(); ++i) {
             callString += " " + this.expressionList.get(i);
+            // System.out.println(this.expressionList.get(i));
         }
         callString += ")";
 
@@ -906,6 +902,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 
         // System.out.println("----------------------EndMessageSend");
         isMessageSend = false;
+        isCall = false;
         return _ret;
     }
 
@@ -962,13 +959,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                     String className = helper.symbolTable.get(currScope).getClassName();
                     int fieldOffset = helper.classList.getFieldOffset(className, f0);
                     if (fieldOffset > 0) {
-                        if (this.isAssignment && !this.isArrayLookup && !this.arithExpr) {
-                            _ret = "[this+" + fieldOffset + "]";
-                        } else {
-                            System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
-                            _ret = "t." + tempCount;
-                            ++tempCount;
-                        }
+                        System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
+                        _ret = "t." + tempCount;
+                        ++tempCount;
                     }
                 }
             }

@@ -30,6 +30,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean isMessageSend = false;
     boolean isPrint = false;
     boolean isCompare = false;
+    boolean isCall = false;
 
     /**
     * f0 -> MainClass()
@@ -622,6 +623,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(CompareExpression n, TranslationHelper helper) {
         // System.out.println("CompareExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        isCompare = true;
         String first = n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         String second = n.f2.accept(this, helper);
@@ -629,7 +631,6 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         int fieldOffset = helper.classList.getFieldOffset(className, second);
         System.out.println(indent + "t." + tempCount + " = LtS(" + first + " " + second + ")");
         String _ret = "t." + tempCount;
-        isCompare = true;
         return _ret;
     }
 
@@ -665,6 +666,12 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             System.out.println(indent + "t." + tempCount + " = " + addString);
             this.nestedArtih = false;
             ++tempCount;
+        } else if (isCall || isCompare) {
+            _ret = "t." + tempCount;
+            System.out.println(indent + "t." + tempCount + " = " + addString);
+            ++tempCount;
+            isCall = false;
+            isCompare = false;
         } else {
             _ret = addString;
             this.arithExpr = false;
@@ -704,6 +711,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             System.out.println(indent + "t." + tempCount + " = " + subString);
             this.nestedArtih = false;
             ++tempCount;
+        } else if (isCall || isCompare) {
+            _ret = "t." + tempCount;
+            System.out.println(indent + "t." + tempCount + " = " + subString);
+            isCall = false;
+            isCompare = false;
         } else {
             _ret = subString;
             this.arithExpr = false;
@@ -833,6 +845,8 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 
         // System.out.println("                        isAssn: " + this.isAssignment +
         //     "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
+
+        isCall = true;
 
         String name = n.f0.accept(this, helper);
 

@@ -31,6 +31,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean isPrint = false;
     boolean isCompare = false;
     boolean isCall = false;
+    boolean noCall = false;
 
     /**
     * f0 -> MainClass()
@@ -402,7 +403,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
             System.out.println(indent + id + " = " + exprResult);
         }
 
-        if (exprResult.matches("t\\.(.*)") && !this.isArrayAlloc) {
+        if (exprResult.matches("t\\.(.*)") && !this.isArrayAlloc && !this.noCall) {
             System.out.println(indent + "if t." + tempCount + " goto :null" + nullCount);
             System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
             System.out.println(indent + "null" + nullCount + ":");
@@ -414,6 +415,8 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         this.isAssignment = false;
 
         // System.out.println("----------------------EndAssnStmt:");
+
+        this.noCall = false;
 
         return _ret;
     }
@@ -661,16 +664,17 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             System.out.println(indent + "t." + tempCount +  " = " + addString);
             this.arithExpr = false;
             ++tempCount;
+        } else if (this.isCall) {
+            _ret = "t." + tempCount;
+            System.out.println(indent + _ret + " = " + addString);
+            ++tempCount;
+            this.isCall = false;
+            this.noCall = true;
         } else if (this.isAssignment && this.nestedArtih) {
             _ret = "t." + tempCount;
             System.out.println(indent + "t." + tempCount + " = " + addString);
             this.nestedArtih = false;
             ++tempCount;
-        } else if (!this.isAssignment && this.isCall) {
-            _ret = "t." + tempCount;
-            System.out.println(indent + _ret + " = " + addString);
-            ++tempCount;
-            this.isCall = false;
         } else {
             _ret = addString;
             this.arithExpr = false;
@@ -710,11 +714,12 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             System.out.println(indent + "t." + tempCount + " = " + subString);
             this.nestedArtih = false;
             ++tempCount;
-        } else if (!this.isAssignment && this.isCall) {
+        } else if (this.isCall) {
             _ret = "t." + tempCount;
             System.out.println(indent + _ret + " = " + subString);
             ++tempCount;
             this.isCall = false;
+            this.noCall = true;
         } else {
             _ret = subString;
             this.arithExpr = false;
@@ -959,6 +964,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                     String className = helper.symbolTable.get(currScope).getClassName();
                     int fieldOffset = helper.classList.getFieldOffset(className, f0);
                     if (fieldOffset > 0) {
+                        noCall = true;
                         System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
                         _ret = "t." + tempCount;
                         ++tempCount;

@@ -29,6 +29,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean isArrayAssignment = false;
     boolean isMessageSend = false;
     boolean isPrint = false;
+    boolean isCompare = false;
 
     /**
     * f0 -> MainClass()
@@ -622,6 +623,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         int fieldOffset = helper.classList.getFieldOffset(className, second);
         System.out.println(indent + "t." + tempCount + " = LtS(" + first + " " + second + ")");
         String _ret = "t." + tempCount;
+        isCompare = true;
         return _ret;
     }
 
@@ -1068,6 +1070,10 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("NotExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
         n.f0.accept(this, helper);
         String expr = n.f1.accept(this, helper);
+        if (isCompare) {
+            ++tempCount;
+            isCompare = false;
+        }
         String _ret = "t." + tempCount;
         System.out.println(indent + "t." + tempCount + " = Sub(1 " + expr + ")");
         ++tempCount;

@@ -27,6 +27,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean isAssignment = false;
     boolean isArrayAlloc = false;
     boolean isArrayAssignment = false;
+    boolean isArrayLookup = false;
     boolean isMessageSend = false;
     boolean isPrint = false;
     boolean isCompare = false;
@@ -381,7 +382,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         this.isAssignment = true;
         String _ret=null;
         String id = n.f0.accept(this, helper);
-        //System.out.println("                        id: " + id);
+        // System.out.println("                        id: " + id);
 
         n.f1.accept(this, helper);
 
@@ -762,6 +763,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         // System.out.println("----------------------ArrayLookup: " + this.currScope + " -> " +
         //     helper.symbolTable.get(this.currScope).getClassName());
 
+        this.isArrayLookup = true;
         String _ret = null;
         String array = n.f0.accept(this, helper);
         // System.out.println("                        array: " + array);
@@ -796,6 +798,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             if (this.isArrayAssignment) ++tempCount;
         }
 
+        this.isArrayLookup = false;
         // System.out.println("----------------------EndArrayLookup");
         return _ret;
     }
@@ -945,9 +948,13 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                     String className = helper.symbolTable.get(currScope).getClassName();
                     int fieldOffset = helper.classList.getFieldOffset(className, f0);
                     if (fieldOffset > 0) {
-                        System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
-                        _ret = "t." + tempCount;
-                        ++tempCount;
+                        if (this.isAssignment && !this.isArrayLookup && !this.arithExpr) {
+                            _ret = "[this+" + fieldOffset + "]";
+                        } else {
+                            System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
+                            _ret = "t." + tempCount;
+                            ++tempCount;
+                        }
                     }
                 }
             }

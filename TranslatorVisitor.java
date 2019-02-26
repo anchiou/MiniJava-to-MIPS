@@ -190,6 +190,9 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
        String _ret=null;
        String type = n.f0.accept(this, helper);
        String id = n.f1.accept(this, helper);
+       if (!type.matches("int|boolean|array")) {
+           this.objectList.add(id);
+       }
        n.f2.accept(this, helper);
        return _ret;
     }

@@ -1083,6 +1083,13 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 
         String id = n.f1.accept(this, helper);
         int classSize = helper.classList.getClassSize(id); // get size of class
+        if (this.isCall) {
+            for (String key : helper.symbolTable.keySet()) {
+                if (helper.symbolTable.get(key).contains(id)) {
+                    this.currScope = key;
+                }
+            }
+        }
 
         System.out.println(indent + "t." + tempCount + " = HeapAllocZ(" + classSize + ")");
         System.out.println(indent + "[t." + tempCount + "] = :vmt_" + id);

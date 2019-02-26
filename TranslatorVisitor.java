@@ -839,7 +839,13 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         //     "\n                        arith: " + this.arithExpr + "\n                        nested: " + this.nestedArtih);
 
         String name = n.f0.accept(this, helper);
-        String type = helper.symbolTable.get(currScope).getType(name); // name type
+        String type = helper.symbolTable.get(currScope).getType(name);
+        if (this.parameterList != null) {
+            if (this.parameterList.containsKey(name)) {
+                type = this.parameterList.get(name);
+            }
+        }
+        // System.out.println("                        type: " + type);
 
         n.f1.accept(this, helper);
 
@@ -959,7 +965,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             if (this.parameterList != null) {
                 if (this.parameterList.containsKey(f0)) {
                     String type = this.parameterList.get(f0);
-                    if (!type.matches("int|boolean|array")) { // object of another class
+                    if (!type.matches("int|boolean|array") && this.isCall && !this.isMessageSend) { // object of another class
                         System.out.println(indent + "if " + f0 + " goto :null" + nullCount);
                         System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
                         System.out.println(indent + "null" + nullCount + ":");

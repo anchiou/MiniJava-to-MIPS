@@ -31,11 +31,12 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     boolean isArrayAlloc = false;
     boolean isArrayAssignment = false;
     boolean isMessageSend = false;
-    boolean nestedMsgSend = false;
+    int nestedMsgSend = 0;
     boolean isPrint = false;
     boolean isCompare = false;
     boolean isCall = false;
     boolean noCall = false;
+    boolean isCallee = false;
 
     /**
     * f0 -> MainClass()
@@ -380,6 +381,12 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
 
         String className = helper.symbolTable.get(currScope).getClassName();
         int offset = helper.classList.getFieldOffset(className, id);
+
+        if (isCallee) {
+            System.out.println(indent + "t." + tempCount + " = " + exprResult);
+            exprResult = "t." + tempCount;
+            isCallee = false;
+        }
 
         if (offset > 0) {
             System.out.println(indent + "[this+" + offset + "] = " + exprResult);
@@ -833,14 +840,19 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(MessageSend n, TranslationHelper helper) {
         this.isCall = true;
+<<<<<<< Updated upstream
         if (helper.symbolTable.containsKey("scope" + (scopeCount + 1))) {
             ++scopeCount;
         }
+=======
+        this.isCallee = true;
+        ++scopeCount;
+>>>>>>> Stashed changes
         this.currScope = "scope" + scopeCount; // update scope
         // System.out.println("----------------------MessageSend: " + this.currScope
         //     + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        if (this.isMessageSend) this.nestedMsgSend = true;
+        if (this.isMessageSend) this.nestedMsgSend++;
         // System.out.println("                        isMsgSend: " + this.isMessageSend);
         // System.out.println("                        nestedMsg: " + this.nestedMsgSend);
 
@@ -900,11 +912,11 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         }
         callString += ")";
 
-        if (this.isAssignment && !this.arithExpr && !this.nestedMsgSend) {
+        if (this.isAssignment && !this.arithExpr && this.nestedMsgSend < 1) {
             _ret = callString;
         } else {
-            if (this.nestedMsgSend) {
-                this.nestedMsgSend = false;
+            if (this.nestedMsgSend > 0) {
+                this.nestedMsgSend--;
             }
             System.out.println(indent + "t." + tempCount + " = " + callString);
             tempCount++;
@@ -972,14 +984,14 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
             if (this.parameterList != null) {
                 if (this.parameterList.containsKey(f0)) {
                     String type = this.parameterList.get(f0);
-                    if (!type.matches("int|boolean|array") && this.isCall && (!this.isMessageSend || this.nestedMsgSend)) { // object of another class
+                    if (!type.matches("int|boolean|array") && this.isCall && (!this.isMessageSend || this.nestedMsgSend > 0)) { // object of another class
                         System.out.println(indent + "if " + f0 + " goto :null" + nullCount);
                         System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
                         System.out.println(indent + "null" + nullCount + ":");
                         ++nullCount;
                     }
                     _ret = f0;
-                } else if (this.objectList != null && this.isCall && (!this.isMessageSend || this.nestedMsgSend)) {
+                } else if (this.objectList != null && this.isCall && (!this.isMessageSend || this.nestedMsgSend > 0)) {
                     if (this.objectList.contains(f0)) {
                         System.out.println(indent + "if " + f0 + " goto :null" + nullCount);
                         System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");

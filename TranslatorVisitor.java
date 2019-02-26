@@ -1139,6 +1139,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
         String _ret=null;
         n.f0.accept(this, helper);
         _ret = n.f1.accept(this, helper);
+        System.out.println(indent + "t." + tempCount + " = " + _ret);
+        _ret = "t." + tempCount;
+        ++tempCount;
         n.f2.accept(this, helper);
         return _ret;
     }

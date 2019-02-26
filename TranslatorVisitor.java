@@ -876,9 +876,18 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
 
         String _ret = "t." + tempCount;
         String callString = "call " + callTemp + "(" + name;
+        String expr = "";
         for (int i = 0; i < this.expressionList.size(); ++i) {
-            callString += " " + this.expressionList.get(i);
-            // System.out.println(this.expressionList.get(i));
+            expr = this.expressionList.get(i);
+            if (helper.classList.getRecord(className).contains(expr)) {
+                int fieldOffset = helper.classList.getFieldOffset(className, expr);
+                System.out.println(indent + "t." + tempCount + " = [this+" + fieldOffset + "]");
+                callString += " t." + tempCount;
+                ++tempCount;
+                _ret = "t." + tempCount;
+            } else {
+                callString += " " + this.expressionList.get(i);
+            }
         }
         callString += ")";
 

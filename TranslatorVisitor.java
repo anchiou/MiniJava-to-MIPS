@@ -3,6 +3,7 @@ import visitor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -10,7 +11,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     Vector<String> globalVector = new Vector<String>();
     ArrayList<String> expressionList;
     ArrayList<String> objectList; // keeps track of object names
-    ArrayList<String> parameterList;
+    LinkedHashMap<String, String> parameterList;
     String currScope = "scope0";
     int scopeCount = 0;
 
@@ -225,11 +226,11 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
         String method = className + "." + id;
         n.f3.accept(this, helper);
 
-        this.parameterList = new ArrayList<String>();
+        this.parameterList = new LinkedHashMap<String, String>();
         n.f4.accept(this, helper);
         System.out.print("func " + method + "(this");
-        for (int i = 0; i < this.parameterList.size(); ++i) {
-            System.out.print(" " + this.parameterList.get(i));
+        for (String key : this.parameterList.keySet()) {
+            System.out.print(" " + key);
         }
         System.out.println(")");
 
@@ -257,39 +258,15 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     }
 
     /**
-     * f0 -> FormalParameter()
-     * f1 -> ( FormalParameterRest() )*
-     */
-    public String visit(FormalParameterList n, TranslationHelper helper) {
-        // System.out.println("FormalParamList: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
-        String _ret = null;
-        String parameter = n.f0.accept(this, helper);
-        this.parameterList.add(parameter);
-        n.f1.accept(this, helper);
-        return _ret;
-    }
-
-    /**
      * f0 -> Type()
      * f1 -> Identifier()
      */
     public String visit(FormalParameter n, TranslationHelper helper) { // Within method scope
         // System.out.println("FormalParam: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        n.f0.accept(this, helper);
+        String type = n.f0.accept(this, helper);
         String _ret = n.f1.accept(this, helper);
-        return _ret;
-    }
-
-    /**
-     * f0 -> ","
-     * f1 -> FormalParameter()
-     */
-    public String visit(FormalParameterRest n, TranslationHelper helper) {
-        String _ret = null;
-        n.f0.accept(this, helper);
-        String parameter = n.f1.accept(this, helper);
-        this.parameterList.add(parameter);
+        this.parameterList.put(_ret, type);
         return _ret;
     }
 
@@ -314,7 +291,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     public String visit(ArrayType n, TranslationHelper helper) {
         // System.out.println("ArrayType: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret=null;
+        String _ret = "array";
         n.f0.accept(this, helper);
         n.f1.accept(this, helper);
         n.f2.accept(this, helper);
@@ -327,7 +304,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     public String visit(BooleanType n, TranslationHelper helper) {
         // System.out.println("BooleanType: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret=null;
+        String _ret = n.f0.toString();
         n.f0.accept(this, helper);
         return _ret;
     }
@@ -338,7 +315,7 @@ public class TranslatorVisitor extends GJDepthFirst<String, TranslationHelper> {
     public String visit(IntegerType n, TranslationHelper helper) {
         // System.out.println("IntType: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
 
-        String _ret=null;
+        String _ret = n.f0.toString();
         n.f0.accept(this, helper);
         return _ret;
     }
@@ -961,15 +938,24 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      *       | BracketExpression()
      */
     public String visit(PrimaryExpression n, TranslationHelper helper) {
-        // System.out.println("----------------------PrimaryExpr: " + this.currScope + " -> " + helper.symbolTable.get(this.currScope).getClassName());
+        // System.out.println("----------------------PrimaryExpr: " + this.currScope + " -> " +
+        //     helper.symbolTable.get(this.currScope).getClassName());
 
         String f0 = n.f0.accept(this, helper);
         String _ret = f0;
         // System.out.println("                        f0: " + f0);
 
+        String className = "";
         if (!f0.matches("([0-9])+|this|Not|t\\.(.*)") && f0 != null) {
             if (this.parameterList != null) {
-                if (this.parameterList.contains(f0)) {
+                if (this.parameterList.containsKey(f0)) {
+                    String type = this.parameterList.get(f0);
+                    if (!type.matches("int|boolean|array")) { // object of another class
+                        System.out.println(indent + "if " + f0 + " goto :null" + nullCount);
+                        System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");
+                        System.out.println(indent + "null" + nullCount + ":");
+                        ++nullCount;
+                    }
                     _ret = f0;
                 } else if (this.objectList != null && this.isCall) {
                     if (this.objectList.contains(f0)) {
@@ -980,7 +966,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                         ++tempCount;
                     }
                 } else {
-                    String className = helper.symbolTable.get(currScope).getClassName();
+                    className = helper.symbolTable.get(currScope).getClassName();
                     int fieldOffset = helper.classList.getFieldOffset(className, f0);
                     if (fieldOffset > 0) {
                         noCall = true;

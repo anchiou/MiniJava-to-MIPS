@@ -833,7 +833,9 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
      */
     public String visit(MessageSend n, TranslationHelper helper) {
         this.isCall = true;
-        ++scopeCount;
+        if (helper.symbolTable.containsKey("scope" + (scopeCount + 1))) {
+            ++scopeCount;
+        }
         this.currScope = "scope" + scopeCount; // update scope
         // System.out.println("----------------------MessageSend: " + this.currScope
         //     + " -> " + helper.symbolTable.get(this.currScope).getClassName());

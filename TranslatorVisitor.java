@@ -975,7 +975,7 @@ public String visit(ArrayAssignmentStatement n, TranslationHelper helper) {
                         ++nullCount;
                     }
                     _ret = f0;
-                } else if (this.objectList != null && this.isCall) {
+                } else if (this.objectList != null && this.isCall && !this.isMessageSend) {
                     if (this.objectList.contains(f0)) {
                         System.out.println(indent + "if " + f0 + " goto :null" + nullCount);
                         System.out.println(indent + "  Error" + "(" + "\"null pointer\"" + ")");

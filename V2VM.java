@@ -30,5 +30,9 @@ public class V2VM {
         }
 
         return tree;
-      }
+    }
+
+    public static void main(String[] args) throws ProblemException, IOException {
+
+    }
 }

@@ -34,11 +34,9 @@ public class V2VM {
     }
 
     public static void main(String[] args) throws ProblemException, IOException {
-
         VaporProgram program = parseVapor(System.in, System.out);
 
         AllocationTranslator translator = new AllocationTranslator();
         translator.translate(program);
-
     }
 }

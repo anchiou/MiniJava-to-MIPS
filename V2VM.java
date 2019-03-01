@@ -1,7 +1,7 @@
-import cs132.util.ProblemException;
-import cs132.vapor.parser.VaporParser;
-import cs132.vapor.ast.VaporProgram;
+import cs132.util.*;
 import cs132.vapor.ast.VBuiltIn.Op;
+import cs132.vapor.ast.*;
+import cs132.vapor.parser.*;
 
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 public class V2VM {
+
     public static VaporProgram parseVapor(InputStream in, PrintStream err) throws IOException {
         Op[] ops = {
           Op.Add, Op.Sub, Op.MulS, Op.Eq, Op.Lt, Op.LtS,
@@ -24,7 +25,7 @@ public class V2VM {
                                  java.util.Arrays.asList(ops),
                                  allowLocals, registers, allowStack);
         }
-        catch (ProblemException ex) {
+        catch (Exception ex) {
           err.println(ex.getMessage());
           return null;
         }
@@ -33,8 +34,11 @@ public class V2VM {
     }
 
     public static void main(String[] args) throws ProblemException, IOException {
+
         VaporProgram program = parseVapor(System.in, System.out);
 
+        AllocationTranslator translator = new AllocationTranslator();
+        translator.translate(program);
 
     }
 }

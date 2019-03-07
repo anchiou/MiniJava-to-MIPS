@@ -2,7 +2,11 @@ import cs132.vapor.ast.*;
 
 public class V2VMTranslator {
 
-    public V2VMTranslator() {}
+    InstructionTranslator translator;
+
+    public V2VMTranslator() {
+        translator = new InstructionTranslator();
+    }
 
     public void translate(VaporProgram p) {
         // Print data segments
@@ -35,6 +39,8 @@ public class V2VMTranslator {
         for (String var : function.vars) {
             System.out.println(var.toString());
         }
+
+        translator.translate(function.body);
 
         System.out.println("");
     }

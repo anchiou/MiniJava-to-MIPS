@@ -1,8 +1,8 @@
 import cs132.vapor.ast.*;
 
-public class AllocationTranslator {
+public class V2VMTranslator {
 
-    public AllocationTranslator() {}
+    public V2VMTranslator() {}
 
     public void translate(VaporProgram p) {
         // Print data segments

@@ -5,8 +5,8 @@ import java.util.Set;
 
 public class Node {
     private VInstr instr; // instruction
-    private Set<Node> pred = new HashSet<>(); // set of predecessor nodes
-    private Set<Node> succ = new HashSet<>(); // set of successor nodes
+    private Set<Node> pred = new HashSet<>(); // set of predecessor nodes (in-edges)
+    private Set<Node> succ = new HashSet<>(); // set of successor nodes (out-edges)
 
     private Set<String> def; // set of variables the node defines
     private Set<String> use; // set of variables used by node

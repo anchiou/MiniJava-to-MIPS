@@ -78,7 +78,9 @@ public class InstructionTranslator {
                 // Get return information
                 @Override
                 public void visit(VReturn r) {
-
+                    if (r.value instanceof VVarRef) {
+                        use.add(r.value.toString());
+                    }
                 }
 
             });
@@ -87,8 +89,8 @@ public class InstructionTranslator {
 
         }
 
-    }
+        return this.graph;
 
-    return this.graph;
+    }
 
 }

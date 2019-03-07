@@ -59,21 +59,33 @@ public class InstructionTranslator {
                 }
 
                 // Get goto information
-                @Override
+               @Override
                 public void visit(VGoto g) {
-
+                	if (g.target instanceof VVaddr.var) {
+                		use.add(g.target.toString());
+                	}
                 }
 
                 // Get memread information
                 @Override
                 public void visit(VMemRead r) {
-
+                	if (r.dest instanceof VVarRef) {
+                		def.add(r.dest.toString());
+                	}
+                	if (r.source instanceof VMemRef) {
+                		use.add(r.source.toString());
+                	}
                 }
 
                 // Get memwrite information
                 @Override
                 public void visit(VMemWrite w) {
-
+                	if (r.dest instanceof VMemRef) {
+                		def.add(r.dest.toString());
+                	}
+                	if (r.source instanceof VOperand) {
+                		use.add(r.source.toString());
+                	}
                 }
 
                 // Get return information

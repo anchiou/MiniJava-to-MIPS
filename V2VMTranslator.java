@@ -8,7 +8,7 @@ public class V2VMTranslator {
 
     // Constructor
     public V2VMTranslator() {
-        translator = new InstructionTranslator();
+        translator = new InstructionVisitor();
         graph = new FlowGraph();
     }
 

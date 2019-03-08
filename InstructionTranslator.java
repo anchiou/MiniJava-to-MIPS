@@ -31,6 +31,7 @@ public class InstructionTranslator {
                     }
                 }
 
+                // Get branch information
                 @Override
                 public void visit(VBranch b) {
                     if (b.value instanceof VVarRef) {
@@ -94,7 +95,7 @@ public class InstructionTranslator {
                 // Get return information
                 @Override
                 public void visit(VReturn r) {
-                    if (r.value instanceof VVarRef) {
+                    if (r.value != null && r.value instanceof VVarRef) {
                         use.add(r.value.toString());
                     }
                 }

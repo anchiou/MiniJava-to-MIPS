@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Node {
+
+    // Private data members
     private VInstr instr; // instruction
     private Set<Node> pred = new HashSet<>(); // set of predecessor nodes (in-edges)
     private Set<Node> succ = new HashSet<>(); // set of successor nodes (out-edges)
@@ -44,4 +46,5 @@ public class Node {
     public void addSucc(Node s) {
         if (s != null) this.succ.add(s);
     }
+    
 }

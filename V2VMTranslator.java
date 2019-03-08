@@ -2,7 +2,8 @@ import cs132.vapor.ast.*;
 
 public class V2VMTranslator {
 
-    private InstructionTranslator translator;
+    // Private data members
+    private InstructionVisitor translator;
     private FlowGraph graph;
 
     // Constructor
@@ -13,6 +14,7 @@ public class V2VMTranslator {
 
     // Translator
     public void translate(VaporProgram p) {
+
         // Print data segments
         for (VDataSegment value : p.dataSegments) {
             System.out.println("const " + value.ident.toString());
@@ -25,10 +27,12 @@ public class V2VMTranslator {
         for (VFunction function : p.functions) {
             translateFunction(function);
         }
+
     }
 
     // Function translator
     public void translateFunction(VFunction function) {
+
         System.out.print("func " + function.ident);
         System.out.println(" [in " + function.stack.in + " out "
             + function.stack.out + " local " + function.stack.local + "]");
@@ -48,5 +52,6 @@ public class V2VMTranslator {
         graph = translator.translate(function.body);
 
         System.out.println("");
+
     }
 }

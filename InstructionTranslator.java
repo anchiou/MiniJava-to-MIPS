@@ -31,6 +31,9 @@ public class InstructionTranslator {
                     }
                 }
 
+                @Override
+                public void visit(VBranch b) {}
+
                 // Get BuiltIn information
                 @Override
                 public void visit(VBuiltIn c) {
@@ -61,7 +64,7 @@ public class InstructionTranslator {
                 // Get goto information
                @Override
                 public void visit(VGoto g) {
-                	if (g.target instanceof VVaddr.var) {
+                	if (g.target instanceof VAddr.Var) {
                 		use.add(g.target.toString());
                 	}
                 }
@@ -80,11 +83,11 @@ public class InstructionTranslator {
                 // Get memwrite information
                 @Override
                 public void visit(VMemWrite w) {
-                	if (r.dest instanceof VMemRef) {
-                		def.add(r.dest.toString());
+                	if (w.dest instanceof VMemRef) {
+                		def.add(w.dest.toString());
                 	}
-                	if (r.source instanceof VOperand) {
-                		use.add(r.source.toString());
+                	if (w.source instanceof VOperand) {
+                		use.add(w.source.toString());
                 	}
                 }
 

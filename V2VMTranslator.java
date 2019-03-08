@@ -16,17 +16,25 @@ public class V2VMTranslator {
     public void translate(VaporProgram p) {
 
         // Print data segments
-        for (VDataSegment value : p.dataSegments) {
-            System.out.println("const " + value.ident.toString());
-            for (VOperand val : value.values) {
-                System.out.println("  " + val.toString());
-            }
-            System.out.print("\n");
+        for (VDataSegment segment : p.dataSegments) {
+            translateDataSegments(segment);
         }
 
+        // Print functions
         for (VFunction function : p.functions) {
             translateFunction(function);
         }
+
+    }
+
+    // Translate data segments
+    public void translateDataSegments(VDataSegment segment) {
+
+        System.out.println("const " + segment.ident.toString());
+        for (VOperand val : segment.values) {
+            System.out.println("  " + val.toString());
+        }
+        System.out.print("\n");
 
     }
 

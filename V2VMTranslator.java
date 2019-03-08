@@ -3,12 +3,12 @@ import cs132.vapor.ast.*;
 public class V2VMTranslator {
 
     // Private data members
-    private InstructionVisitor translator;
+    private InstructionVisitor instrVisitor;
     private FlowGraph graph;
 
     // Constructor
     public V2VMTranslator() {
-        translator = new InstructionVisitor();
+        instrVisitor = new InstructionVisitor();
         graph = new FlowGraph();
     }
 
@@ -57,7 +57,8 @@ public class V2VMTranslator {
             System.out.println(var.toString());
         }
 
-        graph = translator.translate(function.body);
+        graph = instrVisitor.createFlowGraph(function.body);
+        graph.calcLiveness();
 
         System.out.println("");
 

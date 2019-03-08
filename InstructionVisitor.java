@@ -11,8 +11,8 @@ public class InstructionVisitor {
         graph = new FlowGraph();
     }
 
-    // Translate array of instructions
-    public FlowGraph translate(VInstr[] instructions) {
+    // Construct flow graph from array of instructions
+    public FlowGraph createFlowGraph(VInstr[] instructions) {
 
         for (VInstr instruction : instructions) {
 

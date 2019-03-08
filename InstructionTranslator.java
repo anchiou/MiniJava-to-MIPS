@@ -32,7 +32,11 @@ public class InstructionTranslator {
                 }
 
                 @Override
-                public void visit(VBranch b) {}
+                public void visit(VBranch b) {
+                    if (b.value instanceof VVarRef) {
+                        use.add(b.value.toString());
+                    }
+                }
 
                 // Get BuiltIn information
                 @Override
@@ -72,23 +76,19 @@ public class InstructionTranslator {
                 // Get memread information
                 @Override
                 public void visit(VMemRead r) {
-                	if (r.dest instanceof VVarRef) {
-                		def.add(r.dest.toString());
-                	}
-                	if (r.source instanceof VMemRef) {
-                		use.add(r.source.toString());
-                	}
+                	def.add(r.dest.toString());
+                    VMemRef.Global globalReference = (VMemRef.Global)r.source;
+                    use.add(globalReference.base.toString());
                 }
 
                 // Get memwrite information
                 @Override
                 public void visit(VMemWrite w) {
-                	if (w.dest instanceof VMemRef) {
-                		def.add(w.dest.toString());
-                	}
-                	if (w.source instanceof VOperand) {
-                		use.add(w.source.toString());
-                	}
+                    VMemRef.Global globalReference = (VMemRef.Global)w.dest;
+                    use.add(globalReference.base.toString());
+                    if (w.source instanceof VVarRef) {
+                        use.add(w.source.toString());
+                    }
                 }
 
                 // Get return information

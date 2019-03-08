@@ -7,7 +7,7 @@ public class InstructionVisitor {
     public FlowGraph graph;
 
     // Constructor
-    public InstructionTranslator() {
+    public InstructionVisitor() {
         graph = new FlowGraph();
     }
 

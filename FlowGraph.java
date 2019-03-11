@@ -28,7 +28,7 @@ public class FlowGraph {
         }
     }
 
-    // Return nodes
+    // Return node list
     public List<Node> getNodeList() {
         return this.nodeList;
     }
@@ -74,18 +74,24 @@ public class FlowGraph {
             }
         } while (isUpdated);
 
+        // System.out.println("in size: " + in.size());
+        // System.out.println("out size: " + out.size());
         // for (Node key : in.keySet()) {
         //     Set<String> temp = in.get(key);
+        //     System.out.print("in: ");
         //     for (String value : temp) {
-        //         System.out.println("in: " + value);
+        //         System.out.print(value + " ");
         //     }
+        //     System.out.println("");
         // }
         // System.out.println("-----------------------------------");
         // for (Node key : out.keySet()) {
         //     Set<String> temp = out.get(key);
+        //     System.out.print("out: ");
         //     for (String value : temp) {
-        //         System.out.println("out: " + value);
+        //         System.out.print(value + " ");
         //     }
+        //     System.out.println("");
         // }
 
         return new Liveness(in, out);

@@ -1,3 +1,4 @@
+import java.util.*;
 import cs132.vapor.ast.*;
 
 public class V2VMTranslator {
@@ -52,7 +53,31 @@ public class V2VMTranslator {
         // }
 
         graph = instrVisitor.createFlowGraph(function.body);
-        graph.calcLiveness();
+        Liveness liveness = graph.calcLiveness();
+
+        Map<String, Interval> intervals = new HashMap<>(); // maps variables to its live interval
+        List<Set<String>> active = new ArrayList<>();
+
+        // live intervals (used by the linear scan algorithm) calculated using the active sets
+        // by top-down scan of the instructions
+        for (Node node : graph.getNodeList()) {
+            // active[n] = def[n] U in[n]
+            Set<String> act = node.getDefSet(); // def[n]
+            act.addAll(liveness.in.get(node));  // in[n]
+            active.add(act);
+        }
+
+        for (int i = 0; i < active.size(); ++i) {
+            for (String variable : active.get(i)) {
+                if (intervals.containsKey(variable)) {
+                    intervals.get(variable).setEnd(i); // update end of interval
+                } else {
+                    intervals.put(variable, new Interval(variable, i, i)); // create new interval
+                }
+            }
+        }
+
+        // TODO: pass live intervals into register allocation
 
         transVisitor.printFunc(function);
 

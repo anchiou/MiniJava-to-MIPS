@@ -2,17 +2,9 @@ import java.util.*;
 import cs132.vapor.ast.*;
 
 public class InstructionVisitor {
-
-    // Flowgraph
-    private FlowGraph graph;
-
-    // Constructor
-    public InstructionVisitor() {
-        graph = new FlowGraph();
-    }
-
     // Construct flow graph from array of instructions
     public FlowGraph createFlowGraph(VInstr[] instructions) {
+        FlowGraph graph = new FlowGraph();
 
         for (VInstr instruction : instructions) {
 
@@ -134,8 +126,6 @@ public class InstructionVisitor {
         }
 
         // Return the created flowgraph
-        return this.graph;
-
+        return graph;
     }
-
 }

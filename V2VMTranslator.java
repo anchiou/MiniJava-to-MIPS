@@ -4,10 +4,12 @@ public class V2VMTranslator {
 
     // Private data members
     private InstructionVisitor instrVisitor;
+    private TranslationVisitor transVisitor;
     private FlowGraph graph;
 
     // Constructor
     public V2VMTranslator() {
+        transVisitor = new TranslationVisitor();
         instrVisitor = new InstructionVisitor();
         graph = new FlowGraph();
     }
@@ -41,24 +43,18 @@ public class V2VMTranslator {
     // Function translator
     public void translateFunction(VFunction function) {
 
-        System.out.print("func " + function.ident);
-        System.out.println(" [in " + function.stack.in + " out "
-            + function.stack.out + " local " + function.stack.local + "]");
-
-        for (VVarRef.Local param : function.params) {
-            System.out.println(param.toString());
-        }
-
-        for (VCodeLabel label : function.labels) {
-            System.out.println(label.ident);
-        }
-
-        for (String var : function.vars) {
-            System.out.println(var.toString());
-        }
+        // for (VVarRef.Local param : function.params) {
+        //     System.out.println(param.toString());
+        // }
+        //
+        // for (String var : function.vars) {
+        //     System.out.println(var.toString());
+        // }
 
         graph = instrVisitor.createFlowGraph(function.body);
         graph.calcLiveness();
+
+        transVisitor.printFunc(function);
 
         System.out.println("");
 

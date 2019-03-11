@@ -46,5 +46,4 @@ public class Node {
     public void addSucc(Node s) {
         if (s != null) this.succ.add(s);
     }
-    
 }

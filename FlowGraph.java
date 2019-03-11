@@ -15,26 +15,26 @@ public class FlowGraph {
 
     // Create new node for graph
     public void addNode(VInstr instr, Set<String> def, Set<String> use) {
-        // adjNodes.putIfAbsent(new Node(instr, def, use));
         this.nodeList.add(new Node(instr, def, use));
     }
 
     // Add edge
     public void addEdge(Node from, Node to) {
-        if (from != null && to != null && from != to) {
+        if (from != null && to != null && from != to
+                && nodeList.contains(from) && nodeList.contains(to)) {
+            adjNodes.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
             to.addPred(from);
             from.addSucc(to);
         }
     }
 
-    // Get node
-    public Node getNode() {
-        // TODO: return
-        return null;
+    // Return nodes
+    public List<Node> getNodeList() {
+        return this.nodeList;
     }
 
     // Calculate liveness
-    public void calcLiveness() {
+    public Liveness calcLiveness() {
         Map<Node, Set<String>> in = new HashMap<>(); // maps nodes to live-in
         Map<Node, Set<String>> out = new HashMap<>(); // maps nodes to live-out
 
@@ -55,7 +55,7 @@ public class FlowGraph {
 
                 // in[n] <-- use[n] ∪ (out[n] − def [n])
                 newIn = node.getUseSet(); // all variables in use[n]
-                tempDef = new HashSet(prevOut);
+                tempDef = new HashSet<>(prevOut);
                 tempDef.removeAll(node.getDefSet()); // remove all variables in out[n] that are in def[n]
                 newIn.addAll(tempDef); // use[n] ∪ (out[n] − def [n])
 
@@ -74,6 +74,20 @@ public class FlowGraph {
             }
         } while (isUpdated);
 
-        return;
+        // for (Node key : in.keySet()) {
+        //     Set<String> temp = in.get(key);
+        //     for (String value : temp) {
+        //         System.out.println("in: " + value);
+        //     }
+        // }
+        // System.out.println("-----------------------------------");
+        // for (Node key : out.keySet()) {
+        //     Set<String> temp = out.get(key);
+        //     for (String value : temp) {
+        //         System.out.println("out: " + value);
+        //     }
+        // }
+
+        return new Liveness(in, out);
     }
 }

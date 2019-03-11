@@ -4,7 +4,7 @@ import cs132.vapor.ast.*;
 public class InstructionVisitor {
 
     // Flowgraph
-    public FlowGraph graph;
+    private FlowGraph graph;
 
     // Constructor
     public InstructionVisitor() {
@@ -105,6 +105,32 @@ public class InstructionVisitor {
             // Add new node with current instruction, def, and node to flowgraph
             graph.addNode(instruction, def, use);
 
+        }
+
+        List<Node> nodeList = graph.getNodeList();
+
+        // Create graph edges
+        // Add corresponding predecessor and successors to nodes (in addEdge)
+        for (int i = 0; i < instructions.length; ++i) {
+            VInstr instr = instructions[i];
+            Node prev = i > 0 ? nodeList.get(i - 1) : null;
+            Node curr = nodeList.get(i);
+
+            // Edge from the previous instr to current instr.
+            if (prev != null) {
+                graph.addEdge(prev, curr);
+            }
+
+            if (instr instanceof VBranch) {
+                VLabelRef<VCodeLabel> target = ((VBranch) instr).target;
+                Node to = nodeList.get(target.getTarget().instrIndex);
+                graph.addEdge(curr, to);
+            } else if (instr instanceof VGoto) {
+                // For gotos, only allow goto labels.
+                VLabelRef<VCodeLabel> target = ((VAddr.Label<VCodeLabel>) ((VGoto) instr).target).label;
+                Node to = nodeList.get(target.getTarget().instrIndex);
+                graph.addEdge(curr, to);
+            }
         }
 
         // Return the created flowgraph

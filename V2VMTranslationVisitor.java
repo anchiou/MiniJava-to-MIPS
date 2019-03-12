@@ -134,7 +134,7 @@ public class V2VMTranslationVisitor {
                     } else {
                         output += "if0 ";
                     }
-                    System.out.println(indent + output + statement + " goto " + branch.target);
+                    System.out.println(output + statement + " goto " + branch.target);
                 }
 
                 @Override

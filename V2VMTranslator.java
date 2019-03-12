@@ -6,20 +6,20 @@ public class V2VMTranslator {
     // Private data members
     private InstructionVisitor instrVisitor;
     private TranslationVisitor transVisitor;
+
     private FlowGraph graph;
-    private List<Interval> active;
+
+    private RegisterPool pool; // pool of free registers
+    private Map<String, Register> registerMap; // map of argument to register it occupies
+    private List<Interval> active; // live intervals that overlap current point and have been placed in registers
     private Set<String> spillStack;
     private Set<String> unused;
-    private Map<String, Register> registerMap;
 
     // Constructor
     public V2VMTranslator() {
         transVisitor = new TranslationVisitor();
         instrVisitor = new InstructionVisitor();
         graph = new FlowGraph();
-        spillStack = new LinkedHashSet<>();
-        unused = new HashSet<>();
-        registerMap = new LinkedHashMap<>();
     }
 
     // Translator
@@ -59,7 +59,7 @@ public class V2VMTranslator {
         //     System.out.println(var.toString());
         // }
 
-        graph = instrVisitor.createFlowGraph(function.body);
+        this.graph = instrVisitor.createFlowGraph(function.body);
         Liveness liveness = graph.calcLiveness();
 
         Map<String, Interval> intervals = new HashMap<>(); // maps variables to its live interval
@@ -95,29 +95,44 @@ public class V2VMTranslator {
 
     // Linear scan register allocation
     public void registerAlloc(ArrayList<Interval> intervals, VVarRef.Local[] params) {
+        this.pool = RegisterPool.CreateGlobalPool();
+        this.registerMap = new LinkedHashMap<>();
+        this.spillStack = new LinkedHashSet<>();
+        this.unused = new HashSet<>();
+
         // active ←{}
-        active = new ArrayList<Interval>();
+        this.active = new ArrayList<Interval>();
 
         // sort intervals in order of increasing start point
         intervals.sort(Comparator.comparingInt(Interval::getStart));
 
+        // TODO: deal with argument passing
+
         for (Interval i : intervals) {
             expireOldIntervals(i);
-            if (active.size() == R) {
+            if (active.size() == pool.numAvailable()) {
                 spillAtInterval(i);
             } else {
-                // register[i] ← a register removed from pool of free registers
-                // add i to active, sorted by increasing end point
+                registerMap.put(i.getVar(), pool.getRegister()); // register[i] ← a register removed from pool of free registers
+                active.add(i); // add i to active, sorted by increasing end point
             }
         }
     }
 
     public void expireOldIntervals(Interval i) {
-        // foreach interval j in active, in order of increasing end point
-            // if endpoint[j] ≥ startpoint[i] then
-                // return
-            // remove j from active
-            // add register[j] to pool of free registers
+        // sort intervals in active in order of increasing end point
+        active.sort(Comparator.comparingInt(Interval::getEnd));
+
+        for (int j = 0; j < active.size(); ++j) {
+            Interval old = active.get(j);
+            if (old.getEnd() >= i.getStart()) { // if endpoint[j] ≥ startpoint[i]
+                return;
+            }
+            active.remove(old); // remove old interval from active
+            pool.releaseRegister(registerMap.get(old.getVar())); // add register[j] to pool of free registers
+
+            // TODO: deal with argument passing
+        }
     }
 
     public void spillAtInterval(Interval i) {

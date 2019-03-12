@@ -58,7 +58,7 @@ public class TranslationVisitor {
         // Save all $s registers
         for (int i = 0; i < callee.size(); i++) {
             String output = "local[" + Integer.toString(i) + "]";
-            System.out.println(output + " = " + callee.get(i).toString());
+            System.out.println("  " + output + " = " + callee.get(i).toString());
         }
 
         // load params into registers or (local) stack
@@ -70,9 +70,9 @@ public class TranslationVisitor {
             Register dest = map.lookupRegister(function.params[i].ident);
             if (dest != null) {
                 if (i < 4) { // parameters passed by registers
-                    System.out.println(indent + dest.toString() + " = " + registers[i].toString());
+                    System.out.println("  " + dest.toString() + " = " + registers[i].toString());
                 } else { // parameters passed by (in) stack
-                    System.out.println(indent + dest.toString() + " = in[" + Integer.toString(i - 4) + "]");
+                    System.out.println("  " + dest.toString() + " = in[" + Integer.toString(i - 4) + "]");
                 }
             } else {
                 int offset = map.lookupStack(function.params[i].ident);
@@ -96,6 +96,12 @@ public class TranslationVisitor {
         for (int i = 0; i < function.body.length; ++i) {
 
             indent += "  ";
+
+            Node node = graph.getNodeList().get(i);
+            // out[n] - def[n]
+            final Set<String> liveOut = liveness.out.get(node);
+            liveOut.removeAll(node.getDefSet());
+
 
             // Output labels
             if (labels.containsKey(i)) {

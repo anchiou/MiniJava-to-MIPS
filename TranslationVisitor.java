@@ -204,7 +204,12 @@ public class TranslationVisitor {
                     Register[] registers = {
                         Register.a0, Register.a1, Register.a2, Register.a3
                     };
-
+                    //////////////////////////////////////////////
+                    for (int i = 0; i < call.args.length; ++i) {
+                        if (i < registers.length) System.out.println(indent + registers[i] + " = " + call.args[i]);
+                        else System.out.println(indent + "out[" + (i - registers.length) + "] = " + call.args[i]);
+                    }
+                    //////////////////////////////////////////
                     if (call.addr instanceof VAddr.Label) {
                         System.out.println(indent + "call " + call.addr.toString());
                     } else {

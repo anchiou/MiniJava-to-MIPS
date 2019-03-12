@@ -48,7 +48,7 @@ public class Register {
         return this.register.startsWith("a");
     }
 
-    // Is return value or  temp loading
+    // Is return value or temp loading
     public boolean isRetOrLoad() {
         return this.register.startsWith("v");
     }

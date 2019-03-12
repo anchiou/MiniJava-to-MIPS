@@ -36,6 +36,10 @@ public class RegisterPool {
         return new RegisterPool(registers);
     }
 
+    public boolean addRegister(Register[] registers) {
+        return Collections.addAll(all, registers);
+    }
+
     public boolean contains(Register register) {
         return all.contains(register);
     }

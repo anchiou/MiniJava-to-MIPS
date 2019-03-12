@@ -5,7 +5,7 @@ public class V2VMTranslator {
 
     // Private data members
     private InstructionVisitor instrVisitor;
-    private TranslationVisitor transVisitor;
+    private V2VMTranslationVisitor transVisitor;
 
     private FlowGraph graph;
 
@@ -17,7 +17,7 @@ public class V2VMTranslator {
 
     // Constructor
     public V2VMTranslator() {
-        transVisitor = new TranslationVisitor();
+        transVisitor = new V2VMTranslationVisitor();
         instrVisitor = new InstructionVisitor();
         graph = new FlowGraph();
     }
@@ -86,6 +86,7 @@ public class V2VMTranslator {
 
         // Pass live intervals and function parameters into register allocation
         AllocationMap map = registerAlloc(new ArrayList<>(intervals.values()), function.params);
+        // map.printRegisterMap();
 
         transVisitor.printFunc(graph, function, liveness, map);
 

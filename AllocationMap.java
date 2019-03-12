@@ -12,6 +12,12 @@ public class AllocationMap {
         this.stackReserved = usedCalleeRegister().size();
     }
 
+    public void printRegisterMap() {
+        for (String key : register.keySet()) {
+            System.out.println(key + " --> " + register.get(key).toString());
+        }
+    }
+
     public List<Register> usedCalleeRegister() {
         return register.values().stream().filter(Register::isCalleeSaved).distinct().collect(Collectors.toList());
     }

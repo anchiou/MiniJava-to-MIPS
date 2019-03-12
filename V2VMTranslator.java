@@ -122,7 +122,7 @@ public class V2VMTranslator {
 
         for (Interval i : intervals) {
             expireOldIntervals(i);
-            if (active.size() == pool.numAvailable()) {
+            if (!pool.hasFreeRegisters()) {
                 spillAtInterval(i);
             } else {
                 registerMap.put(i.getVar(), pool.getRegister()); // register[i] <-- a register removed from pool of free registers

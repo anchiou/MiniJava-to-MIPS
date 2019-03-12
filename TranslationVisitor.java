@@ -65,25 +65,32 @@ public class TranslationVisitor {
         Register[] registers = {
             Register.a0, Register.a1, Register.a2, Register.a3
         };
-        // for (int i = 0; i < function.params.length; ++i) {
-        //     Register dst = map.lookupRegister(func.params[i].ident);
-        //     if (dst != null) {
-        //         if (i < 4) { // Params passed by registers
-        //             outputAssignment(dst.toString(), argregs[i].toString());
-        //         } else { // Params passed by `in` stack
-        //             outputAssignment(dst.toString(), RegAllocHelper.in(i - 4));
-        //         }
-        //     } else {
-        //         int offset = map.lookupStack(func.params[i].ident);
-        //         if (offset != -1) { // some parameters may never be used
-        //             // Move the remaining parameters into `local` stack
-        //             Register load = localPool.acquire();
-        //             outputAssignment(load.toString(), RegAllocHelper.in(i - 4));
-        //             outputAssignment(RegAllocHelper.local(offset), load.toString());
-        //             localPool.release(load);
-        //         }
-        //     }
-        // }
+
+        for (int i = 0; i < function.params.length; ++i) {
+            Register dest = map.lookupRegister(function.params[i].ident);
+            if (dest != null) {
+                if (i < 4) { // parameters passed by registers
+                    System.out.println(indent + dest.toString() + " = " + registers[i].toString());
+                } else { // parameters passed by (in) stack
+                    System.out.println(indent + dest.toString() + " = in[" + Integer.toString(i - 4) + "]");
+                }
+            } else {
+                int offset = map.lookupStack(function.params[i].ident);
+                if (offset != -1) { // Some parameters are never used
+                    // Put remaining parameters into (local) stack
+                    Register load = localPool.getRegister();
+                    String output = "";
+                    if (offset > 0) {
+                        output = "[" + load.toString() + "+" + Integer.toString(offset) + "]";
+                    } else {
+                        output = "[" + load.toString() + "]";
+                    }
+                    System.out.println(indent + load.toString() + " = in[" + Integer.toString(i - 4) + "]");
+                    System.out.println(indent + output + " = " + load.toString());
+                    localPool.releaseRegister(load);
+                }
+            }
+        }
 
         // print body stuff
         for (int i = 0; i < function.body.length; ++i) {
@@ -188,11 +195,9 @@ public class TranslationVisitor {
 
                 @Override
                 public void visit(VCall call) {
-
                     Register[] registers = {
                         Register.a0, Register.a1, Register.a2, Register.a3
                     };
-
 
                     if (call.addr instanceof VAddr.Label) {
                         System.out.println(indent + "call " + call.addr.toString());

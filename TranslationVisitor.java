@@ -156,13 +156,19 @@ public class TranslationVisitor {
                 @Override
                 public void visit(VCall call) {
 
-                    Register[] registers = { 
+                    Register[] registers = {
                         Register.a0, Register.a1, Register.a2, Register.a3
                     };
 
 
                     if (call.addr instanceof VAddr.Label) {
                         System.out.println(indent + "call " + call.addr.toString());
+                    } else {
+                        Register reg = createRegister(map, call.addr.toString(), false);
+                        System.out.println(indent + "call " + reg.toString());
+                        if (localPool.contains(reg)) {
+                            localPool.releaseRegister(reg);
+                        }
                     }
 
                 }

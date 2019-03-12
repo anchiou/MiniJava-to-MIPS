@@ -8,12 +8,18 @@ public class V2VMTranslator {
     private TranslationVisitor transVisitor;
     private FlowGraph graph;
     private List<Interval> active;
+    private Set<String> spillStack;
+    private Set<String> unused;
+    private Map<String, Register> registerMap;
 
     // Constructor
     public V2VMTranslator() {
         transVisitor = new TranslationVisitor();
         instrVisitor = new InstructionVisitor();
         graph = new FlowGraph();
+        spillStack = new LinkedHashSet<>();
+        unused = new HashSet<>();
+        registerMap = new LinkedHashMap<>();
     }
 
     // Translator
@@ -115,13 +121,35 @@ public class V2VMTranslator {
     }
 
     public void spillAtInterval(Interval i) {
-        // spill ← last interval in active
-        // if endpoint[spill] > endpoint[i] then
-        //     register[i] ← register[spill]
-        //     location[spill] ← new stack location
-        //     remove spill from active
-        //     add i to active, sorted by increasing end point
-        // else
-        //     location[i] ← new stack location
+
+        // Sort intervals in active by start time
+        active.sort(Comparator.comparingInt(Interval::getStart));
+
+        Interval spilled = null;
+
+        // determine spill
+        if (!active.isEmpty()) {
+            int index = active.size() - 1;
+            do {
+                spilled = active.get(index -= 1);
+            } while (index >= 0 && unused.contains(spilled.getVar()));
+            if (index < 0) {
+                spilled = null;
+            } else {
+                spilled = spilled;
+            }
+        }
+
+        // Add spill to function stack if interval is larger else add interval to spill stack
+        if (spilled != null && spilled.getEnd() > i.getEnd()) {
+            registerMap.put(i.getVar(), registerMap.get(spilled.getVar()));
+            registerMap.remove(spilled.getVar());
+            spillStack.add(spilled.getVar());
+            active.remove(spilled);
+            active.add(i);
+        } else {
+            spillStack.add(i.getVar());
+        }
+
     }
 }

@@ -2,9 +2,7 @@ import java.util.*;
 import cs132.vapor.ast.*;
 
 public class TranslationVisitor {
-
     private RegisterPool localPool = RegisterPool.CreateLocalPool();
-
     String indent = "";
 
     public Register createRegister(AllocationMap map, String s, boolean isDestination) {
@@ -38,6 +36,13 @@ public class TranslationVisitor {
         System.out.println(" [in " + in + " out " + out + " local " + local + "]");
 
         // SAVE ALL CALLEE REGISTERS
+        List<Register> callee = map.usedCalleeRegister();
+
+        // Save all $s registers
+        for (int i = 0; i < callee.size(); i++) {
+            String output = "local[" + Integer.toString(i) + "]";
+            System.out.println(output + " = " + callee.get(i).toString());
+        }
 
         // load params into registers or local
         // Register[] registers = {
@@ -147,28 +152,106 @@ public class TranslationVisitor {
                 @Override
                 public void visit(VMemRead memRead) {
 
+                    Register dst = loadVar(map, memRead.dest.toString(), true);
+
                     VMemRef.Global mem = (VMemRef.Global) memRead.source;
-                    System.out.println(indent + "REGISTER HERE " + "[" + mem.base.toString() + "+" + mem.byteOffset + "]");
+                    Register src = loadVar(map, mem.base.toString(), false);
+
+                    int offset = mem.byteOffset;
+                    String output = "";
+                    if (offset > 0) {
+                        output = "[" + src.toString() + "+" + Integer.toString(offset) + "]";
+                    } else {
+                        output = "[" + src.toString() + "]";
+                    }
+
+                    System.out.println(indent + dst.toString() + " = " + output);
+                    releaseLocalReg(src);
+
+                    writeVar(dst, map, memRead.dest.toString());
+                    releaseLocalReg(dst);
 
                 }
 
                 @Override
                 public void visit(VMemWrite memWrite) {
+                    VMemRef.Global ref = (VMemRef.Global) memWrite.dest;
+                    Register base = loadVar(map, ref.base.toString(), false);
+                    String output = "";
+                    int offset = ref.byteOffset;
+                    if (offset > 0) {
+                        output = "[" + base.toString() + "+" + Integer.toString(offset) + "]";
+                    } else {
+                        output = "[" + base.toString() + "]";
+                    }
 
+                    if (memWrite.source instanceof VVarRef) {
+                        Register src = loadVar(map, memWrite.source.toString(), false);
+                        System.out.println(indent + output + " = " + src.toString());
+                        releaseLocalReg(src);
+                    } else {
+                        System.out.println(indent + output + " = " + memWrite.source.toString());
+                    }
 
+                    releaseLocalReg(base);
                 }
 
                 @Override
                 public void visit(VReturn ret) {
+                    if (ret.value != null) {
+                        if (ret.value instanceof VVarRef) {
+                            Register src = loadVar(map, ret.value.toString(), false);
+                            if (src != Register.v0)
+                                System.out.println(indent + Register.v0.toString() + " = " + src.toString());
+                            releaseLocalReg(src);
+                        } else {
+                            System.out.println(indent + Register.v0.toString() + " = " + ret.value.toString());
+                        }
+                    }
 
-                    // Restore $S registers here and set $V registers to the return target
+                    // Restore $s registers
+                    String output;
+                    for (int i = 0; i < callee.size(); i++) {
+                        output = "local[" + Integer.toString(i) + "]";
+                        System.out.println(indent + callee.get(i).toString() + " = " + output);
+                    }
 
+                    System.out.println("ret");
+                    // TODO: set $V registers to the return target
                 }
 
             });
 
             indent = indent.substring(0, indent.length() - 2);
 
+        }
+    }
+
+    private Register loadVar(AllocationMap map, String var, boolean dst) {
+        Register register = map.lookupRegister(var);
+        if (register != null) { // variable in register
+            return register;
+        } else { // variable on (local) stack
+            int offset = map.lookupStack(var);
+            String output = "local[" + Integer.toString(offset) + "]";
+            Register load = localPool.getRegister();
+            if (!dst) // for destinations, only a register
+                System.out.println(load.toString() + " = " + output);
+            return load;
+        }
+    }
+
+    private void writeVar(Register register, AllocationMap map, String var) {
+        int offset = map.lookupStack(var);
+        String output = "local[" + Integer.toString(offset) + "]";
+        if (offset != -1) {
+            System.out.println(output + " = " + register.toString());
+        }
+    }
+
+    private void releaseLocalReg(Register register) {
+        if (localPool.contains(register)) {
+            localPool.releaseRegister(register);
         }
     }
 }

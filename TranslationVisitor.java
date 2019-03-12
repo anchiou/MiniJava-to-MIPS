@@ -3,23 +3,65 @@ import cs132.vapor.ast.*;
 
 public class TranslationVisitor {
 
+    private RegisterPool localPool = RegisterPool.CreateLocalPool();
+
     String indent = "";
 
-    public void printFunc(VFunction function) {
+    public Register createRegister(AllocationMap map, String s, boolean isDestination) {
+        Register register = map.lookupRegister(s);
+        if (register != null) {
+            return register;
+        }
+        else {
+            int offset = map.lookupStack(s);
+            Register var = localPool.getRegister();
+            if (!isDestination) {
+                System.out.println(indent + var.toString());
+            }
+            return var;
+        }
+    }
+
+    public void printFunc(VFunction function, Liveness liveness, AllocationMap map) {
+
+        Map<Integer, Set<String>> labels = new HashMap<>();
+        for (VCodeLabel label : function.labels) {
+            labels.computeIfAbsent(label.instrIndex, k -> new LinkedHashSet<>()).add(label.ident);
+        }
+
+        int in = Math.max(function.params.length - 4, 0);
+        int local = 0;
+        int out = 0;
 
         // Output function sig
         System.out.print("func " + function.ident);
-        System.out.println(" [in " + function.stack.in + " out "
-            + function.stack.out + " local " + function.stack.local + "]");
+        System.out.println(" [in " + in + " out " + out + " local " + local + "]");
 
+        // SAVE ALL CALLEE REGISTERS
+
+        // load params into registers or local
+        // Register[] registers = {
+        //     Register.a0, Register.a1, Register.a2, Register.a3
+        // };
+        // for (int i = 0; i < function.params.length; ++i) {
+        //
+        // }
+
+        // print body stuff
         for (int i = 0; i < function.body.length; ++i) {
 
-            // Output function labels
-            // for (VCodeLabel label : function.labels) {
-            //     System.out.println(label.ident + ":");
-            // }
-
             indent += "  ";
+
+            // Output labels
+            if (labels.containsKey(i)) {
+                indent = indent.substring(0, indent.length() - 2);
+                Set<String> set = labels.get(i);
+                for (Iterator<String> it = set.iterator(); it.hasNext(); ) {
+                    String s = it.next();
+                    System.out.println(s + ":");
+                }
+                indent += "  ";
+            }
 
             // Visitor for instruction printing
             function.body[i].accept(new VInstr.Visitor<RuntimeException>() {
@@ -27,10 +69,17 @@ public class TranslationVisitor {
                 @Override
                 public void visit(VAssign assignment) {
 
+                    Register destination = createRegister(map, assignment.dest.toString(), true);
+
                     if (assignment.source instanceof VVarRef) {
                         // register stuff here
+                        Register source = createRegister(map, assignment.source.toString(), false);
+                        System.out.println(indent + destination.toString() + " = " + source.toString());
+                        if (localPool.contains(source)){
+                            localPool.releaseRegister(source);
+                        }
                     } else {
-                        System.out.println(indent + assignment.dest.toString() + " = " + assignment.source.toString());
+                        System.out.println(indent + destination.toString() + " = " + assignment.source.toString());
                     }
 
                 }
@@ -118,7 +167,8 @@ public class TranslationVisitor {
 
             });
 
-            indent = indent.substring(0, indent.length()-2);
+            indent = indent.substring(0, indent.length() - 2);
+
         }
     }
 }

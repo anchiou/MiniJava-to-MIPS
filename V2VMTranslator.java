@@ -100,7 +100,7 @@ public class V2VMTranslator {
         this.spillStack = new LinkedHashSet<>();
         this.unused = new HashSet<>();
 
-        // active ←{}
+        // active <-{}
         this.active = new ArrayList<Interval>();
 
         // sort intervals in order of increasing start point
@@ -113,7 +113,7 @@ public class V2VMTranslator {
             if (active.size() == pool.numAvailable()) {
                 spillAtInterval(i);
             } else {
-                registerMap.put(i.getVar(), pool.getRegister()); // register[i] ← a register removed from pool of free registers
+                registerMap.put(i.getVar(), pool.getRegister()); // register[i] <- a register removed from pool of free registers
                 active.add(i); // add i to active, sorted by increasing end point
             }
         }

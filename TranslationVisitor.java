@@ -87,6 +87,10 @@ public class TranslationVisitor {
                         System.out.println(indent + destination.toString() + " = " + assignment.source.toString());
                     }
 
+                    if (localPool.contains(destination)){
+                        localPool.releaseRegister(destination);
+                    }
+
                 }
 
                 @Override
@@ -94,19 +98,20 @@ public class TranslationVisitor {
 
                     String statement = "";
 
-                    // Determine branch
-                    if (branch.positive) {
-                        statement += "if ";
-                    } else {
-                        statement += "if0 ";
-                    }
-
                     if (branch.value instanceof VVarRef) {
                         // do something with registers here (instead of branch.value its a register)
-                        System.out.println(indent + statement + "REGISTER HERE" + " goto " + branch.target.toString());
-                    } else {
-                        System.out.println(indent + statement + branch.value.toString() + " goto " + branch.target.toString());
+                        Register source = createRegister(map, branch.value.toString(), false);
+                        statement = source.toString();
                     }
+
+                    String out = "  ";
+                    if (branch.positive) {
+                        out += "if ";
+                    } else {
+                        out += "if0 ";
+                    }
+
+                    System.out.println(out + statement + " goto " + branch.target.toString());
 
                 }
 
@@ -114,29 +119,47 @@ public class TranslationVisitor {
                 public void visit(VBuiltIn builtIn) {
 
                     String output = builtIn.op.name + "(";
-
+                    List<Register> registers = new ArrayList<>();
                     for (VOperand operand : builtIn.args) {
                         if (operand instanceof VVarRef) {
-                            // registers
+                            Register source = createRegister(map, operand.toString(), false);
+                            registers.add(source);
+                            output += source.toString();
+                            output += " ";
                         } else {
                             output += operand.toString();
                             output += " ";
                         }
                     }
 
-                    output = output.replace(" ", "");
+                    output = output.substring(0, output.length() - 1);
                     output += ")";
 
-                    if (builtIn.dest != null) {
-                        System.out.println(indent + builtIn.dest + " = " + output);
-                    } else if (builtIn.dest == null) {
+                    for (Register reg : registers) {
+                        if (localPool.contains(reg)) {
+                            localPool.releaseRegister(reg);
+                        }
+                    }
+
+                    if (builtIn.dest == null) {
                         System.out.println(indent + output);
+                    } else if (builtIn.dest != null) {
+                        Register destination = createRegister(map, builtIn.dest.toString(), true);
+                        System.out.println(indent + destination.toString() + " = " + output);
+                        if (localPool.contains(destination)) {
+                            localPool.releaseRegister(destination);
+                        }
                     }
 
                 }
 
                 @Override
                 public void visit(VCall call) {
+
+                    Register[] registers = { 
+                        Register.a0, Register.a1, Register.a2, Register.a3
+                    };
+
 
                     if (call.addr instanceof VAddr.Label) {
                         System.out.println(indent + "call " + call.addr.toString());
@@ -216,7 +239,7 @@ public class TranslationVisitor {
                         System.out.println(indent + callee.get(i).toString() + " = " + output);
                     }
 
-                    System.out.println("ret");
+                    System.out.println(indent + "ret");
                     // TODO: set $V registers to the return target
                 }
 

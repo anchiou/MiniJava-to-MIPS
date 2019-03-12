@@ -1,5 +1,5 @@
-import cs132.vapor.ast.*;
 import java.util.*;
+import cs132.vapor.ast.*;
 
 public class TranslationVisitor {
 
@@ -107,7 +107,6 @@ public class TranslationVisitor {
                 public void visit(VMemWrite memWrite) {
 
 
-
                 }
 
                 @Override
@@ -120,9 +119,6 @@ public class TranslationVisitor {
             });
 
             indent = indent.substring(0, indent.length()-2);
-
         }
-
     }
-
 }

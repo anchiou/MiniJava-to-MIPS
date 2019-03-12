@@ -87,7 +87,7 @@ public class V2VMTranslator {
         // Pass live intervals and function parameters into register allocation
         AllocationMap map = registerAlloc(new ArrayList<>(intervals.values()), function.params);
 
-        transVisitor.printFunc(function, liveness, map);
+        transVisitor.printFunc(graph, function, liveness, map);
 
         System.out.println("");
 

@@ -20,7 +20,7 @@ public class TranslationVisitor {
         }
     }
 
-    public void printFunc(VFunction function, Liveness liveness, AllocationMap map) {
+    public void printFunc(FlowGraph graph, VFunction function, Liveness liveness, AllocationMap map) {
 
         Map<Integer, Set<String>> labels = new HashMap<>();
         for (VCodeLabel label : function.labels) {
@@ -29,7 +29,24 @@ public class TranslationVisitor {
 
         int in = Math.max(function.params.length - 4, 0);
         int local = 0;
-        int out = 0;
+        int out = map.stackSize();
+
+        for (Node node : graph.getNodeList()) {
+            VInstr instr = node.getInstr();
+            if (instr instanceof VCall) {
+                VCall call = (VCall) instr;
+                out = Math.max(call.args.length - 4, out);
+
+                // out[n] - def[n]
+                Set<String> liveOut = liveness.out.get(node);
+                liveOut.removeAll(node.getDefSet()); // remove all variables in out[n] that are in def[n]
+
+                // Save $t before function call, saved on high address of local stack
+                int saves = (int) liveOut.stream().map(map::lookupRegister).filter(o -> o != null
+                        && o.isCallerSaved()).distinct().count();
+                local = Math.max(local, map.stackSize() + saves);
+            }
+        }
 
         // Output function sig
         System.out.print("func " + function.ident);
@@ -44,12 +61,28 @@ public class TranslationVisitor {
             System.out.println(output + " = " + callee.get(i).toString());
         }
 
-        // load params into registers or local
-        // Register[] registers = {
-        //     Register.a0, Register.a1, Register.a2, Register.a3
-        // };
+        // load params into registers or (local) stack
+        Register[] registers = {
+            Register.a0, Register.a1, Register.a2, Register.a3
+        };
         // for (int i = 0; i < function.params.length; ++i) {
-        //
+        //     Register dst = map.lookupRegister(func.params[i].ident);
+        //     if (dst != null) {
+        //         if (i < 4) { // Params passed by registers
+        //             outputAssignment(dst.toString(), argregs[i].toString());
+        //         } else { // Params passed by `in` stack
+        //             outputAssignment(dst.toString(), RegAllocHelper.in(i - 4));
+        //         }
+        //     } else {
+        //         int offset = map.lookupStack(func.params[i].ident);
+        //         if (offset != -1) { // some parameters may never be used
+        //             // Move the remaining parameters into `local` stack
+        //             Register load = localPool.acquire();
+        //             outputAssignment(load.toString(), RegAllocHelper.in(i - 4));
+        //             outputAssignment(RegAllocHelper.local(offset), load.toString());
+        //             localPool.release(load);
+        //         }
+        //     }
         // }
 
         // print body stuff

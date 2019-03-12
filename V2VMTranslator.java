@@ -7,6 +7,7 @@ public class V2VMTranslator {
     private InstructionVisitor instrVisitor;
     private TranslationVisitor transVisitor;
     private FlowGraph graph;
+    private List<Interval> active;
 
     // Constructor
     public V2VMTranslator() {
@@ -89,16 +90,19 @@ public class V2VMTranslator {
     // Linear scan register allocation
     public void registerAlloc(ArrayList<Interval> intervals, VVarRef.Local[] params) {
         // active ←{}
-        List<Interval> active = new ArrayList<Interval>();
+        active = new ArrayList<Interval>();
 
-        // foreach live interval i, in order of increasing start point
+        // sort intervals in order of increasing start point
+        intervals.sort(Comparator.comparingInt(Interval::getStart));
+
         for (Interval i : intervals) {
             expireOldIntervals(i);
-            //     if length(active) = R then
-            //         SpillAtInterval(i)
-            //     else
-            //         register[i] ← a register removed from pool of free registers
-            //         add i to active, sorted by increasing end point
+            if (active.size() == R) {
+                spillAtInterval(i);
+            } else {
+                // register[i] ← a register removed from pool of free registers
+                // add i to active, sorted by increasing end point
+            }
         }
     }
 

@@ -55,7 +55,7 @@ public class Register {
         return this.register.startsWith("a");
     }
 
-    // Is return or loading
+    // Is return value or  temp loading
     public boolean isRetOrLoad() {
 >>>>>>> 43640ecf9812310305d8fa8f093dc0eaf621b952
         return this.register.startsWith("v");

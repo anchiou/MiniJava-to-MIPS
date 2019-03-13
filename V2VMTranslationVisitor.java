@@ -7,6 +7,12 @@ public class V2VMTranslationVisitor {
     String indent = "";
 
     public void printFunc(FlowGraph graph, VFunction function, Liveness liveness, AllocationMap map) {
+        List<Register> callee = map.usedCalleeRegister();
+        // System.out.println("********************" + callee);
+
+        // for (Register reg : callee) {
+        //     System.out.print(reg.toString() + " ");
+        // }
 
         Map<Integer, Set<String>> labels = new HashMap<>();
         for (VCodeLabel label : function.labels) {
@@ -41,7 +47,6 @@ public class V2VMTranslationVisitor {
         indent += "  ";
 
         // Save all $s registers
-        List<Register> callee = map.usedCalleeRegister();
         for (int i = 0; i < callee.size(); i++) {
             String output = "local[" + Integer.toString(i) + "]";
             System.out.println(indent + output + " = " + callee.get(i).toString());
@@ -75,10 +80,10 @@ public class V2VMTranslationVisitor {
         // print body stuff
         for (int i = 0; i < function.body.length; ++i) {
             Node node = graph.getNodeList().get(i);
+
             // out[n] - def[n]
             final Set<String> liveOut = liveness.out.get(node);
             liveOut.removeAll(node.getDefSet());
-
 
             // Output labels
             if (labels.containsKey(i)) {
@@ -96,7 +101,6 @@ public class V2VMTranslationVisitor {
 
                 @Override
                 public void visit(VAssign assignment) {
-
                     Register destination = loadVar(map, assignment.dest.toString(), true);
 
                     if (assignment.source instanceof VVarRef) {
@@ -115,7 +119,6 @@ public class V2VMTranslationVisitor {
 
                     writeVar(destination, map, assignment.dest.toString());
                     releaseLocalReg(destination);
-
                 }
 
                 @Override
@@ -139,7 +142,6 @@ public class V2VMTranslationVisitor {
 
                 @Override
                 public void visit(VBuiltIn builtIn) {
-
                     String output = builtIn.op.name + "(";
                     List<Register> registers = new ArrayList<>();
                     for (VOperand operand : builtIn.args) {
@@ -172,7 +174,6 @@ public class V2VMTranslationVisitor {
                             localPool.releaseRegister(destination);
                         }
                     }
-
                 }
 
                 @Override
@@ -255,7 +256,6 @@ public class V2VMTranslationVisitor {
                         System.out.println(indent + save.get(i).toString()
                             + " = local[" + Integer.toString(map.stackSize() + i) + "]");
                     }
-
                 }
 
                 @Override
@@ -265,7 +265,6 @@ public class V2VMTranslationVisitor {
 
                 @Override
                 public void visit(VMemRead memRead) {
-
                     Register dst = loadVar(map, memRead.dest.toString(), true);
 
                     VMemRef.Global mem = (VMemRef.Global) memRead.source;
@@ -284,7 +283,6 @@ public class V2VMTranslationVisitor {
 
                     writeVar(dst, map, memRead.dest.toString());
                     releaseLocalReg(dst);
-
                 }
 
                 @Override
@@ -332,7 +330,6 @@ public class V2VMTranslationVisitor {
 
                     System.out.println(indent + "ret");
                 }
-
             });
         }
 
@@ -345,7 +342,7 @@ public class V2VMTranslationVisitor {
             return register;
         } else { // variable on (local) stack
             int offset = map.lookupStack(var);
-            String output = "local[" + Integer.toString(offset) + "]";
+            String output = "ocal[" + Integer.toString(offset) + "]";
             Register load = localPool.getRegister();
             if (!dest) // for destinations, only a register
                 System.out.println(indent + load.toString() + " = " + output);

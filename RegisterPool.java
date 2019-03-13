@@ -1,7 +1,6 @@
 import java.util.*;
 
 public class RegisterPool {
-
     private Set<Register> all = new LinkedHashSet<>();
     private Set<Register> use = new HashSet<>();
 
@@ -12,7 +11,6 @@ public class RegisterPool {
 
     public static RegisterPool CreateGlobalPool() {
         Register[] registers = {
-
             // Caller saved registers
             Register.t0, Register.t1, Register.t2, Register.t3,
             Register.t4, Register.t5, Register.t6, Register.t7,
@@ -21,23 +19,33 @@ public class RegisterPool {
             // Callee saved registers
             Register.s0, Register.s1, Register.s2, Register.s3,
             Register.s4, Register.s5, Register.s6, Register.s7
-
         };
         return new RegisterPool(registers);
     }
 
     public static RegisterPool CreateLocalPool() {
         Register[] registers = {
-
             Register.v0, Register.v1,
             Register.a0, Register.a1, Register.a2, Register.a3
-
         };
+
         return new RegisterPool(registers);
     }
 
-    public boolean addRegister(Register[] registers) {
-        return Collections.addAll(all, registers);
+    public void printAllPool() {
+        System.out.print("All Register Pool: [ ");
+        for (Register reg : this.all) {
+            System.out.print(reg.toString() + " ");
+        }
+        System.out.println("]");
+    }
+
+    public void printUsePool() {
+        System.out.print("Used Register Pool: [ ");
+        for (Register reg : this.use) {
+            System.out.print(reg.toString() + " ");
+        }
+        System.out.println("]");
     }
 
     public boolean contains(Register register) {
@@ -49,8 +57,9 @@ public class RegisterPool {
     }
 
     public boolean hasFreeRegisters() {
-        if (all.size() > use.size())
+        if (all.size() > use.size()) {
             return true;
+        }
         return false;
     }
 

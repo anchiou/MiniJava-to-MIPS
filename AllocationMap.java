@@ -6,20 +6,21 @@ public class AllocationMap {
     private final List<String> stack;
     private final int stackReserved;
 
-    public AllocationMap(Map<String, Register> register, String[] stack) {
-        this.register = register;
+    public AllocationMap(Map<String, Register> registerMap, String[] stack) {
+        this.register = registerMap;
         this.stack = Arrays.asList(stack);
         this.stackReserved = usedCalleeRegister().size();
     }
 
     public void printRegisterMap() {
+        System.out.println("Allocation Map: ");
         for (String key : register.keySet()) {
-            System.out.println(key + " --> " + register.get(key).toString());
+            System.out.println("                    " + key + " --> " + register.get(key).toString());
         }
     }
 
     public List<Register> usedCalleeRegister() {
-        return register.values().stream().filter(Register::isCalleeSaved).distinct().collect(Collectors.toList());
+        return this.register.values().stream().filter(Register::isCalleeSaved).distinct().collect(Collectors.toList());
     }
 
     public Register lookupRegister(String s) {

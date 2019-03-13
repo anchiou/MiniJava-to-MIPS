@@ -33,11 +33,11 @@ public class InstructionVisitor {
 
                 // Get BuiltIn information
                 @Override
-                public void visit(VBuiltIn c) {
-                    if (c.dest != null) {
-                        def.add(c.dest.toString());
+                public void visit(VBuiltIn b) {
+                    if (b.dest != null) {
+                        def.add(b.dest.toString());
                     }
-                    for (VOperand operand : c.args) {
+                    for (VOperand operand : b.args) {
                         if (operand instanceof VVarRef) {
                             use.add(operand.toString());
                         }
@@ -70,14 +70,14 @@ public class InstructionVisitor {
                 @Override
                 public void visit(VMemRead r) {
                 	def.add(r.dest.toString());
-                    VMemRef.Global globalReference = (VMemRef.Global)r.source;
+                    VMemRef.Global globalReference = (VMemRef.Global) r.source;
                     use.add(globalReference.base.toString());
                 }
 
                 // Get memwrite information
                 @Override
                 public void visit(VMemWrite w) {
-                    VMemRef.Global globalReference = (VMemRef.Global)w.dest;
+                    VMemRef.Global globalReference = (VMemRef.Global) w.dest;
                     use.add(globalReference.base.toString());
                     if (w.source instanceof VVarRef) {
                         use.add(w.source.toString());

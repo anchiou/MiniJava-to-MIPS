@@ -44,7 +44,7 @@ public class FlowGraph {
         }
 
         Set<String> prevIn, prevOut, newIn, newOut; // in'[n], out'[n], in[n], out[n]
-        Set<String> tempDef; // temporary def[n]
+        Set<String> tempIn; // temporary
         boolean isUpdated;
 
         do {
@@ -55,9 +55,9 @@ public class FlowGraph {
 
                 // in[n] <-- use[n] ∪ (out[n] − def [n])
                 newIn = node.getUseSet(); // all variables in use[n]
-                tempDef = new HashSet<>(prevOut);
-                tempDef.removeAll(node.getDefSet()); // remove all variables in out[n] that are in def[n]
-                newIn.addAll(tempDef); // use[n] ∪ (out[n] − def [n])
+                tempIn = new HashSet<>(prevOut); // out[n]
+                tempIn.removeAll(node.getDefSet()); // remove all variables in out[n] that are in def[n]
+                newIn.addAll(tempIn); // use[n] ∪ (out[n] − def [n])
 
                 // out[n] <-- U_s∈succ[n] in[s]
                 newOut = new HashSet<>();

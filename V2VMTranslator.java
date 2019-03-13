@@ -2,7 +2,6 @@ import java.util.*;
 import cs132.vapor.ast.*;
 
 public class V2VMTranslator {
-
     // Private data members
     private InstructionVisitor instrVisitor;
     private V2VMTranslationVisitor transVisitor;
@@ -24,7 +23,6 @@ public class V2VMTranslator {
 
     // Translator
     public void translate(VaporProgram p) {
-
         // Print data segments
         for (VDataSegment segment : p.dataSegments) {
             translateDataSegments(segment);
@@ -34,32 +32,21 @@ public class V2VMTranslator {
         for (VFunction function : p.functions) {
             translateFunction(function);
         }
-
     }
 
     // Translate data segments
     public void translateDataSegments(VDataSegment segment) {
-
         System.out.println("const " + segment.ident.toString());
         for (VOperand val : segment.values) {
             System.out.println("  " + val.toString());
         }
         System.out.print("\n");
-
     }
 
     // Function translator
     public void translateFunction(VFunction function) {
-
-        // for (VVarRef.Local param : function.params) {
-        //     System.out.println(param.toString());
-        // }
-        //
-        // for (String var : function.vars) {
-        //     System.out.println(var.toString());
-        // }
-
         this.graph = instrVisitor.createFlowGraph(function.body);
+
         Liveness liveness = graph.calcLiveness();
 
         Map<String, Interval> intervals = new HashMap<>(); // maps variables to its live interval
@@ -91,7 +78,6 @@ public class V2VMTranslator {
         transVisitor.printFunc(graph, function, liveness, map);
 
         System.out.println("");
-
     }
 
     // Linear scan register allocation
@@ -100,6 +86,8 @@ public class V2VMTranslator {
         this.registerMap = new LinkedHashMap<>();
         this.spillStack = new LinkedHashSet<>();
         this.unused = new HashSet<>();
+
+        // pool.printAllPool();
 
         // active <-- {}
         this.active = new ArrayList<Interval>();
@@ -123,11 +111,14 @@ public class V2VMTranslator {
 
         for (Interval i : intervals) {
             expireOldIntervals(i);
-            if (!pool.hasFreeRegisters()) {
-                spillAtInterval(i);
-            } else {
-                registerMap.put(i.getVar(), pool.getRegister()); // register[i] <-- a register removed from pool of free registers
-                active.add(i); // add i to active, sorted by increasing end point
+            if (i.getStart() > 0 || !unused.contains(i.getVar())) {
+                if (!pool.hasFreeRegisters()) {
+                    spillAtInterval(i);
+                } else {
+                    registerMap.put(i.getVar(), pool.getRegister()); // register[i] <-- a register removed from pool of free registers
+                    active.add(i); // add i to active, sorted by increasing end point
+                    // pool.printUsePool();
+                }
             }
         }
 
@@ -163,7 +154,7 @@ public class V2VMTranslator {
         if (!active.isEmpty()) {
             int index = active.size() - 1; // spill <-- last interval in active
             do {
-                spill = active.get(index -= 1);
+                spill = active.get(index--);
             } while (index >= 0 && unused.contains(spill.getVar()));
 
             if (index < 0) {

@@ -42,7 +42,7 @@ public class V2VMTranslationVisitor {
 
         // Output function sig
         System.out.print("func " + function.ident);
-        System.out.println(" [in " + in + " out " + out + " local " + local + "]");
+        System.out.println(" [in " + in + ", out " + out + ", local " + local + "]");
 
         indent += "  ";
 

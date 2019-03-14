@@ -44,9 +44,10 @@ public class VM2M {
         VaporProgram program = parseVapor(System.in, System.out);
         VM2MTranslator translator = new VM2MTranslator();
         translator.translateDataSegments(program.dataSegments);
+        translator.beginText();
 
-        for (VFunction func : program.functions) {
-
+        for (VFunction function : program.functions) {
+            translator.translateFunction(function);
         }
     }
 }

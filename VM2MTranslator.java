@@ -61,8 +61,6 @@ public class VM2MTranslator {
         System.out.println("  sw $fp -8($sp)"); // store frame pointer into ($sp-8)
         System.out.println("  move $fp $sp");   // $fp = $sp
 
-        // TODO: translate function
-
         // Translate stack (stacks multiplied by 4 because each word is 4 bytes)
         int in = function.stack.in * 4;
         int local = function.stack.local * 4;

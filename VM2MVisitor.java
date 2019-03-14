@@ -48,10 +48,9 @@ public class VM2MVisitor {
                     if (b.dest != null)
                         System.out.println("                           " + b.dest.toString());
 
-
-                    for (VOperand operand : b.args) {
-                        if (operand instanceof VVarRef) {
-                            System.out.println("                           " + operand.toString());
+                    for (VOperand argument : b.args) {
+                        if (argument instanceof VVarRef) {
+                            System.out.println("                           **" + argument.toString());
                         }
                     }
                 }

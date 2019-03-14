@@ -42,7 +42,11 @@ public class VM2M {
 
     public static void main(String[] args) throws ProblemException, IOException {
         VaporProgram program = parseVapor(System.in, System.out);
+        VM2MTranslator translator = new VM2MTranslator();
+        translator.translateDataSegments(program.dataSegments);
 
+        for (VFunction func : program.functions) {
 
+        }
     }
 }

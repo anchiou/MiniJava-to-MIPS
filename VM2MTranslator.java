@@ -2,6 +2,8 @@ import java.util.*;
 import cs132.vapor.ast.*;
 
 public class VM2MTranslator {
+    VM2MVisitor visitor = new VM2MVisitor();
+
     // Output beginning of MIPS text section
     public void beginText() {
         System.out.println(".text\n");
@@ -54,6 +56,23 @@ public class VM2MTranslator {
     // Translate function
     public void translateFunction(VFunction function) {
         System.out.println(function.ident + ":");
+
+        // Function preamble
+        System.out.println("  sw $fp -8($sp)"); // store frame pointer into ($sp-8)
+        System.out.println("  move $fp $sp");   // $fp = $sp
+
+        // Translate stack (stacks multiplied by 4 because each word is 4 bytes)
+        int in = function.stack.in * 4;
+        int local = function.stack.local * 4;
+        int out = function.stack.out * 4;
+        int size = local + out + 8; // 8 bytes = 2 words
+        System.out.println("  subu $sp $sp " + Integer.toString(size));
+
+        // Save return address at $fp-4 (1 word)
+        System.out.println("  sw $ra -4($fp)");
+
+        // TODO: translate function
+        visitor.acceptInstructions(function.body);
 
         System.out.print("\n");
     }

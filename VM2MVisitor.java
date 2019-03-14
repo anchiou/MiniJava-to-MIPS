@@ -2,6 +2,9 @@ import java.util.*;
 import cs132.vapor.ast.*;
 
 public class VM2MVisitor {
+
+    String indent = "  ";
+
     // Instruction visitor
     public void acceptInstructions(VInstr[] instructions) {
         for (VInstr instruction : instructions) {
@@ -24,6 +27,19 @@ public class VM2MVisitor {
                 public void visit(VBranch b) {
 
                     System.out.println("                         Branch");
+
+                    String target = b.target.toString();
+
+                    // if the branch is positive
+                    if (b.positive) {
+                        // use bnez
+                        target = target.substring(1, target.length());
+                        System.out.println(indent + "bnez " + b.value + " " + target);
+                    } else {
+                        // use beqz
+                        target = target.substring(1, target.length());
+                        System.out.println(indent + "beqz " + b.value + " " + target);
+                    }
 
                     // if (b.value instanceof VVarRef) {
                     //     use.add(b.value.toString());

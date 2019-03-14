@@ -49,5 +49,7 @@ public class VM2M {
         for (VFunction function : program.functions) {
             translator.translateFunction(function);
         }
+
+        translator.endText();
     }
 }

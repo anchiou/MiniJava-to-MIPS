@@ -55,6 +55,14 @@ public class VM2MTranslator {
     public void translateFunction(VFunction function) {
         System.out.println(function.ident + ":");
 
+        // Function preamble
+        System.out.println("  sw $fp -8($sp)"); // store frame pointer into ($sp-8)
+        System.out.println("  move $fp $sp");   // $fp = $sp
+
+        // TODO: translate function
+
+
+
         System.out.print("\n");
     }
 }

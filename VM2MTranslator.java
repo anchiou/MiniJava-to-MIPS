@@ -39,6 +39,9 @@ public class VM2MTranslator {
         System.out.println(".align 0");
         System.out.println("_newline: .asciiz \"\\n\"");
         System.out.println("_str0: .asciiz \"null pointer\\n\"");
+        if (visitor.hasArrayError()) {
+            System.out.println("_str1: .asciiz \"array index out of bounds\\n\"");
+        }
     }
 
     // Translate data segments
@@ -66,13 +69,13 @@ public class VM2MTranslator {
         int local = function.stack.local * 4;
         int out = function.stack.out * 4;
         int size = local + out + 8; // 8 bytes = 2 words
-        System.out.println("  subu $sp $sp " + Integer.toString(size));
+        System.out.println("  subu $sp $sp " + Integer.toString(size)); // decrease $sp by size
 
-        // Save return address at $fp-4 (1 word)
+        // Save return address at ($fp-4) (1 word)
         System.out.println("  sw $ra -4($fp)");
 
         // TODO: translate function
-        visitor.acceptInstructions(function.body);
+        visitor.acceptInstructions(function.body, size);
 
         System.out.print("\n");
     }

@@ -58,6 +58,7 @@ public class VM2MTranslator {
 
     // Translate function
     public void translateFunction(VFunction function) {
+        Map<Integer, Set<String>> labels = new HashMap<>(); // map to keep track of labels
         System.out.println(function.ident + ":");
 
         // Function preamble
@@ -74,8 +75,10 @@ public class VM2MTranslator {
         // Save return address at ($fp-4) (1 word)
         System.out.println("  sw $ra -4($fp)");
 
-        // TODO: translate function
-        visitor.acceptInstructions(function.body, size);
+        for (VCodeLabel label : function.labels) {
+            labels.computeIfAbsent(label.instrIndex, k -> new LinkedHashSet<>()).add(label.ident);
+        }
+        visitor.acceptInstructions(function.body, labels, size); // translate instructions
 
         System.out.print("\n");
     }

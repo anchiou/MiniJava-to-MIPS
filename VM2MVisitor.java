@@ -7,9 +7,22 @@ public class VM2MVisitor {
     boolean arrayError = false; // flag for array out of bounds error
 
     // Instruction visitor
-    public void acceptInstructions(VInstr[] instructions, int size) {
+    public void acceptInstructions(VInstr[] instructions, Map<Integer, Set<String>> labels, int size) {
+        int index = 0;
 
         for (VInstr instruction : instructions) {
+            // Output labels
+            if (labels.containsKey(index)) {
+                indent = indent.substring(0, indent.length() - 2);
+                Set<String> set = labels.get(index);
+                for (Iterator<String> it = set.iterator(); it.hasNext(); ) {
+                    String label = it.next();
+                    System.out.println(label + ":");
+                }
+                indent += "  ";
+            }
+            ++index;
+
             instruction.accept(new VInstr.Visitor<RuntimeException>() {
 
                 // Translate assignment information

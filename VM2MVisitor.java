@@ -222,7 +222,8 @@ public class VM2MVisitor {
                         String src = w.source.toString();
                         if (src.startsWith(":")) { // source is vmt
                             System.out.println(indent + "la $t9 " + src.substring(1));
-                            System.out.println(indent + "sw $t9 0($t0)");
+                            System.out.println(indent + "sw $t9 " +
+                                                dest.byteOffset + "(" + dest.base.toString() + ")");
                         } else if (src.startsWith("$")) { // source is register
                             System.out.println(indent + "sw " + w.source.toString() + " " +
                                                 dest.byteOffset + "(" + dest.base.toString() + ")");

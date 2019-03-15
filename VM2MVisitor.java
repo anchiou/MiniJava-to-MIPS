@@ -12,11 +12,9 @@ public class VM2MVisitor {
         for (VInstr instruction : instructions) {
             instruction.accept(new VInstr.Visitor<RuntimeException>() {
 
-                // Get assignment information
+                // Translate assignment information
                 @Override
                 public void visit(VAssign a) {
-                    // System.out.println("                           Assign");
-
                     if (a.source instanceof VVarRef) {
                         System.out.println(indent + "move " +
                                             a.dest.toString() + " " + a.source.toString());
@@ -26,7 +24,7 @@ public class VM2MVisitor {
                     }
                 }
 
-                // Get branch information
+                // Translate branch information
                 @Override
                 public void visit(VBranch b) {
                     // System.out.println("                           Branch");
@@ -45,7 +43,7 @@ public class VM2MVisitor {
                     }
                 }
 
-                // Get BuiltIn information
+                // Translate BuiltIn information
                 @Override
                 public void visit(VBuiltIn b) {
                     String opName = ""; // operation name
@@ -62,7 +60,11 @@ public class VM2MVisitor {
                     }
 
                     if (opName == "HeapAllocZ") { // HeapAllocZ
-                        System.out.println(indent + "li $a0 " + b.args[0].toString());
+                        if (b.args[0].toString().startsWith("$")) { // register value
+                            System.out.println(indent + "move $a0 " + b.args[0].toString());
+                        } else { // immediate value
+                            System.out.println(indent + "li $a0 " + b.args[0].toString());
+                        }
                         System.out.println(indent + "jal _heapAlloc");
 
                     } else if (opName == "PrintIntS") { // PrintIntS
@@ -159,7 +161,7 @@ public class VM2MVisitor {
                     }
                 }
 
-                // Get Call information
+                // Translate Call information
                 @Override
                 public void visit(VCall c) {
                     // System.out.println("                           Call");
@@ -175,7 +177,7 @@ public class VM2MVisitor {
                     // System.out.println("                             " + c.addr.toString());
                 }
 
-                // Get goto information
+                // Translate goto information
                 @Override
                 public void visit(VGoto g) {
                     // System.out.println("                           Goto");
@@ -185,38 +187,48 @@ public class VM2MVisitor {
                     System.out.println(indent + "j " + target);
                 }
 
-                // Get memread information
+                // Translate memread information
                 @Override
                 public void visit(VMemRead r) {
-                    // System.out.println("                           MemRead");
-
-                    if (r.source instanceof VMemRef.Global) {
-                        VMemRef.Global ref = (VMemRef.Global) r.source;
-                        System.out.println(indent + "lw " + r.dest.toString() + " " + ref.byteOffset
-                                            + "(" + ref.base.toString() + ")");
-                    } else {
-                        VMemRef.Stack ref = (VMemRef.Stack) r.source;
-                        System.out.println(indent + "lw " + r.dest.toString() + " 0($sp)");
+                    if (r.source instanceof VMemRef.Global) { // read from register
+                        VMemRef.Global src = (VMemRef.Global) r.source;
+                        System.out.println(indent + "lw " + r.dest.toString() + " " + src.byteOffset
+                                            + "(" + src.base.toString() + ")");
+                    } else { // read from stack
+                        VMemRef.Stack src = (VMemRef.Stack) r.source;
+                        int byteOffset = src.index * 4;
+                        // in stack pointed to by fp
+                        System.out.println(indent + "lw " + r.dest.toString() + " " + byteOffset + "($fp)");
                     }
                 }
 
-                // Get memwrite information
+                // Translate memwrite information
                 @Override
                 public void visit(VMemWrite w) {
-                    // System.out.println("                           MemWrite");
-
-                    if (w.dest instanceof VMemRef.Global) {
-                        // TODO figure out source value here
-                        System.out.println("                           TODO: FIX SOURCE VALUE (TEMP?)");
-                        VMemRef.Global destination_0 = (VMemRef.Global) w.dest;
-                        System.out.println(indent + "sw " + w.source.toString() + " " +
-                                            destination_0.byteOffset + "(" + destination_0.base.toString() + ")");
-                    } else {
-                        // TODO figure out destination here
-                        VMemRef.Stack destination_1 = (VMemRef.Stack) w.dest;
-                        System.out.println(indent + "sw " + w.source.toString() + " 0($sp)");
+                    if (w.dest instanceof VMemRef.Global) { // destination is a register
+                        VMemRef.Global dest = (VMemRef.Global) w.dest;
+                        String src = w.source.toString();
+                        if (src.startsWith(":")) { // source is vmt
+                            System.out.println(indent + "move $t0 $v0");
+                            System.out.println(indent + "la $t9 " + src.substring(1));
+                            System.out.println(indent + "sw $t9 0($t0)");
+                        } else {
+                            System.out.println(indent + "sw " + w.source.toString() + " " +
+                                                dest.byteOffset + "(" + dest.base.toString() + ")");
+                        }
                     }
-
+                    else { // destination is stack
+                        VMemRef.Stack dest = (VMemRef.Stack) w.dest;
+                        int byteOffset = dest.index * 4;
+                        // String region = dest.region.toString();
+                        if (w.source instanceof VVarRef) { // source is a register
+                            System.out.println(indent + "sw " + w.source.toString() +
+                                                " " + Integer.toString(byteOffset) + "($sp)");
+                        } else { // source is an immediate
+                            System.out.println(indent + "li $t9 " +  w.source.toString());
+                            System.out.println(indent + "sw $t9 " + Integer.toString(byteOffset) + "($sp)");
+                        }
+                    }
                 }
 
                 // Return from function

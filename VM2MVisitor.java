@@ -77,6 +77,7 @@ public class VM2MVisitor {
                             System.out.println(indent + "li $a0 " + b.args[0].toString());
                         }
                         System.out.println(indent + "jal _heapAlloc");
+                        System.out.println(indent + "move " + dest + " $v0");
 
                     } else if (opName == "PrintIntS") { // PrintIntS
                         if (b.args[0] instanceof VVarRef) { // PrintIntS(reg)
@@ -126,8 +127,8 @@ public class VM2MVisitor {
                             }
                         }
                     } else if (opName == "MulS") {  // MulS
-                        if (arg1 instanceof VLitStr) {
-                            if (arg2 instanceof VLitStr) { // MulS(imm imm)
+                        if (!arg1.toString().startsWith("$")) { // Not a register therefore an immediate
+                            if (!arg2.toString().startsWith("$")) { // MulS(imm imm)
                                 int imm1 = Integer.parseInt(arg1.toString()); // immediate value 1
                                 int imm2 = Integer.parseInt(arg2.toString()); // immediate value 2
                                 int product = imm1 * imm2;
@@ -178,8 +179,6 @@ public class VM2MVisitor {
                 // Translate Call information
                 @Override
                 public void visit(VCall c) {
-                    // System.out.println("                           Call");
-
                     String addr = c.addr.toString(); // call address
                     if (addr.startsWith(":")) { // address is to a function
                         System.out.println(indent + "jal " + addr.substring(1));
@@ -222,11 +221,14 @@ public class VM2MVisitor {
                         VMemRef.Global dest = (VMemRef.Global) w.dest;
                         String src = w.source.toString();
                         if (src.startsWith(":")) { // source is vmt
-                            System.out.println(indent + "move $t0 $v0");
                             System.out.println(indent + "la $t9 " + src.substring(1));
                             System.out.println(indent + "sw $t9 0($t0)");
-                        } else {
+                        } else if (src.startsWith("$")) { // source is register
                             System.out.println(indent + "sw " + w.source.toString() + " " +
+                                                dest.byteOffset + "(" + dest.base.toString() + ")");
+                        } else { // source is immediate
+                            System.out.println(indent + "li $t9 " +  w.source.toString());
+                            System.out.println(indent + "sw $t9 " +
                                                 dest.byteOffset + "(" + dest.base.toString() + ")");
                         }
                     }

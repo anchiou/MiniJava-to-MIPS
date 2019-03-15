@@ -7,6 +7,7 @@ public class VM2MVisitor {
 
     // Instruction visitor
     public void acceptInstructions(VInstr[] instructions) {
+
         for (VInstr instruction : instructions) {
             instruction.accept(new VInstr.Visitor<RuntimeException>() {
 
@@ -32,6 +33,8 @@ public class VM2MVisitor {
                         // use bnez
                         target = target.substring(1, target.length());
                         System.out.println(indent + "bnez " + b.value + " " + target);
+                        System.out.println(indent + "la $a0 _str0");
+                        System.out.println(indent + "j _error");
                     } else {
                         // use beqz
                         target = target.substring(1, target.length());

@@ -50,7 +50,7 @@ public class VM2MTranslator {
         for (VDataSegment segment : segments) {
             System.out.println(segment.ident + ":");
             for (VOperand value : segment.values) {
-                System.out.println("  " + value.toString());
+                System.out.println("  " + value.toString().substring(1));
             }
             System.out.print("\n");
         }

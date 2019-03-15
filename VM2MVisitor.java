@@ -28,24 +28,22 @@ public class VM2MVisitor {
                 // Translate assignment information
                 @Override
                 public void visit(VAssign a) {
-                    if (a.source instanceof VVarRef) {
-                        System.out.println(indent + "move " +
-                                            a.dest.toString() + " " + a.source.toString());
-                    } else {
-                        System.out.println(indent + "li " +
-                                            a.dest.toString() + " " + a.source.toString());
+                    String src = a.source.toString();
+                    if (a.source instanceof VVarRef) { // source is register
+                        System.out.println(indent + "move " + a.dest.toString() + " " + src);
+                    } else if (src.startsWith(":")) { // source is label
+                        System.out.println(indent + "la " + a.dest.toString() + " " + src.substring(1));
+                    } else { // source is immediate
+                        System.out.println(indent + "li " + a.dest.toString() + " " + src);
                     }
                 }
 
                 // Translate branch information
                 @Override
                 public void visit(VBranch b) {
-                    // System.out.println("                           Branch");
-
                     String target = b.target.toString();
 
-                    // if the branch is positive
-                    if (b.positive) {
+                    if (b.positive) { // if the branch is positive
                         // use bnez
                         target = target.substring(1, target.length());
                         System.out.println(indent + "bnez " + b.value + " " + target);
@@ -81,9 +79,12 @@ public class VM2MVisitor {
                         System.out.println(indent + "jal _heapAlloc");
 
                     } else if (opName == "PrintIntS") { // PrintIntS
-                        System.out.println(indent + "move $a0 " + b.args[0].toString());
+                        if (b.args[0] instanceof VVarRef) { // PrintIntS(reg)
+                            System.out.println(indent + "move $a0 " + b.args[0].toString());
+                        } else { // PrintIntS(imm)
+                            System.out.println(indent + "li $a0 " + b.args[0].toString());
+                        }
                         System.out.println(indent + "jal _print");
-
                     } else if (opName == "Error") { // Error
                         if (b.args[0].toString().contains("null pointer")) {
                             System.out.println(indent + "la $a0 _str0");
@@ -178,23 +179,18 @@ public class VM2MVisitor {
                 @Override
                 public void visit(VCall c) {
                     // System.out.println("                           Call");
-                    // def.add(c.dest.toString());
-                    // if (c.addr instanceof VAddr.Var) {
-                    //     use.add(c.addr.toString());
-                    // }
-                    // for (VOperand operand : c.args) {
-                    //     if (operand instanceof VVarRef) {
-                    //         use.add(operand.toString());
-                    //     }
-                    // }
-                    // System.out.println("                             " + c.addr.toString());
+
+                    String addr = c.addr.toString(); // call address
+                    if (addr.startsWith(":")) { // address is to a function
+                        System.out.println(indent + "jal " + addr.substring(1));
+                    } else { // address is in register
+                        System.out.println(indent + "jalr " + addr);
+                    }
                 }
 
                 // Translate goto information
                 @Override
                 public void visit(VGoto g) {
-                    // System.out.println("                           Goto");
-
                     String target = g.target.toString();
                     target = target.substring(1, target.length());
                     System.out.println(indent + "j " + target);
@@ -210,8 +206,12 @@ public class VM2MVisitor {
                     } else { // read from stack
                         VMemRef.Stack src = (VMemRef.Stack) r.source;
                         int byteOffset = src.index * 4;
-                        // in stack pointed to by fp
-                        System.out.println(indent + "lw " + r.dest.toString() + " " + byteOffset + "($fp)");
+                        String region = src.region.toString();
+                        if (region == "In") { // (in) stack pointed to by fp
+                            System.out.println(indent + "lw " + r.dest.toString() + " " + byteOffset + "($fp)");
+                        } else { // (local) and (out) pointed to by sp
+                            System.out.println(indent + "lw " + r.dest.toString() + " " + byteOffset + "($sp)");
+                        }
                     }
                 }
 
@@ -233,13 +233,23 @@ public class VM2MVisitor {
                     else { // destination is stack
                         VMemRef.Stack dest = (VMemRef.Stack) w.dest;
                         int byteOffset = dest.index * 4;
-                        // String region = dest.region.toString();
-                        if (w.source instanceof VVarRef) { // source is a register
-                            System.out.println(indent + "sw " + w.source.toString() +
-                                                " " + Integer.toString(byteOffset) + "($sp)");
-                        } else { // source is an immediate
-                            System.out.println(indent + "li $t9 " +  w.source.toString());
-                            System.out.println(indent + "sw $t9 " + Integer.toString(byteOffset) + "($sp)");
+                        String region = dest.region.toString();
+                        if (region != "In") { // (local) or (out)
+                            if (w.source instanceof VVarRef) { // source is a register
+                                System.out.println(indent + "sw " + w.source.toString() +
+                                                    " " + Integer.toString(byteOffset) + "($sp)");
+                            } else { // source is an immediate
+                                System.out.println(indent + "li $t9 " +  w.source.toString());
+                                System.out.println(indent + "sw $t9 " + Integer.toString(byteOffset) + "($sp)");
+                            }
+                        } else { // (in)
+                            if (w.source instanceof VVarRef) { // source is a register
+                                System.out.println(indent + "sw " + w.source.toString() +
+                                                    " " + Integer.toString(byteOffset) + "($fp)");
+                            } else { // source is an immediate
+                                System.out.println(indent + "li $t9 " +  w.source.toString());
+                                System.out.println(indent + "sw $t9 " + Integer.toString(byteOffset) + "($fp)");
+                            }
                         }
                     }
                 }

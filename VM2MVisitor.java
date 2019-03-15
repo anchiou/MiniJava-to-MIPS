@@ -13,20 +13,17 @@ public class VM2MVisitor {
                 // Get assignment information
                 @Override
                 public void visit(VAssign a) {
+                    if (a.source instanceof VVarRef) {
+                        System.out.println(indent + "move " + a.dest.toString() + " " + a.source.toString());
+                    } else {
+                        System.out.println(indent + "li " + a.dest.toString() + " " + a.source.toString());
+                    }
 
-                    System.out.println("                         Assign");
-
-                    // def.add(a.dest.toString());
-                    // if (a.source instanceof VVarRef) {
-                    //     use.add(a.source.toString());
-                    // }
                 }
 
                 // Get branch information
                 @Override
                 public void visit(VBranch b) {
-
-                    System.out.println("                         Branch");
 
                     String target = b.target.toString();
 
@@ -40,10 +37,6 @@ public class VM2MVisitor {
                         target = target.substring(1, target.length());
                         System.out.println(indent + "beqz " + b.value + " " + target);
                     }
-
-                    // if (b.value instanceof VVarRef) {
-                    //     use.add(b.value.toString());
-                    // }
                 }
 
                 // Get BuiltIn information
@@ -89,43 +82,51 @@ public class VM2MVisitor {
                 // Get goto information
                @Override
                 public void visit(VGoto g) {
-                    System.out.println("                         Goto");
-
-                	// if (g.target instanceof VAddr.Var) {
-                	// 	use.add(g.target.toString());
-                	// }
+                    String target = g.target.toString();
+                    target = target.substring(1, target.length());
+                    System.out.println(indent + "j " + target);
                 }
 
                 // Get memread information
                 @Override
                 public void visit(VMemRead r) {
-                    System.out.println("                         MemRead");
 
-                	// def.add(r.dest.toString());
-                    // VMemRef.Global globalReference = (VMemRef.Global) r.source;
-                    // use.add(globalReference.base.toString());
+                    if (r.source instanceof VMemRef.Global) {
+                        VMemRef.Global ref = (VMemRef.Global) r.source;
+                        System.out.println(indent + "lw " + r.dest.toString() + " " + ref.byteOffset
+                                            + "(" + ref.base.toString() + ")");
+                    } else {
+                        VMemRef.Stack ref = (VMemRef.Stack) r.source;
+                        System.out.println(indent + "lw " + r.dest.toString() + " 0($sp)");
+                        System.out.println(indent + "lw $ra -4($fp)");
+                        System.out.println(indent + "lw $fp -8($fp)");
+                        System.out.println(indent + "addu $sp $sp 12");
+                    }
+
                 }
 
                 // Get memwrite information
                 @Override
                 public void visit(VMemWrite w) {
-                    System.out.println("                         MemWrite");
 
-                    // VMemRef.Global globalReference = (VMemRef.Global) w.dest;
-                    // use.add(globalReference.base.toString());
-                    // if (w.source instanceof VVarRef) {
-                    //     use.add(w.source.toString());
-                    // }
+                    if (w.dest instanceof VMemRef.Global) {
+                        // TODO figure out source value here
+                        System.out.println("                       TODO: FIX SOURCE VALUE (TEMP MAYBE?)");
+                        VMemRef.Global destination_0 = (VMemRef.Global) w.dest;
+                        System.out.println(indent + "sw " + w.source.toString() + " " + destination_0.byteOffset
+                                            + "(" + destination_0.base.toString() + ")");
+                    } else {
+                        // TODO figure out destination here
+                        VMemRef.Stack destination_1 = (VMemRef.Stack) w.dest;
+                        System.out.println(indent + "sw " + w.source.toString() + " 0($sp)");
+                    }
+
                 }
 
                 // Get return information
                 @Override
                 public void visit(VReturn r) {
-                    System.out.println("                         Return");
-
-                    // if (r.value != null && r.value instanceof VVarRef) {
-                    //     use.add(r.value.toString());
-                    // }
+                    System.out.println(indent + "jr $ra");
                 }
 
             });
